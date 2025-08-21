@@ -10,171 +10,56 @@ export default function ProductListingSection() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Sample product data
-  const sampleProducts = [
-    {
-      id: 1,
-      name: 'Organic Avocados',
-      description: 'Fresh organic avocados, rich in nutrients and perfect for your healthy diet.',
-      price: 4.99,
-      originalPrice: 6.99,
-      rating: 4.5,
-      reviewCount: 128,
-      image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-      category: 'fruits',
-      weight: '500g',
-      organic: true,
-      inStock: true,
-      discount: 25,
-      featured: true
-    },
-    {
-      id: 2,
-      name: 'Fresh Strawberries',
-      description: 'Sweet and juicy strawberries, perfect for desserts or snacking.',
-      price: 3.99,
-      originalPrice: 4.99,
-      rating: 4.2,
-      reviewCount: 96,
-      image: 'https://images.unsplash.com/photo-1464454709131-ffd692591ee5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'fruits',
-      weight: '400g',
-      organic: false,
-      inStock: true,
-      discount: 20,
-      featured: true
-    },
-    {
-      id: 3,
-      name: 'Whole Milk',
-      description: 'Fresh whole milk from grass-fed cows, rich in calcium.',
-      price: 2.49,
-      originalPrice: 2.99,
-      rating: 4.7,
-      reviewCount: 204,
-      image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'dairy',
-      weight: '1L',
-      organic: true,
-      inStock: true,
-      discount: 15,
-      featured: false
-    },
-    {
-      id: 4,
-      name: 'Organic Bread',
-      description: 'Artisan organic bread made with whole grains and no preservatives.',
-      price: 3.49,
-      originalPrice: 3.99,
-      rating: 4.3,
-      reviewCount: 87,
-      image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'bakery',
-      weight: '500g',
-      organic: true,
-      inStock: true,
-      discount: 12,
-      featured: true
-    },
-    {
-      id: 5,
-      name: 'Free Range Eggs',
-      description: 'Farm fresh free range eggs from happy chickens.',
-      price: 4.29,
-      originalPrice: 4.99,
-      rating: 4.8,
-      reviewCount: 156,
-      image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'dairy',
-      weight: 'Dozen',
-      organic: false,
-      inStock: false,
-      discount: 14,
-      featured: false
-    },
-    {
-      id: 6,
-      name: 'Organic Tomatoes',
-      description: 'Vine-ripened organic tomatoes, perfect for salads and cooking.',
-      price: 2.99,
-      originalPrice: 3.49,
-      rating: 4.4,
-      reviewCount: 112,
-      image: 'https://images.unsplash.com/photo-1561136594-7f68413baa99?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'vegetables',
-      weight: '500g',
-      organic: true,
-      inStock: true,
-      discount: 14,
-      featured: false
-    },
-    {
-      id: 7,
-      name: 'Greek Yogurt',
-      description: 'Creamy Greek yogurt with high protein content and probiotics.',
-      price: 3.79,
-      originalPrice: 4.29,
-      rating: 4.6,
-      reviewCount: 189,
-      image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'dairy',
-      weight: '500g',
-      organic: false,
-      inStock: true,
-      discount: 12,
-      featured: true
-    },
-    {
-      id: 8,
-      name: 'Bananas',
-      description: 'Fresh yellow bananas, a great source of potassium and energy.',
-      price: 1.99,
-      originalPrice: 2.49,
-      rating: 4.1,
-      reviewCount: 76,
-      image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      category: 'fruits',
-      weight: '1kg',
-      organic: false,
-      inStock: true,
-      discount: 20,
-      featured: false
-    }
-  ];
-
-  // Categories for filtering
   const categories = [
     { id: 'all', name: 'All Products' },
-    { id: 'fruits', name: 'Fruits' },
-    { id: 'vegetables', name: 'Vegetables' },
-    { id: 'dairy', name: 'Dairy' },
-    { id: 'bakery', name: 'Bakery' },
-    { id: 'meat', name: 'Meat & Seafood' }
+    { id: 'Fruits & Vegetables', name: 'Fruits & Vegetables' },
+    { id: 'Grocery & Staples', name: 'Grocery & Staples' }
   ];
 
-  // Sort options
-  const sortOptions = [
-    { id: 'featured', name: 'Featured' },
-    { id: 'priceLow', name: 'Price: Low to High' },
-    { id: 'priceHigh', name: 'Price: High to Low' },
-    { id: 'rating', name: 'Top Rated' },
-    { id: 'newest', name: 'Newest' }
-  ];
-
-  // Simulate data loading
   useEffect(() => {
-    const loadProducts = () => {
+    const fetchProducts = async () => {
       setLoading(true);
-      // Simulate API call delay
-      setTimeout(() => {
-        setProducts(sampleProducts);
-        setFilteredProducts(sampleProducts);
+      try {
+        const response = await fetch('http://localhost:5000/api/product/');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        
+        // Transform API data to match expected format
+        const transformedProducts = data.map((product, index) => ({
+          id: product._id || index,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          originalPrice: product.oldPrice || product.price,
+          rating: 4.0, // Default rating since API doesn't provide
+          reviewCount: 0, // Default review count
+          image: product.image,
+          category: product.category,
+          weight: product.weight,
+          organic: false, // Default value
+          inStock: true, // Default value
+          discount: product.oldPrice > 0 
+            ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) 
+            : 0,
+          featured: index < 3 // First few products as featured
+        }));
+        
+        setProducts(transformedProducts);
+        setFilteredProducts(transformedProducts);
+        console.log('Products loaded successfully from API');
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        // Fallback to empty array on error
+        setProducts([]);
+        setFilteredProducts([]);
+      } finally {
         setLoading(false);
-        console.log('Products loaded successfully');
-      }, 1000);
+      }
     };
 
-    loadProducts();
+    fetchProducts();
   }, []);
 
   // Filter and sort products
@@ -203,11 +88,8 @@ export default function ProductListingSection() {
       case 'priceHigh':
         result.sort((a, b) => b.price - a.price);
         break;
-      case 'rating':
-        result.sort((a, b) => b.rating - a.rating);
-        break;
       case 'newest':
-        // For demo, we'll sort by ID which simulates newest first
+        // For API products, we don't have createdAt, so sort by ID
         result.sort((a, b) => b.id - a.id);
         break;
       default:
@@ -237,6 +119,23 @@ export default function ProductListingSection() {
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
+       
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {categories.map(category => (
+            <button
+              key={category.id}
+              onClick={() => handleCategoryChange(category.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === category.id
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
 
         {/* Products Grid */}
         {loading ? (

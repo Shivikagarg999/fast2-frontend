@@ -136,23 +136,6 @@ export default function CategorySection() {
           </div>
         )}
 
-        {/* CTA Section */}
-        <div className="text-center px-4">
-          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-10 text-white shadow-lg">
-            <h2 className="text-3xl font-bold mb-4">
-              Get Everything Delivered in Minutes!
-            </h2>
-            <p className="text-green-100 mb-6 text-lg">
-              Fresh groceries, household essentials, and more at your doorstep
-            </p>
-            <button 
-              className="bg-white text-green-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-colors shadow-md hover:shadow-lg"
-              onClick={() => console.log('CTA clicked at:', new Date().toLocaleTimeString())}
-            >
-              Start Shopping Now
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

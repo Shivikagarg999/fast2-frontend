@@ -2,26 +2,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 
-export default function ProductCard() {
+export default function ProductCard({ product }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [quantity, setQuantity] = useState(1);
-
-  // Sample product data
-  const product = {
-    id: 1,
-    name: 'Organic Avocados',
-    description: 'Fresh organic avocados, rich in nutrients and perfect for your healthy diet.',
-    price: 4.99,
-    originalPrice: 6.99,
-    rating: 4.5,
-    reviewCount: 128,
-    image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    category: 'Fruits & Vegetables',
-    weight: '500g',
-    organic: true,
-    inStock: true,
-    discount: 25,
-  };
 
   const handleWishlistToggle = () => {
     setIsWishlisted(!isWishlisted);
@@ -36,12 +19,22 @@ export default function ProductCard() {
     setQuantity(prev => Math.max(1, prev + amount));
   };
 
+  // Calculate discount percentage if oldPrice exists and is greater than current price
+  const discount = product.oldPrice > product.price 
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : 0;
+
+  // Construct image URL - you might need to adjust this based on your API
+  const imageUrl = product.image.startsWith('http') 
+    ? product.image 
+    : `https://fast2-backend.onrender.com/images/${product.image}`;
+
   return (
     <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {/* Product Image */}
       <div className="relative">
         <Image
-          src={product.image}
+          src={imageUrl}
           alt={product.name}
           width={400}
           height={300}
@@ -53,23 +46,18 @@ export default function ProductCard() {
         />
         
         {/* Discount Badge */}
-        {product.discount > 0 && (
+        {discount > 0 && (
           <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-            {product.discount}% OFF
+            {discount}% OFF
           </div>
         )}
         
-        {/* Organic Badge */}
-        {product.organic && (
-          <div className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-            ORGANIC
-          </div>
-        )}
+        {/* Organic Badge - removed since API doesn't provide this info */}
         
         {/* Wishlist Button */}
         <button
           onClick={handleWishlistToggle}
-          className={`absolute top-12 right-4 p-2 rounded-full shadow-md ${
+          className={`absolute top-4 right-4 p-2 rounded-full shadow-md ${
             isWishlisted ? 'bg-red-500 text-white' : 'bg-white text-gray-600'
           }`}
           aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
@@ -90,14 +78,7 @@ export default function ProductCard() {
           </svg>
         </button>
         
-        {/* Out of Stock Overlay */}
-        {!product.inStock && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <span className="bg-white text-gray-800 font-bold py-2 px-4 rounded-lg">
-              Out of Stock
-            </span>
-          </div>
-        )}
+        {/* Out of Stock Overlay - removed since API doesn't provide stock info */}
       </div>
 
       {/* Product Details */}
@@ -111,35 +92,17 @@ export default function ProductCard() {
         {/* Description */}
         <p className="text-gray-600 text-sm mb-4">{product.description}</p>
         
-        {/* Rating */}
-        <div className="flex items-center mb-4">
-          <div className="flex text-yellow-400">
-            {[...Array(5)].map((_, i) => (
-              <svg
-                key={i}
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            ))}
-          </div>
-          <span className="text-gray-600 text-sm ml-2">
-            {product.rating} ({product.reviewCount} reviews)
-          </span>
-        </div>
+        {/* Rating - removed since API doesn't provide rating data */}
         
         {/* Weight */}
         <div className="text-sm text-gray-500 mb-4">Weight: {product.weight}</div>
         
         {/* Price */}
         <div className="flex items-center mb-4">
-          <span className="text-xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
-          {product.originalPrice > product.price && (
+          <span className="text-xl font-bold text-gray-900">₹{product.price}</span>
+          {product.oldPrice > product.price && (
             <span className="text-sm text-gray-500 line-through ml-2">
-              ${product.originalPrice.toFixed(2)}
+              ₹{product.oldPrice}
             </span>
           )}
         </div>
@@ -165,14 +128,9 @@ export default function ProductCard() {
           
           <button
             onClick={handleAddToCart}
-            disabled={!product.inStock}
-            className={`px-4 py-2 rounded-lg font-medium ${
-              product.inStock
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
+            className="px-4 py-2 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700"
           >
-            {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+            Add to Cart
           </button>
         </div>
       </div>

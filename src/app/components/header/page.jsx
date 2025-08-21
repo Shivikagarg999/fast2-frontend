@@ -10,10 +10,16 @@ import {
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.jpeg';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItems] = useState(3); // Mock cart count
+  const router = useRouter();
+
+  const handleLoginClick = () => {
+    router.push('/login');
+  };
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -46,7 +52,7 @@ export default function Header() {
                 <input
                   type="text"
                   placeholder="Search for products..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -55,7 +61,10 @@ export default function Header() {
             <div className="flex items-center space-x-4">
               
               {/* Login/Signup */}
-              <div className="hidden md:flex items-center space-x-2">
+              <div 
+                className="hidden md:flex items-center space-x-2 cursor-pointer"
+                onClick={handleLoginClick}
+              >
                 <UserIcon className="w-6 h-6 text-gray-600" />
                 <span className="text-sm font-medium text-gray-700">Login/Signup</span>
               </div>
@@ -135,7 +144,10 @@ export default function Header() {
               <MapPinIcon className="w-5 h-5 text-green-600" />
               <span>Connaught Place, Delhi</span>
             </div>
-            <div className="flex items-center space-x-2 text-gray-700">
+            <div 
+              className="flex items-center space-x-2 text-gray-700 cursor-pointer"
+              onClick={handleLoginClick}
+            >
               <UserIcon className="w-5 h-5" />
               <span>Login/Signup</span>
             </div>
