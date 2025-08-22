@@ -1,13 +1,27 @@
 'use client'
+import Image from "next/image";
+import Logo from "../../../assets/images/logo.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-8 mt-12">
+    <footer className="bg-gray-900 text-white py-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-lg font-bold mb-4">Fast2</h3>
+                       <div className="flex items-center space-x-6">
+                         
+                         <div className="flex items-center">
+                           <Image
+                             src={Logo}
+                             alt="Blinkit"
+                             width={220}
+                             height={100}
+                             className="h-22 w-auto object-contain"
+                           />
+                         </div>
+           
+                       </div>
             <p className="text-gray-400 text-sm">
               Your trusted partner for quick grocery delivery. Fresh products at your doorstep in minutes.
             </p>

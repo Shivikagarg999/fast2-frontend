@@ -2,12 +2,11 @@
 import React, { useState } from 'react';
 
 const BlinkitProductListing = () => {
-  // Sample Blinkit-style product data
-  const [products, setProducts] = useState([
+  const [products] = useState([
     {
       id: 1,
       name: "Fresh Potatoes",
-      description: "Farm fresh potatoes, 1 kg pack",
+      description: "Farm fresh, 1 kg",
       category: "Vegetables",
       price: 35,
       image: "https://i.pinimg.com/736x/b6/c4/cd/b6c4cde196e12850d64cc6570eef7674.jpg",
@@ -17,7 +16,7 @@ const BlinkitProductListing = () => {
     {
       id: 2,
       name: "Organic Tomatoes",
-      description: "Organic red tomatoes, 500 g",
+      description: "Organic red, 500 g",
       category: "Vegetables",
       price: 25,
       image: "https://i.pinimg.com/736x/f2/7c/1a/f27c1a4fdcc547bbced51a424492be2f.jpg",
@@ -36,13 +35,93 @@ const BlinkitProductListing = () => {
     },
     {
       id: 4,
+      name: "Paneer",
+      description: "Fresh cottage cheese, 200 g",
+      category: "Dairy",
+      price: 80,
+      image: "https://i.pinimg.com/736x/5c/5d/5c/5c5d5c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.6,
+      deliveryTime: "10 mins"
+    },
+    {
+      id: 5,
       name: "Whole Wheat Bread",
-      description: "Freshly baked bread, 400 g",
+      description: "Freshly baked, 400 g",
       category: "Bakery",
       price: 45,
       image: "https://i.pinimg.com/736x/9b/87/24/9b8724dc3f7ba8a2a9674ae633e4064c.jpg",
       rating: 4.3,
       deliveryTime: "15 mins"
+    },
+    {
+      id: 6,
+      name: "Croissants",
+      description: "Buttery, 4 pcs",
+      category: "Bakery",
+      price: 85,
+      image: "https://i.pinimg.com/736x/0c/6c/6c/0c6c6c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.4,
+      deliveryTime: "12 mins"
+    },
+    {
+      id: 7,
+      name: "Mineral Water",
+      description: "1L purified bottle",
+      category: "Beverages",
+      price: 20,
+      image: "https://i.pinimg.com/736x/7c/7d/7c/7c7d7c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.1,
+      deliveryTime: "7 mins"
+    },
+    {
+      id: 8,
+      name: "Orange Juice",
+      description: "Freshly squeezed, 1L",
+      category: "Beverages",
+      price: 120,
+      image: "https://i.pinimg.com/736x/6c/6d/6c/6c6d6c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.5,
+      deliveryTime: "10 mins"
+    },
+    {
+      id: 9,
+      name: "Potato Chips",
+      description: "Crunchy, 50g pack",
+      category: "Snacks",
+      price: 20,
+      image: "https://i.pinimg.com/736x/8c/8d/8c/8c8d8c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.3,
+      deliveryTime: "9 mins"
+    },
+    {
+      id: 10,
+      name: "Chocolate Cookies",
+      description: "Choco chip, 200g",
+      category: "Snacks",
+      price: 65,
+      image: "https://i.pinimg.com/736x/9c/9d/9c/9c9d9c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.6,
+      deliveryTime: "11 mins"
+    },
+    {
+      id: 11,
+      name: "Apples",
+      description: "Kashmiri, 1kg",
+      category: "Fruits",
+      price: 110,
+      image: "https://i.pinimg.com/736x/a0/a1/a0/a0a1a05b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.4,
+      deliveryTime: "12 mins"
+    },
+    {
+      id: 12,
+      name: "Bananas",
+      description: "Fresh yellow, 6 pcs",
+      category: "Fruits",
+      price: 40,
+      image: "https://i.pinimg.com/736x/b0/b1/b0/b0b1b05b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      rating: 4.2,
+      deliveryTime: "10 mins"
     }
   ]);
 
@@ -51,6 +130,7 @@ const BlinkitProductListing = () => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
+      maximumFractionDigits: 0
     }).format(price);
   };
 
@@ -63,80 +143,58 @@ const BlinkitProductListing = () => {
     ? products 
     : products.filter(product => product.category === selectedCategory);
 
+  // Group products by category for the category-wise view
+  const productsByCategory = {};
+  products.forEach(product => {
+    if (!productsByCategory[product.category]) {
+      productsByCategory[product.category] = [];
+    }
+    productsByCategory[product.category].push(product);
+  });
+
   return (
-    <div className="min-h-screen bg-gray-50 py-4 px-4 font-sans">
-  
-
-      <div className="max-w-6xl mx-auto">
-        {/* Category Filter */}
-        <div className="flex overflow-x-auto gap-2 mb-6 pb-2 scrollbar-hide">
-          <button
-            onClick={() => setSelectedCategory('All')}
-            className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-              selectedCategory === 'All'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
-            }`}
-          >
-            All Items
-          </button>
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                selectedCategory === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+    <div className="bg-gray-50 py-4 px-4 font-sans bg-white">
+      <div className="max-w-8xl mx-auto">
+        {/* Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-800">Vegetarian Products</h1>
+          <div className="text-sm text-gray-500">Delivery in 10 minutes</div>
         </div>
-
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredProducts.map(product => (
-            <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-transform hover:shadow-md">
-              {/* Product Image */}
-              <div className="h-40 bg-gray-100 flex items-center justify-center p-4">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="object-contain h-full"
-                />
-              </div>
-              
-              {/* Product Details */}
-              <div className="p-3">
-                <h3 className="font-medium text-gray-800 mb-1">{product.name}</h3>
-                <p className="text-xs text-gray-500 mb-2">{product.description}</p>
-                
-                <div className="flex items-center mb-2">
-                  <div className="flex items-center bg-blue-50 px-1 rounded">
-                    <span className="text-xs font-semibold text-blue-700">{product.rating}</span>
-                    <svg className="w-3 h-3 text-yellow-400 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  </div>
-                  <span className="text-xs text-gray-500 ml-2">• Delivery in {product.deliveryTime}</span>
-                </div>
-                
-                <div className="flex justify-between items-center mt-3">
-                  <span className="text-lg font-bold text-gray-900">{formatPrice(product.price)}</span>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-lg text-sm transition-colors">
-                    Add
-                  </button>
+        {/* Category-wise Product Sections (shown when "All" is selected) */}
+        {selectedCategory === 'All' ? (
+          <div className="space-y-6">
+            {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
+              <div key={category} className="bg-white rounded-lg shadow-sm p-4">
+                <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                  {category}
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {categoryProducts.map(product => (
+                    <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
+                  ))}
                 </div>
               </div>
+            ))}
+          </div>
+        ) : (
+          /* Single Category View */
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+              <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+              {selectedCategory}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {filteredProducts.map(product => (
+                <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
         {/* Empty state */}
         {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white rounded-lg">
             <div className="text-gray-300 text-5xl mb-4">
               <i className="fas fa-search"></i>
             </div>
@@ -145,24 +203,77 @@ const BlinkitProductListing = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-6 flex justify-around">
-        <div className="flex flex-col items-center text-blue-600">
-          <i className="fas fa-home mb-1"></i>
-          <span className="text-xs">Home</span>
+// Compact Product Card Component (Blinkit style)
+const ProductCard = ({ product, formatPrice }) => {
+  const [quantity, setQuantity] = useState(0);
+
+  const handleAdd = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const handleRemove = () => {
+    if (quantity > 0) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden transition-transform hover:shadow-md flex flex-col h-full">
+      {/* Product Image */}
+      <div className="h-28 bg-gray-100 flex items-center justify-center p-2">
+        <img 
+          src={product.image} 
+          alt={product.name}
+          className="object-contain h-full rounded"
+        />
+      </div>
+      
+      {/* Product Details */}
+      <div className="p-2 flex-grow flex flex-col">
+        <h3 className="font-medium text-gray-800 text-xs mb-1 leading-tight">{product.name}</h3>
+        <p className="text-xs text-gray-500 mb-2">{product.description}</p>
+        
+        <div className="flex items-center mb-2 mt-auto">
+          <div className="flex items-center bg-blue-50 px-1.5 py-0.5 rounded">
+            <span className="text-xs font-semibold text-blue-700">{product.rating}</span>
+            <svg className="w-3 h-3 text-yellow-400 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 ml-1.5">• {product.deliveryTime}</span>
         </div>
-        <div className="flex flex-col items-center text-gray-500">
-          <i className="fas fa-search mb-1"></i>
-          <span className="text-xs">Search</span>
-        </div>
-        <div className="flex flex-col items-center text-gray-500">
-          <i className="fas fa-shopping-cart mb-1"></i>
-          <span className="text-xs">Cart</span>
-        </div>
-        <div className="flex flex-col items-center text-gray-500">
-          <i className="fas fa-user mb-1"></i>
-          <span className="text-xs">Account</span>
+        
+        <div className="flex justify-between items-center mt-1">
+          <span className="text-sm font-bold text-gray-900">{formatPrice(product.price)}</span>
+          
+          {quantity === 0 ? (
+            <button 
+              className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2.5 rounded text-xs transition-colors"
+              onClick={handleAdd}
+            >
+              ADD
+            </button>
+          ) : (
+            <div className="flex items-center space-x-1.5 bg-blue-100 rounded-full px-1.5 py-0.5">
+              <button 
+                className="text-blue-600 text-sm font-bold"
+                onClick={handleRemove}
+              >
+                -
+              </button>
+              <span className="text-xs font-medium text-blue-600">{quantity}</span>
+              <button 
+                className="text-blue-600 text-sm font-bold"
+                onClick={handleAdd}
+              >
+                +
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

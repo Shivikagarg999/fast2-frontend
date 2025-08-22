@@ -9,12 +9,12 @@ import {
   XMarkIcon 
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import Logo from '../../../assets/images/logo.jpeg';
+import Logo from '../../../assets/images/logo.png';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItems] = useState(3); // Mock cart count
+  const [cartItems] = useState(3);
   const router = useRouter();
 
   const handleLoginClick = () => {
@@ -28,7 +28,6 @@ export default function Header() {
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             
-            {/* Left: Logo and Location */}
             <div className="flex items-center space-x-6">
               
               <div className="flex items-center">
@@ -37,7 +36,7 @@ export default function Header() {
                   alt="Blinkit"
                   width={220}
                   height={100}
-                  className="h-20 w-auto object-contain"
+                  className="h-22 w-auto object-contain"
                 />
               </div>
 
@@ -52,7 +51,7 @@ export default function Header() {
                 <input
                   type="text"
                   placeholder="Search for products..."
-                  className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -74,7 +73,7 @@ export default function Header() {
                 <div className="relative">
                   <ShoppingCartIcon className="w-7 h-7" />
                   {cartItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {cartItems}
                     </span>
                   )}
@@ -98,30 +97,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Bottom Section: Categories */}
-      <div className="hidden lg:block bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <nav className="flex items-center space-x-8 overflow-x-auto scrollbar-hide">
-            {[
-              'Groceries & Essentials',
-              'Fruits & Vegetables',
-              'Dairy & Breakfast',
-              'Snacks & Beverages',
-              'Home & Kitchen',
-              'Beauty & Hygiene',
-              'Ice Cream & Desserts'
-            ].map((category, index) => (
-              <span
-                key={index}
-                className="text-sm font-medium text-gray-600 hover:text-green-600 whitespace-nowrap cursor-pointer"
-              >
-                {category}
-              </span>
-            ))}
-          </nav>
-        </div>
-      </div>
-
       {/* Mobile Search Bar */}
       <div className="lg:hidden px-4 py-3 border-t border-gray-200">
         <div className="relative">
@@ -131,7 +106,7 @@ export default function Header() {
           <input
             type="text"
             placeholder="Search for products..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -141,7 +116,7 @@ export default function Header() {
         <div className="lg:hidden bg-white border-t border-gray-200">
           <div className="px-4 py-4 space-y-4">
             <div className="flex items-center space-x-2 text-gray-700">
-              <MapPinIcon className="w-5 h-5 text-green-600" />
+              <MapPinIcon className="w-5 h-5 text-blue-600" />
               <span>Connaught Place, Delhi</span>
             </div>
             <div 

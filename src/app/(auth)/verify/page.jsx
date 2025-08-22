@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Header from '@/app/components/header/page';
+import Footer from '@/app/components/footer/page';
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function VerifyPage() {
@@ -144,30 +146,10 @@ export default function VerifyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
-        <title>Verify OTP | QuickGrocer</title>
+        <title>Verify OTP | Fast2.in</title>
         <meta name="description" content="Verify your OTP" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center">
-          <button onClick={() => window.history.back()} className="mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h1 className="text-lg font-bold text-green-600">QuickGrocer</h1>
-          </div>
-        </div>
-      </header>
-
+ <Header/>
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-green-600 py-4 px-6">
@@ -254,11 +236,7 @@ export default function VerifyPage() {
         </div>
       </main>
 
-      <footer className="mt-12 py-6 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 text-center text-xs text-gray-500">
-          <p>© 2023 QuickGrocer. All rights reserved.</p>
-        </div>
-      </footer>
+     <Footer/>
     </div>
   );
 }

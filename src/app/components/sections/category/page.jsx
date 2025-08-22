@@ -10,7 +10,6 @@ export default function CategorySection() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      console.log('Component loaded successfully at:', new Date().toLocaleTimeString());
     }, 1500);
     
     return () => clearTimeout(timer);
@@ -61,35 +60,44 @@ export default function CategorySection() {
     }
   ];
 
-  // Log category selection
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
-    console.log(`Category selected: ${categoryId} at ${new Date().toLocaleTimeString()}`);
-    
-    // Log additional details for analytics
-    const category = categories.find(cat => cat.id === categoryId);
-    if (category) {
-      console.table({
-        'Category Name': category.name,
-        'Product Count': category.count,
-        'Selection Time': new Date().toLocaleTimeString()
-      });
-    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
+    <div className="bg-white py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-   
+      
+        {/* Category Filter Tabs */}
+        <div className="flex overflow-x-auto pb-2 mb-6 hide-scrollbar">
+          <div className="flex space-x-2">
+            <button
+              className={`px-4 py-2 rounded-full text-sm font-medium ${selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              onClick={() => handleCategorySelect('all')}
+            >
+              All Categories
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                onClick={() => handleCategorySelect(category.id)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Loading State */}
         {isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
-                <div className="h-48 bg-gray-300"></div>
-                <div className="p-4">
-                  <div className="h-5 bg-gray-300 rounded mb-3"></div>
-                  <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+            {[...Array(10)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="skeleton h-32 w-full"></div>
+                <div className="p-3">
+                  <div className="skeleton h-5 w-3/4 mb-2"></div>
+                  <div className="skeleton h-4 w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -98,45 +106,57 @@ export default function CategorySection() {
 
         {/* Categories Grid */}
         {!isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {categories.map((category) => (
               <div
                 key={category.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer transform hover:-translate-y-2"
+                className="bg-white rounded-lg shadow-sm overflow-hidden transition-transform duration-200 hover:shadow-md"
               >
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-32 overflow-hidden">
                   <Image
                     src={category.image}
                     alt={category.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    onLoad={() => console.log(`Image loaded: ${category.name}`)}
+                    className="object-cover"
                     onError={(e) => {
-                      console.error(`Failed to load image for ${category.name}`);
                       e.target.src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
-                <div className="p-5">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+                <div className="p-3">
+                  <h3 className="font-medium text-gray-800 text-sm mb-1">
                     {category.name}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs text-gray-500">
                     {category.count}+ products
                   </p>
-                  <button className="mt-4 text-green-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    Shop now →
-                  </button>
                 </div>
               </div>
             ))}
           </div>
         )}
-
       </div>
+
+      <style jsx>{`
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .skeleton {
+          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background-size: 200% 100%;
+          animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </div>
   );
 }
