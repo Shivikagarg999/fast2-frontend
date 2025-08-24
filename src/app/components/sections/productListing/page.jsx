@@ -1,7 +1,9 @@
 'use client'
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-const BlinkitProductListing = () => {
+const ProductListing = () => {
+  const router = useRouter();
   const [products] = useState([
     {
       id: 1,
@@ -11,7 +13,8 @@ const BlinkitProductListing = () => {
       price: 35,
       image: "https://i.pinimg.com/736x/b6/c4/cd/b6c4cde196e12850d64cc6570eef7674.jpg",
       rating: 4.2,
-      deliveryTime: "10 mins"
+      deliveryTime: "10 mins",
+      fullDescription: "Farm fresh potatoes sourced directly from local farms. Rich in nutrients and perfect for cooking. These potatoes are carefully selected for quality and freshness."
     },
     {
       id: 2,
@@ -21,7 +24,8 @@ const BlinkitProductListing = () => {
       price: 25,
       image: "https://i.pinimg.com/736x/f2/7c/1a/f27c1a4fdcc547bbced51a424492be2f.jpg",
       rating: 4.5,
-      deliveryTime: "12 mins"
+      deliveryTime: "12 mins",
+      fullDescription: "Organically grown red tomatoes with no pesticides or chemicals. Rich in lycopene and vitamin C. Perfect for salads, cooking, and garnishing."
     },
     {
       id: 3,
@@ -31,7 +35,8 @@ const BlinkitProductListing = () => {
       price: 30,
       image: "https://i.pinimg.com/736x/24/1d/d3/241dd354a1303f9cbeb6ad04d70a4211.jpg",
       rating: 4.7,
-      deliveryTime: "8 mins"
+      deliveryTime: "8 mins",
+      fullDescription: "Pure cow milk from healthy cows. Rich in calcium, protein, and vitamins. Perfect for drinking, tea, coffee, and cooking."
     },
     {
       id: 4,
@@ -41,7 +46,8 @@ const BlinkitProductListing = () => {
       price: 80,
       image: "https://i.pinimg.com/736x/cf/d4/36/cfd4360fb7a7c8e5e020c7637b4dd091.jpg",
       rating: 4.6,
-      deliveryTime: "10 mins"
+      deliveryTime: "10 mins",
+      fullDescription: "Fresh homemade cottage cheese (paneer) made from pure milk. High in protein and perfect for Indian dishes like palak paneer, paneer butter masala."
     },
     {
       id: 5,
@@ -51,7 +57,8 @@ const BlinkitProductListing = () => {
       price: 45,
       image: "https://i.pinimg.com/736x/9b/87/24/9b8724dc3f7ba8a2a9674ae633e4064c.jpg",
       rating: 4.3,
-      deliveryTime: "15 mins"
+      deliveryTime: "15 mins",
+      fullDescription: "Freshly baked whole wheat bread made with 100% whole wheat flour. Rich in fiber and nutrients. Perfect for sandwiches, toast, and breakfast."
     },
     {
       id: 6,
@@ -61,7 +68,8 @@ const BlinkitProductListing = () => {
       price: 85,
       image: "https://i.pinimg.com/1200x/f9/91/50/f991505ccd4167cbdf25259e052d73a5.jpg",
       rating: 4.4,
-      deliveryTime: "12 mins"
+      deliveryTime: "12 mins",
+      fullDescription: "Buttery, flaky croissants baked fresh daily. Made with premium butter and flour. Perfect for breakfast or as a light snack with coffee."
     },
     {
       id: 7,
@@ -71,7 +79,8 @@ const BlinkitProductListing = () => {
       price: 20,
       image: "https://i.pinimg.com/736x/ef/da/27/efda27f5c7a74c56764bd4270f1004ff.jpg",
       rating: 4.1,
-      deliveryTime: "7 mins"
+      deliveryTime: "7 mins",
+      fullDescription: "Pure mineral water purified through advanced filtration. Rich in essential minerals and completely safe to drink. Perfect for daily hydration."
     },
     {
       id: 8,
@@ -81,7 +90,8 @@ const BlinkitProductListing = () => {
       price: 120,
       image: "https://i.pinimg.com/1200x/1d/85/66/1d856623b2d1ee0d53394b6cb0c84a54.jpg",
       rating: 4.5,
-      deliveryTime: "10 mins"
+      deliveryTime: "10 mins",
+      fullDescription: "Freshly squeezed orange juice with no added sugar or preservatives. Rich in vitamin C and natural antioxidants. Perfect for breakfast or as a healthy drink."
     },
     {
       id: 9,
@@ -91,7 +101,8 @@ const BlinkitProductListing = () => {
       price: 20,
       image: "https://i.pinimg.com/736x/43/d7/04/43d70491c3558804a4bdcde044e38c9d.jpg",
       rating: 4.3,
-      deliveryTime: "9 mins"
+      deliveryTime: "9 mins",
+      fullDescription: "Crispy potato chips made from fresh potatoes. Perfectly seasoned with salt and spices. Great for snacking and parties."
     },
     {
       id: 10,
@@ -101,7 +112,8 @@ const BlinkitProductListing = () => {
       price: 65,
       image: "https://i.pinimg.com/736x/2e/6d/1d/2e6d1dfe3cd862d3e884169a75a19510.jpg",
       rating: 4.6,
-      deliveryTime: "11 mins"
+      deliveryTime: "11 mins",
+      fullDescription: "Delicious chocolate chip cookies baked with premium chocolate chips. Soft, chewy texture with rich chocolate flavor. Perfect with milk or tea."
     },
     {
       id: 11,
@@ -111,7 +123,8 @@ const BlinkitProductListing = () => {
       price: 110,
       image: "https://i.pinimg.com/736x/1e/fe/06/1efe0654537adf9efa4bbdcec5eb433c.jpg",
       rating: 4.4,
-      deliveryTime: "12 mins"
+      deliveryTime: "12 mins",
+      fullDescription: "Premium Kashmiri apples known for their sweet taste and crisp texture. Rich in fiber, vitamins, and antioxidants. Perfect for eating fresh or in desserts."
     },
     {
       id: 12,
@@ -121,7 +134,8 @@ const BlinkitProductListing = () => {
       price: 40,
       image: "https://i.pinimg.com/736x/5d/e9/22/5de9226b74c2d216310205611319a8f7.jpg",
       rating: 4.2,
-      deliveryTime: "10 mins"
+      deliveryTime: "10 mins",
+      fullDescription: "Fresh yellow bananas rich in potassium, vitamin B6, and natural sugars. Perfect for breakfast, smoothies, or as a healthy snack anytime."
     }
   ]);
 
@@ -152,6 +166,15 @@ const BlinkitProductListing = () => {
     productsByCategory[product.category].push(product);
   });
 
+  // Handle product click - navigate to product detail page
+  const handleProductClick = (product) => {
+    // Store product data in sessionStorage so we can access it on the detail page
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('selectedProduct', JSON.stringify(product));
+    }
+    router.push(`/product/${product.id}`);
+  };
+
   return (
     <div className="bg-gray-50 py-4 px-4 font-sans bg-white">
       <div className="max-w-8xl mx-auto">
@@ -171,7 +194,12 @@ const BlinkitProductListing = () => {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                   {categoryProducts.map(product => (
-                    <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
+                    <ProductCard 
+                      key={product.id} 
+                      product={product} 
+                      formatPrice={formatPrice} 
+                      onProductClick={handleProductClick}
+                    />
                   ))}
                 </div>
               </div>
@@ -186,7 +214,12 @@ const BlinkitProductListing = () => {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {filteredProducts.map(product => (
-                <ProductCard key={product.id} product={product} formatPrice={formatPrice} />
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  formatPrice={formatPrice} 
+                  onProductClick={handleProductClick}
+                />
               ))}
             </div>
           </div>
@@ -208,21 +241,30 @@ const BlinkitProductListing = () => {
 };
 
 // Compact Product Card Component (Blinkit style)
-const ProductCard = ({ product, formatPrice }) => {
+const ProductCard = ({ product, formatPrice, onProductClick }) => {
   const [quantity, setQuantity] = useState(0);
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
+    e.stopPropagation(); // Prevent triggering the product click when clicking add button
     setQuantity(quantity + 1);
   };
 
-  const handleRemove = () => {
+  const handleRemove = (e) => {
+    e.stopPropagation(); // Prevent triggering the product click when clicking remove button
     if (quantity > 0) {
       setQuantity(quantity - 1);
     }
   };
 
+  const handleCardClick = () => {
+    onProductClick(product);
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden transition-transform hover:shadow-md flex flex-col h-full">
+    <div 
+      className="bg-white rounded-lg border border-gray-100 overflow-hidden transition-transform hover:shadow-md flex flex-col h-full cursor-pointer hover:scale-105"
+      onClick={handleCardClick}
+    >
       {/* Product Image */}
       <div className="h-28 bg-gray-100 flex items-center justify-center p-2">
         <img 
@@ -280,4 +322,4 @@ const ProductCard = ({ product, formatPrice }) => {
   );
 };
 
-export default BlinkitProductListing;
+export default ProductListing;
