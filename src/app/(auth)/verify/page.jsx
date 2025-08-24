@@ -180,7 +180,7 @@ export default function VerifyPage() {
                       value={data}
                       onChange={e => handleOtpChange(e.target, index)}
                       onKeyDown={e => handleKeyDown(e, index)}
-                      className="w-12 h-12 border border-gray-300 rounded-lg text-center text-xl font-semibold focus:ring-blue-500 focus:border-blue-500"
+                      className="w-12 h-12 border text-black border-gray-300 rounded-lg text-center text-xl font-semibold focus:ring-blue-500 focus:border-blue-500"
                     />
                   ))}
                 </div>

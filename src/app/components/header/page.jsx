@@ -70,7 +70,7 @@ export default function Header() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search for products..."
+                  placeholder="Search any product..."
                   className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
