@@ -12,17 +12,37 @@ import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter } from 'next/navigation';
 
+// Fixed event system for communication between components
+const cartEvents = {
+  listeners: [],
+  subscribe: (callback) => {
+    cartEvents.listeners.push(callback);
+  },
+  unsubscribe: (callback) => {
+    cartEvents.listeners = cartEvents.listeners.filter(listener => listener !== callback);
+  },
+  // Changed this method name to match what cart component expects
+  publish: () => {
+    cartEvents.listeners.forEach(listener => listener());
+  }
+};
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItems] = useState(3);
+  const [cartItemCount, setCartItemCount] = useState(3); 
   const router = useRouter();
 
   const handleLoginClick = () => {
     router.push('/login');
   };
 
+  const handleCartClick = () => {
+    // Now calling the correct method
+    cartEvents.publish();
+  };
+
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="bg-white shadow-md sticky top-0 w-full">
       {/* Top Section */}
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
@@ -61,7 +81,7 @@ export default function Header() {
               
               {/* Login/Signup */}
               <div 
-                className="hidden md:flex items-center space-x-2 cursor-pointer"
+                className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
                 onClick={handleLoginClick}
               >
                 <UserIcon className="w-6 h-6 text-gray-600" />
@@ -69,12 +89,15 @@ export default function Header() {
               </div>
 
               {/* Cart */}
-              <div className="flex items-center space-x-1 text-gray-700 cursor-pointer">
+              <div 
+                className="flex items-center space-x-1 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                onClick={handleCartClick}
+              >
                 <div className="relative">
                   <ShoppingCartIcon className="w-7 h-7" />
-                  {cartItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItems}
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                      {cartItemCount}
                     </span>
                   )}
                 </div>
@@ -83,7 +106,7 @@ export default function Header() {
 
               {/* Mobile Menu Button */}
               <button 
-                className="lg:hidden p-2"
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? (
@@ -98,7 +121,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Search Bar */}
-      <div className="lg:hidden px-4 py-3 border-t border-gray-200">
+      <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
@@ -113,14 +136,14 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200">
+        <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
             <div className="flex items-center space-x-2 text-gray-700">
               <MapPinIcon className="w-5 h-5 text-blue-600" />
               <span>Connaught Place, Delhi</span>
             </div>
             <div 
-              className="flex items-center space-x-2 text-gray-700 cursor-pointer"
+              className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
               onClick={handleLoginClick}
             >
               <UserIcon className="w-5 h-5" />
@@ -138,7 +161,7 @@ export default function Header() {
                   'Beauty',
                   'Ice Cream'
                 ].map((item, index) => (
-                  <div key={index} className="text-gray-600">
+                  <div key={index} className="text-gray-600 hover:text-blue-600 cursor-pointer transition-colors py-1">
                     {item}
                   </div>
                 ))}
@@ -150,3 +173,6 @@ export default function Header() {
     </header>
   );
 }
+
+// Export the event system so Cart can subscribe to it
+export { cartEvents };

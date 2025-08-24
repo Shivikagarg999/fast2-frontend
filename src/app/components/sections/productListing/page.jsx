@@ -39,7 +39,7 @@ const BlinkitProductListing = () => {
       description: "Fresh cottage cheese, 200 g",
       category: "Dairy",
       price: 80,
-      image: "https://i.pinimg.com/736x/5c/5d/5c/5c5d5c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/736x/cf/d4/36/cfd4360fb7a7c8e5e020c7637b4dd091.jpg",
       rating: 4.6,
       deliveryTime: "10 mins"
     },
@@ -59,7 +59,7 @@ const BlinkitProductListing = () => {
       description: "Buttery, 4 pcs",
       category: "Bakery",
       price: 85,
-      image: "https://i.pinimg.com/736x/0c/6c/6c/0c6c6c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/1200x/f9/91/50/f991505ccd4167cbdf25259e052d73a5.jpg",
       rating: 4.4,
       deliveryTime: "12 mins"
     },
@@ -69,7 +69,7 @@ const BlinkitProductListing = () => {
       description: "1L purified bottle",
       category: "Beverages",
       price: 20,
-      image: "https://i.pinimg.com/736x/7c/7d/7c/7c7d7c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/736x/ef/da/27/efda27f5c7a74c56764bd4270f1004ff.jpg",
       rating: 4.1,
       deliveryTime: "7 mins"
     },
@@ -79,7 +79,7 @@ const BlinkitProductListing = () => {
       description: "Freshly squeezed, 1L",
       category: "Beverages",
       price: 120,
-      image: "https://i.pinimg.com/736x/6c/6d/6c/6c6d6c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/1200x/1d/85/66/1d856623b2d1ee0d53394b6cb0c84a54.jpg",
       rating: 4.5,
       deliveryTime: "10 mins"
     },
@@ -89,7 +89,7 @@ const BlinkitProductListing = () => {
       description: "Crunchy, 50g pack",
       category: "Snacks",
       price: 20,
-      image: "https://i.pinimg.com/736x/8c/8d/8c/8c8d8c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/736x/43/d7/04/43d70491c3558804a4bdcde044e38c9d.jpg",
       rating: 4.3,
       deliveryTime: "9 mins"
     },
@@ -99,7 +99,7 @@ const BlinkitProductListing = () => {
       description: "Choco chip, 200g",
       category: "Snacks",
       price: 65,
-      image: "https://i.pinimg.com/736x/9c/9d/9c/9c9d9c5b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/736x/2e/6d/1d/2e6d1dfe3cd862d3e884169a75a19510.jpg",
       rating: 4.6,
       deliveryTime: "11 mins"
     },
@@ -109,7 +109,7 @@ const BlinkitProductListing = () => {
       description: "Kashmiri, 1kg",
       category: "Fruits",
       price: 110,
-      image: "https://i.pinimg.com/736x/a0/a1/a0/a0a1a05b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/736x/1e/fe/06/1efe0654537adf9efa4bbdcec5eb433c.jpg",
       rating: 4.4,
       deliveryTime: "12 mins"
     },
@@ -119,7 +119,7 @@ const BlinkitProductListing = () => {
       description: "Fresh yellow, 6 pcs",
       category: "Fruits",
       price: 40,
-      image: "https://i.pinimg.com/736x/b0/b1/b0/b0b1b05b7d7e8b5b8b5e5b5c5d5e5f5c.jpg",
+      image: "https://i.pinimg.com/736x/5d/e9/22/5de9226b74c2d216310205611319a8f7.jpg",
       rating: 4.2,
       deliveryTime: "10 mins"
     }

@@ -65,7 +65,7 @@ export default function CategorySection() {
   };
 
   return (
-    <div className="bg-white py-6">
+    <div className="bg-white py-6 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
         {/* Category Filter Tabs */}
