@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react';
 import Head from 'next/head';
-import Header from '@/app/components/header/page';
 import Footer from '@/app/components/footer/page';
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -48,12 +47,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-    <Header/>
+    <div className=" bg-gray-50">
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-green-600 py-4 px-6">
+          <div className="bg-blue-600 py-4 px-6">
             <h2 className="text-white text-xl font-bold">Login / Sign Up</h2>
           </div>
           
@@ -74,7 +72,7 @@ export default function LoginPage() {
                     name="phone"
                     type="tel"
                     required
-                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Enter your phone number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -90,15 +88,15 @@ export default function LoginPage() {
               )}
               
               {success && (
-                <div className="mb-4 rounded-md bg-green-50 p-4">
-                  <div className="text-sm text-green-700">{success}</div>
+                <div className="mb-4 rounded-md bg-blue-50 p-4">
+                  <div className="text-sm text-blue-700">{success}</div>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={loading || phone.length !== 10}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -113,7 +111,7 @@ export default function LoginPage() {
             </form>
 
             <p className="mt-4 text-center text-xs text-gray-500">
-              By continuing, you agree to our <span className="text-green-600">Terms of Service</span> and <span className="text-green-600">Privacy Policy</span>
+              By continuing, you agree to our <span className="text-blue-600">Terms of Service</span> and <span className="text-blue-600">Privacy Policy</span>
             </p>
           </div>
         </div>
