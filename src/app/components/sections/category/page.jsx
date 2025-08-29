@@ -5,64 +5,39 @@ import Image from 'next/image';
 export default function CategorySection() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Simulate loading for demonstration
+  // Fetch categories from API
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    const fetchCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://fast2-backend.onrender.com/api/category/');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        setError('Failed to load categories. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const categories = [
-    {
-      id: 'groceries',
-      name: 'Groceries & Essentials',
-      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      count: 245
-    },
-    {
-      id: 'fruits',
-      name: 'Fruits & Vegetables',
-      image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      count: 156
-    },
-    {
-      id: 'dairy',
-      name: 'Dairy & Breakfast',
-      image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      count: 89
-    },
-    {
-      id: 'bakery',
-      name: 'Bakery & Bread',
-      image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      count: 63
-    },
-    {
-      id: 'beverages',
-      name: 'Beverages',
-      image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      count: 118
-    },
-    {
-      id: 'snacks',
-      name: 'Snacks & Sweets',
-      image: 'https://i.pinimg.com/736x/30/ed/5d/30ed5d5761e8994c51a55b882208ad70.jpg',
-      count: 204
-    },
-    {
-      id: 'household',
-      name: 'Household Care',
-      image: 'https://i.pinimg.com/1200x/c7/92/7e/c7927e3335694378d6faa4573c8fda8b.jpg',
-      count: 137
-    }
-  ];
+    fetchCategories();
+  }, []);
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
   };
+
+  // Fallback image in case of loading errors
+  const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
 
   return (
     <div className="bg-white py-6 z-50">
@@ -79,15 +54,22 @@ export default function CategorySection() {
             </button>
             {categories.map((category) => (
               <button
-                key={category.id}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                onClick={() => handleCategorySelect(category.id)}
+                key={category._id}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category._id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                onClick={() => handleCategorySelect(category._id)}
               >
                 {category.name}
               </button>
             ))}
           </div>
         </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+        )}
 
         {/* Loading State */}
         {isLoading && (
@@ -105,22 +87,22 @@ export default function CategorySection() {
         )}
 
         {/* Categories Grid */}
-        {!isLoading && (
+        {!isLoading && !error && categories.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {categories.map((category) => (
               <div
-                key={category.id}
+                key={category._id}
                 className="bg-white rounded-lg shadow-sm overflow-hidden transition-transform duration-200 hover:shadow-md"
               >
                 <div className="relative h-32 overflow-hidden">
                   <Image
-                    src={category.image}
+                    src={category.image || fallbackImage}
                     alt={category.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
                     onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+                      e.target.src = fallbackImage;
                     }}
                   />
                 </div>
@@ -130,11 +112,22 @@ export default function CategorySection() {
                     {category.name}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    {category.count}+ products
+                    {/* Since the API doesn't provide product count, we can either:
+                        1. Fetch it separately or 
+                        2. Remove this line or 
+                        3. Use a placeholder */}
+                    Shop now
                   </p>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && categories.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No categories available at the moment.</p>
           </div>
         )}
       </div>
