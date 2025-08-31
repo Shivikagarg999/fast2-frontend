@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   MagnifyingGlassIcon, 
   ShoppingCartIcon, 
@@ -29,20 +29,55 @@ const cartEvents = {
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(3); 
+  const [cartItemCount, setCartItemCount] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+
+  // Check if token exists on component mount and when token changes
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+    };
+
+    // Check initially
+    checkAuthStatus();
+
+    // Listen for storage changes (if token is set/removed in other components)
+    window.addEventListener('storage', checkAuthStatus);
+    
+    // Custom event listener for login/logout
+    const handleAuthChange = () => checkAuthStatus();
+    window.addEventListener('authChange', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+      window.removeEventListener('authChange', handleAuthChange);
+    };
+  }, []);
 
   const handleLoginClick = () => {
     router.push('/login');
   };
 
+  const handleProfileClick = () => {
+    router.push('/pages/profile');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    // Dispatch event to notify other components
+    window.dispatchEvent(new Event('authChange'));
+    router.push('/');
+  };
+
   const handleCartClick = () => {
-    // Now calling the correct method
     cartEvents.publish();
   };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 w-full">
+    <header className="bg-white shadow-md sticky top-0 w-full z-50">
       {/* Top Section */}
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
@@ -79,14 +114,36 @@ export default function Header() {
             {/* Right: Actions */}
             <div className="flex items-center space-x-4">
               
-              {/* Login/Signup */}
-              <div 
-                className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
-                onClick={handleLoginClick}
-              >
-                <UserIcon className="w-6 h-6 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Login/Signup</span>
-              </div>
+              {/* Login/Signup or Profile */}
+              {isLoggedIn ? (
+                <div className="hidden md:flex items-center space-x-3">
+                  {/* Profile Icon */}
+                  <div 
+                    className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                    onClick={handleProfileClick}
+                  >
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <UserIcon className="w-5 h-5 text-blue-600" />
+                    </div>
+                  </div>
+                  
+                  {/* Logout Button */}
+                  <button 
+                    onClick={handleLogout}
+                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div 
+                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={handleLoginClick}
+                >
+                  <UserIcon className="w-6 h-6 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">Login/Signup</span>
+                </div>
+              )}
 
               {/* Cart */}
               <div 
@@ -138,17 +195,32 @@ export default function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
-            <div className="flex items-center space-x-2 text-gray-700">
-              <MapPinIcon className="w-5 h-5 text-blue-600" />
-              <span>Connaught Place, Delhi</span>
-            </div>
-            <div 
-              className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
-              onClick={handleLoginClick}
-            >
-              <UserIcon className="w-5 h-5" />
-              <span>Login/Signup</span>
-            </div>
+            {isLoggedIn ? (
+              <>
+                <div 
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={handleProfileClick}
+                >
+                  <UserIcon className="w-5 h-5" />
+                  <span>My Profile</span>
+                </div>
+                <div 
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={handleLogout}
+                >
+                  <span>Logout</span>
+                </div>
+              </>
+            ) : (
+              <div 
+                className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={handleLoginClick}
+              >
+                <UserIcon className="w-5 h-5" />
+                <span>Login/Signup</span>
+              </div>
+            )}
+            
             <div className="pt-4 border-t border-gray-200">
               <h4 className="font-medium mb-2">Categories</h4>
               <div className="space-y-2">

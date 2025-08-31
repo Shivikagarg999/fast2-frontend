@@ -1,6 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { PlusIcon, MinusIcon, ShoppingCartIcon, StarIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 
 const ProductListing = () => {
   const router = useRouter();
@@ -9,6 +11,29 @@ const ProductListing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [cartQuantities, setCartQuantities] = useState({});
+  const [addingToCart, setAddingToCart] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkAuth();
+    window.addEventListener('authChange', checkAuth);
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('userLoggedIn', checkAuth);
+
+    return () => {
+      window.removeEventListener('authChange', checkAuth);
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('userLoggedIn', checkAuth);
+    };
+  }, []);
 
   // Fetch products and categories
   useEffect(() => {
@@ -16,14 +41,12 @@ const ProductListing = () => {
       try {
         setLoading(true);
         
-        // Fetch products
         const productsResponse = await fetch('https://fast2-backend.onrender.com/api/product/');
         if (!productsResponse.ok) {
           throw new Error('Failed to fetch products');
         }
         const productsData = await productsResponse.json();
         
-        // Fetch categories for all products
         const categoryIds = [...new Set(productsData.map(product => product.category))];
         const categoryPromises = categoryIds.map(id => 
           fetch(`https://fast2-backend.onrender.com/api/category/${id}`).then(res => res.json())
@@ -37,9 +60,9 @@ const ProductListing = () => {
         
         setProducts(productsData);
         setCategories(categoriesMap);
-        setLoading(false);
       } catch (err) {
         setError(err.message);
+      } finally {
         setLoading(false);
       }
     };
@@ -47,7 +70,162 @@ const ProductListing = () => {
     fetchData();
   }, []);
 
-  // Format price in Indian rupees
+  // Fetch cart quantities if logged in
+  useEffect(() => {
+    const fetchCartQuantities = async () => {
+      if (!isLoggedIn) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const cartItems = data.items || data.cart?.items || data || [];
+          const quantities = {};
+          
+          cartItems.forEach(item => {
+            const productId = item.product?._id || item.productId || item._id;
+            quantities[productId] = item.quantity || 0;
+          });
+          
+          setCartQuantities(quantities);
+        }
+      } catch (err) {
+        console.error('Error fetching cart quantities:', err);
+      }
+    };
+
+    fetchCartQuantities();
+  }, [isLoggedIn]);
+
+  // Add to cart API call
+  const addToCart = async (productId, quantity = 1) => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      setTimeout(() => setShowLoginPrompt(false), 3000);
+      return;
+    }
+
+    setAddingToCart(prev => ({ ...prev, [productId]: true }));
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://fast2-backend.onrender.com/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId,
+          quantity
+        })
+      });
+
+      if (response.ok) {
+        // Update local quantity state
+        setCartQuantities(prev => ({
+          ...prev,
+          [productId]: (prev[productId] || 0) + quantity
+        }));
+        
+        // Trigger cart update in header
+        window.dispatchEvent(new Event('cartUpdated'));
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add to cart');
+      }
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+      alert('Failed to add item to cart. Please try again.');
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [productId]: false }));
+    }
+  };
+
+  // Update cart quantity
+  const updateCartQuantity = async (productId, newQuantity) => {
+    if (!isLoggedIn) return;
+
+    if (newQuantity <= 0) {
+      await removeFromCart(productId);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const cartItems = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      const items = cartItems.items || cartItems.cart?.items || cartItems || [];
+      const cartItem = items.find(item => 
+        (item.product?._id || item.productId) === productId
+      );
+
+      if (cartItem) {
+        const response = await fetch(`https://fast2-backend.onrender.com/api/cart/update/${cartItem._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ quantity: newQuantity })
+        });
+
+        if (response.ok) {
+          setCartQuantities(prev => ({
+            ...prev,
+            [productId]: newQuantity
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('Error updating cart:', err);
+    }
+  };
+
+  // Remove from cart
+  const removeFromCart = async (productId) => {
+    if (!isLoggedIn) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const cartItems = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      const items = cartItems.items || cartItems.cart?.items || cartItems || [];
+      const cartItem = items.find(item => 
+        (item.product?._id || item.productId) === productId
+      );
+
+      if (cartItem) {
+        const response = await fetch(`https://fast2-backend.onrender.com/api/cart/remove/${cartItem._id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          setCartQuantities(prev => {
+            const updated = { ...prev };
+            delete updated[productId];
+            return updated;
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error removing from cart:', err);
+    }
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -56,16 +234,13 @@ const ProductListing = () => {
     }).format(price);
   };
 
-  // Get unique categories for filtering
   const availableCategories = [...new Set(products.map(product => categories[product.category]))];
-  availableCategories.unshift('All'); // Add "All" option at the beginning
+  availableCategories.unshift('All');
 
-  // Filter products by category
   const filteredProducts = selectedCategory === 'All' 
     ? products 
     : products.filter(product => categories[product.category] === selectedCategory);
 
-  // Group products by category for the category-wise view
   const productsByCategory = {};
   products.forEach(product => {
     const categoryName = categories[product.category];
@@ -75,9 +250,7 @@ const ProductListing = () => {
     productsByCategory[categoryName].push(product);
   });
 
-  // Handle product click - navigate to product detail page
   const handleProductClick = (product) => {
-    // Store product data in sessionStorage so we can access it on the detail page
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
     }
@@ -86,10 +259,21 @@ const ProductListing = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 py-4 px-4 font-sans bg-white min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-8xl mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg p-4 space-y-3">
+                  <div className="h-28 bg-gray-200 rounded"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-8 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -97,16 +281,14 @@ const ProductListing = () => {
 
   if (error) {
     return (
-      <div className="bg-gray-50 py-4 px-4 font-sans bg-white min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-5xl mb-4">
-            <i className="fas fa-exclamation-circle"></i>
-          </div>
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-lg shadow-md">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
           <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Products</h3>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
           >
             Try Again
           </button>
@@ -116,83 +298,118 @@ const ProductListing = () => {
   }
 
   return (
-    <div className="bg-gray-50 py-4 px-4 font-sans bg-white">
-      <div className="max-w-8xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-800">All Products</h1>
-          <div className="text-sm text-gray-500">Delivery in 10 minutes</div>
+    <div className="bg-gray-50 min-h-screen">
+      {/* Login Prompt Toast */}
+      {showLoginPrompt && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
+          <p className="text-sm font-medium">Please login to add items to cart</p>
+        </div>
+      )}
+
+      <div className="max-w-8xl mx-auto px-4 py-6">
+        {/* Header with improved styling */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Fresh Products</h1>
+          <p className="text-gray-600 flex items-center justify-center">
+            <span className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+              <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+              Super fast delivery
+            </span>
+          </p>
         </div>
 
-        {/* Category Filter */}
-        <div className="mb-6 overflow-x-auto">
-          <div className="flex space-x-2 pb-2">
-            {availableCategories.map(category => (
-              <button
-                key={category}
-                className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                  selectedCategory === category
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300'
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
+        {/* Enhanced Category Filter */}
+        <div className="mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <div className="flex flex-wrap gap-3">
+              {availableCategories.map(category => (
+                <button
+                  key={category}
+                  className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
+                    selectedCategory === category
+                      ? 'bg-blue-600 text-white shadow-md transform scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
+                  }`}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Category-wise Product Sections (shown when "All" is selected) */}
+        {/* Product Grid */}
         {selectedCategory === 'All' ? (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
-              <div key={category} className="bg-white rounded-lg shadow-sm p-4">
-                <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                  {category}
-                </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {categoryProducts.map(product => (
-                    <ProductCard 
-                      key={product._id} 
-                      product={product} 
-                      formatPrice={formatPrice} 
-                      onProductClick={handleProductClick}
-                      categoryName={categories[product.category]}
-                    />
-                  ))}
+              <div key={category} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
+                    {category}
+                    <span className="ml-3 text-sm font-normal text-gray-500">
+                      ({categoryProducts.length} items)
+                    </span>
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {categoryProducts.map(product => (
+                      <ProductCard 
+                        key={product._id} 
+                        product={product} 
+                        formatPrice={formatPrice} 
+                        onProductClick={handleProductClick}
+                        categoryName={categories[product.category]}
+                        cartQuantity={cartQuantities[product._id] || 0}
+                        onAddToCart={addToCart}
+                        onUpdateQuantity={updateCartQuantity}
+                        isAddingToCart={addingToCart[product._id] || false}
+                        isLoggedIn={isLoggedIn}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          /* Single Category View */
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-              <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-              {selectedCategory}
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {filteredProducts.map(product => (
-                <ProductCard 
-                  key={product._id} 
-                  product={product} 
-                  formatPrice={formatPrice} 
-                  onProductClick={handleProductClick}
-                  categoryName={categories[product.category]}
-                />
-              ))}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center">
+                <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
+                {selectedCategory}
+                <span className="ml-3 text-sm font-normal text-gray-500">
+                  ({filteredProducts.length} items)
+                </span>
+              </h2>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {filteredProducts.map(product => (
+                  <ProductCard 
+                    key={product._id} 
+                    product={product} 
+                    formatPrice={formatPrice} 
+                    onProductClick={handleProductClick}
+                    categoryName={categories[product.category]}
+                    cartQuantity={cartQuantities[product._id] || 0}
+                    onAddToCart={addToCart}
+                    onUpdateQuantity={updateCartQuantity}
+                    isAddingToCart={addingToCart[product._id] || false}
+                    isLoggedIn={isLoggedIn}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Empty state */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-lg">
-            <div className="text-gray-300 text-5xl mb-4">
-              <i className="fas fa-search"></i>
-            </div>
+        {filteredProducts.length === 0 && !loading && (
+          <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+            <div className="text-gray-300 text-6xl mb-4">🛒</div>
             <h3 className="text-xl font-medium text-gray-600 mb-2">No products found</h3>
             <p className="text-gray-500">Try selecting a different category</p>
           </div>
@@ -202,93 +419,124 @@ const ProductListing = () => {
   );
 };
 
-// Compact Product Card Component (Blinkit style)
-const ProductCard = ({ product, formatPrice, onProductClick, categoryName }) => {
-  const [quantity, setQuantity] = useState(0);
-
-  const handleAdd = (e) => {
-    e.stopPropagation(); // Prevent triggering the product click when clicking add button
-    setQuantity(quantity + 1);
+// Enhanced Product Card Component
+const ProductCard = ({ 
+  product, 
+  formatPrice, 
+  onProductClick, 
+  categoryName, 
+  cartQuantity,
+  onAddToCart,
+  onUpdateQuantity,
+  isAddingToCart,
+  isLoggedIn
+}) => {
+  const handleAdd = async (e) => {
+    e.stopPropagation();
+    await onAddToCart(product._id, 1);
   };
 
-  const handleRemove = (e) => {
-    e.stopPropagation(); // Prevent triggering the product click when clicking remove button
-    if (quantity > 0) {
-      setQuantity(quantity - 1);
+  const handleRemove = async (e) => {
+    e.stopPropagation();
+    if (cartQuantity > 0) {
+      await onUpdateQuantity(product._id, cartQuantity - 1);
     }
+  };
+
+  const handleIncrement = async (e) => {
+    e.stopPropagation();
+    await onUpdateQuantity(product._id, cartQuantity + 1);
   };
 
   const handleCardClick = () => {
     onProductClick(product);
   };
 
-  // Generate a delivery time between 5-15 minutes
   const deliveryTime = `${Math.floor(Math.random() * 11) + 5} mins`;
-  
-  // Generate a rating between 3.5-5.0
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+  const discountPercent = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : null;
 
   return (
     <div 
-      className="bg-white rounded-lg border border-gray-100 overflow-hidden transition-transform hover:shadow-md flex flex-col h-full cursor-pointer hover:scale-105"
+      className="bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow duration-200 hover:shadow-md flex flex-col h-full cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Product Image */}
-      <div className="h-28 bg-gray-100 flex items-center justify-center p-2">
+      <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
+        {discountPercent && (
+          <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium z-10">
+            {discountPercent}% OFF
+          </div>
+        )}
         <img 
           src={product.image} 
           alt={product.name}
-          className="object-contain h-full rounded"
+          className="object-contain h-full w-full"
           onError={(e) => {
-            e.target.src = "https://via.placeholder.com/150?text=No+Image";
+            e.target.src = "https://via.placeholder.com/200x200?text=No+Image";
           }}
         />
       </div>
       
       {/* Product Details */}
-      <div className="p-2 flex-grow flex flex-col">
-        <h3 className="font-medium text-gray-800 text-xs mb-1 leading-tight">{product.name}</h3>
-        <p className="text-xs text-gray-500 mb-2">{product.description}</p>
-        
-        <div className="flex items-center mb-2 mt-auto">
-          <div className="flex items-center bg-blue-50 px-1.5 py-0.5 rounded">
-            <span className="text-xs font-semibold text-blue-700">{rating}</span>
-            <svg className="w-3 h-3 text-yellow-400 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-          </div>
-          <span className="text-xs text-gray-500 ml-1.5">• {deliveryTime}</span>
-        </div>
-        
-        <div className="flex justify-between items-center mt-1">
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-gray-900">{formatPrice(product.price)}</span>
-            {product.oldPrice && (
-              <span className="text-xs text-gray-500 line-through">{formatPrice(product.oldPrice)}</span>
-            )}
+      <div className="p-3 flex-grow flex flex-col">
+        <div className="flex-grow">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500">{deliveryTime}</span>
+            </div>
+            <div className="flex items-center bg-blue-100 px-1.5 py-0.5 rounded">
+              <StarSolidIcon className="w-3 h-3 text-blue-600 mr-0.5" />
+              <span className="text-xs font-medium text-blue-700">{rating}</span>
+            </div>
           </div>
           
-          {quantity === 0 ? (
+          <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
+            {product.name}
+          </h3>
+          <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.description}</p>
+        </div>
+        
+        {/* Price Section */}
+        <div className="mb-3">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-bold text-gray-900">₹{product.price}</span>
+            {product.oldPrice && (
+              <span className="text-xs text-gray-400 line-through">₹{product.oldPrice}</span>
+            )}
+          </div>
+        </div>
+        
+        {/* Add to Cart Section */}
+        <div className="mt-auto">
+          {cartQuantity === 0 ? (
             <button 
-              className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2.5 rounded text-xs transition-colors"
+              className={`w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-2 px-3 rounded-lg text-xs font-bold transition-colors duration-200 ${
+                isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
               onClick={handleAdd}
+              disabled={isAddingToCart}
             >
-              ADD
+              {isAddingToCart ? 'ADDING...' : 'ADD'}
             </button>
           ) : (
-            <div className="flex items-center space-x-1.5 bg-blue-100 rounded-full px-1.5 py-0.5">
+            <div className="flex items-center justify-between border-2 border-blue-600 bg-blue-600 text-white rounded-lg px-2 py-1">
               <button 
-                className="text-blue-600 text-sm font-bold"
+                className="w-6 h-6 flex items-center justify-center hover:bg-blue-700 rounded transition-colors"
                 onClick={handleRemove}
               >
-                -
+                <MinusIcon className="w-3 h-3" />
               </button>
-              <span className="text-xs font-medium text-blue-600">{quantity}</span>
+              
+              <span className="font-bold text-sm px-2">
+                {cartQuantity}
+              </span>
+              
               <button 
-                className="text-blue-600 text-sm font-bold"
-                onClick={handleAdd}
+                className="w-6 h-6 flex items-center justify-center hover:bg-blue-700 rounded transition-colors"
+                onClick={handleIncrement}
               >
-                +
+                <PlusIcon className="w-3 h-3" />
               </button>
             </div>
           )}

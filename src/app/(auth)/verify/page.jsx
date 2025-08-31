@@ -55,6 +55,25 @@ export default function VerifyPage() {
     }
   };
 
+  // Helper function to handle login success
+  const handleLoginSuccess = (token) => {
+    console.log('Login successful, storing token:', token);
+    
+    // Store the token
+    localStorage.setItem('token', token);
+    
+    // Clean up temporary data
+    localStorage.removeItem('otp');
+    localStorage.removeItem('phone');
+    
+    // Notify all components about auth change
+    window.dispatchEvent(new Event('authChange'));
+    window.dispatchEvent(new Event('userLoggedIn'));
+    window.dispatchEvent(new Event('storage'));
+    
+    console.log('Auth events dispatched');
+  };
+
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     const enteredOtp = otp.join('');
@@ -81,13 +100,16 @@ export default function VerifyPage() {
 
       if (response.ok) {
         setSuccess('OTP verified successfully!');
-        // In a real app, you would store the auth token and redirect to home page
+        
+        // Store the token and notify components
+        handleLoginSuccess(data.token);
+        
+        // Redirect to home page after successful verification
         setTimeout(() => {
-          // Redirect to home page after successful verification
           window.location.href = '/';
         }, 1500);
       } else {
-        setError(data.message || 'Failed to verify OTP');
+        setError(data.error || data.message || 'Failed to verify OTP');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -131,7 +153,7 @@ export default function VerifyPage() {
           });
         }, 1000);
       } else {
-        setError(data.message || 'Failed to resend OTP');
+        setError(data.error || data.message || 'Failed to resend OTP');
         setCanResend(true);
       }
     } catch (err) {
