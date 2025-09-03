@@ -259,7 +259,7 @@ const ProductListing = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-white min-h-screen">
         <div className="max-w-8xl mx-auto px-4 py-8">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-gray-200 rounded w-1/4"></div>
@@ -281,7 +281,7 @@ const ProductListing = () => {
 
   if (error) {
     return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center bg-white p-8 rounded-lg shadow-md">
           <div className="text-red-500 text-5xl mb-4">⚠️</div>
           <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Products</h3>
@@ -298,7 +298,7 @@ const ProductListing = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-white min-h-screen">
       {/* Login Prompt Toast */}
       {showLoginPrompt && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
@@ -307,46 +307,14 @@ const ProductListing = () => {
       )}
 
       <div className="max-w-8xl mx-auto px-4 py-6">
-        {/* Header with improved styling */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Fresh Products</h1>
-          <p className="text-gray-600 flex items-center justify-center">
-            <span className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
-              <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-              Super fast delivery
-            </span>
-          </p>
-        </div>
-
-        {/* Enhanced Category Filter */}
-        <div className="mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <div className="flex flex-wrap gap-3">
-              {availableCategories.map(category => (
-                <button
-                  key={category}
-                  className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
-                    selectedCategory === category
-                      ? 'bg-blue-600 text-white shadow-md transform scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
-                  }`}
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Product Grid */}
         {selectedCategory === 'All' ? (
           <div className="space-y-8">
             {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
               <div key={category} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b">
+                <div className="px-6 py-4">
                   <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
+                    <span className="w-3 h-3 rounded-full mr-3"></span>
                     {category}
                     <span className="ml-3 text-sm font-normal text-gray-500">
                       ({categoryProducts.length} items)
@@ -378,7 +346,7 @@ const ProductListing = () => {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b">
               <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
+                <span className="w-3 h-3 rounded-full mr-3"></span>
                 {selectedCategory}
                 <span className="ml-3 text-sm font-normal text-gray-500">
                   ({filteredProducts.length} items)
@@ -458,13 +426,13 @@ const ProductCard = ({
 
   return (
     <div 
-      className="bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow duration-200 hover:shadow-md flex flex-col h-full cursor-pointer"
+      className="bg-white rounded-lg overflow-hidden transition-shadow duration-200 hover:shadow-md flex flex-col h-full cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Product Image */}
-      <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
+      <div className="relative h-32 bg-white flex items-center justify-center p-3">
         {discountPercent && (
-          <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium z-10">
+          <div className="absolute top-2 left-2 text-white text-xs px-2 py-1 rounded font-medium z-10">
             {discountPercent}% OFF
           </div>
         )}

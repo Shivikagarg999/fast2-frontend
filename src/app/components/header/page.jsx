@@ -12,7 +12,6 @@ import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter } from 'next/navigation';
 
-// Fixed event system for communication between components
 const cartEvents = {
   listeners: [],
   subscribe: (callback) => {
@@ -21,7 +20,6 @@ const cartEvents = {
   unsubscribe: (callback) => {
     cartEvents.listeners = cartEvents.listeners.filter(listener => listener !== callback);
   },
-  // Changed this method name to match what cart component expects
   publish: () => {
     cartEvents.listeners.forEach(listener => listener());
   }
@@ -31,6 +29,8 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemCount, setCartItemCount] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const router = useRouter();
 
   // Check if token exists on component mount and when token changes
@@ -56,15 +56,64 @@ export default function Header() {
     };
   }, []);
 
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoadingCategories(true);
+      try {
+        const response = await fetch('https://fast2-backend.onrender.com/api/category/');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        } else {
+          console.error('Failed to fetch categories');
+          // Fallback to hardcoded categories if API fails
+          setCategories([
+            { name: 'Groceries' },
+            { name: 'Fruits & Vegetables' },
+            { name: 'Dairy' },
+            { name: 'Snacks' },
+            { name: 'Home' },
+            { name: 'Beauty' },
+            { name: 'Ice Cream' }
+          ]);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        // Fallback to hardcoded categories if API fails
+        setCategories([
+          { name: 'Groceries' },
+          { name: 'Fruits & Vegetables' },
+          { name: 'Dairy' },
+          { name: 'Snacks' },
+          { name: 'Home' },
+          { name: 'Beauty' },
+          { name: 'Ice Cream' }
+        ]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   const handleLoginClick = () => {
+    closeMenu(); // Close menu before navigation
     router.push('/login');
   };
 
   const handleProfileClick = () => {
+    closeMenu(); // Close menu before navigation
     router.push('/pages/profile');
   };
 
   const handleLogout = () => {
+    closeMenu(); // Close menu before logout
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     // Dispatch event to notify other components
@@ -73,11 +122,18 @@ export default function Header() {
   };
 
   const handleCartClick = () => {
+    closeMenu(); // Close menu when cart is clicked
     cartEvents.publish();
   };
 
+  const handleCategoryClick = (categoryName) => {
+    closeMenu(); // Close menu before navigation
+    // Navigate to category page or handle category selection
+    router.push(`/category/${encodeURIComponent(categoryName.toLowerCase())}`);
+  };
+
   return (
-    <header className="bg-white shadow-md sticky top-0 w-full z-50">
+    <header className="bg-white text-black shadow-md sticky top-0 w-full z-50">
       {/* Top Section */}
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
@@ -88,7 +144,7 @@ export default function Header() {
               <div className="flex items-center">
                 <Image
                   src={Logo}
-                  alt="Blinkit"
+                  alt="Fast2"
                   width={220}
                   height={100}
                   className="h-22 w-auto object-contain"
@@ -198,14 +254,14 @@ export default function Header() {
             {isLoggedIn ? (
               <>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleProfileClick}
                 >
                   <UserIcon className="w-5 h-5" />
                   <span>My Profile</span>
                 </div>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleLogout}
                 >
                   <span>Logout</span>
@@ -213,7 +269,7 @@ export default function Header() {
               </>
             ) : (
               <div 
-                className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors"
+                className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                 onClick={handleLoginClick}
               >
                 <UserIcon className="w-5 h-5" />
@@ -224,19 +280,29 @@ export default function Header() {
             <div className="pt-4 border-t border-gray-200">
               <h4 className="font-medium mb-2">Categories</h4>
               <div className="space-y-2">
-                {[
-                  'Groceries',
-                  'Fruits & Vegetables',
-                  'Dairy',
-                  'Snacks',
-                  'Home',
-                  'Beauty',
-                  'Ice Cream'
-                ].map((item, index) => (
-                  <div key={index} className="text-gray-600 hover:text-blue-600 cursor-pointer transition-colors py-1">
-                    {item}
-                  </div>
-                ))}
+                {loadingCategories ? (
+                  <div className="text-gray-500 py-1">Loading categories...</div>
+                ) : (
+                  categories.map((category, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 cursor-pointer transition-colors py-2"
+                      onClick={() => handleCategoryClick(category.name)}
+                    >
+                      {category.image && (
+                        <img 
+                          src={category.image} 
+                          alt={category.name}
+                          className="w-6 h-6 object-cover rounded"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <span>{category.name}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -246,5 +312,4 @@ export default function Header() {
   );
 }
 
-// Export the event system so Cart can subscribe to it
 export { cartEvents };
