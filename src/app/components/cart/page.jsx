@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cartEvents } from '../header/page';
+import { useRouter } from 'next/navigation'; // Add this import
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter(); // Add this line
 
   // Check authentication status
   useEffect(() => {
@@ -402,6 +404,12 @@ const Cart = () => {
           </div>
           <button
             disabled={cartItems.length === 0 || loading}
+            onClick={() => {
+              if (cartItems.length > 0 && !loading) {
+                closeCart(); // Close the cart sidebar
+                router.push('/checkout'); // Navigate to checkout page
+              }
+            }}
             className={`w-full py-3 rounded-lg font-bold transition-all ${
               cartItems.length === 0 || loading
                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
