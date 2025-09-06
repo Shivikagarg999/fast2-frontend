@@ -4,9 +4,9 @@ import {
   MagnifyingGlassIcon, 
   ShoppingCartIcon, 
   UserIcon, 
-  MapPinIcon,
   Bars3Icon,
-  XMarkIcon 
+  XMarkIcon,
+  InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
@@ -112,6 +112,11 @@ export default function Header() {
     router.push('/pages/profile');
   };
 
+  const handleAboutClick = () => {
+    closeMenu(); // Close menu before navigation
+    router.push('/about');
+  };
+
   const handleLogout = () => {
     closeMenu(); // Close menu before logout
     localStorage.removeItem('token');
@@ -169,6 +174,15 @@ export default function Header() {
 
             {/* Right: Actions */}
             <div className="flex items-center space-x-4">
+              
+              {/* About Link */}
+              <div 
+                className="hidden md:flex items-center space-x-1 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                onClick={handleAboutClick}
+              >
+                <InformationCircleIcon className="w-6 h-6 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">About</span>
+              </div>
               
               {/* Login/Signup or Profile */}
               {isLoggedIn ? (
@@ -251,6 +265,15 @@ export default function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
+            {/* About Link in Mobile Menu */}
+            <div 
+              className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+              onClick={handleAboutClick}
+            >
+              <InformationCircleIcon className="w-5 h-5" />
+              <span>About Us</span>
+            </div>
+            
             {isLoggedIn ? (
               <>
                 <div 
