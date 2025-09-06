@@ -33,7 +33,7 @@ export default function CategoryProductsPage() {
         setCategory(categoryData);
         
         // Fetch products for this category using your local API
-        const productsResponse = await fetch(`http://localhost:5000/api/product/category/${categoryId}`);
+        const productsResponse = await fetch(`https://fast2-backend.onrender.com/api/product/category/${categoryId}`);
         
         if (!productsResponse.ok) {
           throw new Error(`Failed to fetch products: ${productsResponse.status}`);
