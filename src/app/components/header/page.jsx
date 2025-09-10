@@ -333,15 +333,7 @@ export default function Header() {
 
             {/* Right: Actions */}
             <div className="flex items-center space-x-4">
-              
-              {/* About Link */}
-              <div 
-                className="hidden md:flex items-center space-x-1 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
-                onClick={handleAboutClick}
-              >
-                <InformationCircleIcon className="w-6 h-6 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">About</span>
-              </div>
+           
               
               {/* Login/Signup or Profile */}
               {isLoggedIn ? (
@@ -434,15 +426,6 @@ export default function Header() {
                 <span className="text-xs text-gray-500">Delivering to</span>
                 <span className="text-sm font-medium">{selectedLocation}</span>
               </div>
-            </div>
-            
-            {/* About Link in Mobile Menu */}
-            <div 
-              className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
-              onClick={handleAboutClick}
-            >
-              <InformationCircleIcon className="w-5 h-5" />
-              <span>About Us</span>
             </div>
             
             {isLoggedIn ? (

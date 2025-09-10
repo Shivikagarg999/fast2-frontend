@@ -44,8 +44,6 @@ export default function CategoryPage() {
     <>
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">All Categories</h1>
-        
           {/* Category Filter Tabs */}
           <div className="flex overflow-x-auto pb-2 mb-6 hide-scrollbar">
             <div className="flex space-x-2">
