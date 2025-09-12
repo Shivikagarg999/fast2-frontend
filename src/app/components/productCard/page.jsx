@@ -34,6 +34,20 @@ const ProductCard = ({
     onProductClick(product);
   };
 
+  // Get the primary image or first image from the images array
+  const getProductImage = () => {
+    if (!product.images || product.images.length === 0) {
+      return "https://via.placeholder.com/200x200?text=No+Image";
+    }
+    
+    // Try to find primary image first
+    const primaryImage = product.images.find(img => img.isPrimary);
+    if (primaryImage) return primaryImage.url;
+    
+    // Otherwise return the first image
+    return product.images[0].url;
+  };
+
   const deliveryTime = `${Math.floor(Math.random() * 11) + 5} mins`;
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
   const discountPercent = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : null;
@@ -51,7 +65,7 @@ const ProductCard = ({
           </div>
         )}
         <img 
-          src={product.image} 
+          src={getProductImage()} 
           alt={product.name}
           className="object-contain h-full w-full"
           onError={(e) => {

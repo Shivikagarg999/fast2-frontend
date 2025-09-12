@@ -23,6 +23,20 @@ const ProductDetailPage = () => {
     setLoading(false);
   }, []);
 
+  // Get the primary image or first image from the images array
+  const getProductImage = () => {
+    if (!product.images || product.images.length === 0) {
+      return "https://via.placeholder.com/400x400?text=No+Image";
+    }
+    
+    // Try to find primary image first
+    const primaryImage = product.images.find(img => img.isPrimary);
+    if (primaryImage) return primaryImage.url;
+    
+    // Otherwise return the first image
+    return product.images[0].url;
+  };
+
   // Format price in Indian rupees
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-IN', {
@@ -78,16 +92,18 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-      <div className=" mx-auto">
+      <div className="mx-auto">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="md:flex">
             {/* Product Image */}
             <div className="md:w-1/2 bg-gray-100 flex items-center justify-center p-8">
               <img 
-                src={product.image} 
+                src={getProductImage()} 
                 alt={product.name}
                 className="max-w-full max-h-80 object-contain rounded-lg"
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+                }}
               />
             </div>
 
@@ -106,24 +122,26 @@ const ProductDetailPage = () => {
               <div className="flex items-center space-x-4 mb-6">
                 <div className="flex items-center bg-green-50 px-3 py-1 rounded-full">
                   <StarIconSolid className="w-4 h-4 text-yellow-400 mr-1" />
-                  <span className="text-sm font-semibold text-green-700">{product.rating}</span>
+                  <span className="text-sm font-semibold text-green-700">{product.rating || '4.5'}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <ClockIcon className="w-4 h-4 mr-1" />
-                  <span className="text-sm">Delivery in {product.deliveryTime}</span>
+                  <span className="text-sm">Delivery in {product.deliveryTime || '15-25 mins'}</span>
                 </div>
               </div>
 
               {/* Price */}
               <div className="mb-6">
                 <span className="text-3xl font-bold text-gray-800">{formatPrice(product.price)}</span>
-                <span className="text-gray-500 ml-2">per unit</span>
+                {product.oldPrice && (
+                  <span className="text-lg text-gray-500 ml-2 line-through">{formatPrice(product.oldPrice)}</span>
+                )}
               </div>
 
               {/* Full Description */}
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-800 mb-2">About this product</h3>
-                <p className="text-gray-600 leading-relaxed">{product.fullDescription}</p>
+                <p className="text-gray-600 leading-relaxed">{product.fullDescription || product.description}</p>
               </div>
 
               {/* Quantity Selector and Add to Cart */}
