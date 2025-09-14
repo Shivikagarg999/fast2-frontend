@@ -66,7 +66,7 @@ export default function Checkout() {
       
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+        const response = await fetch('http://193.203.163.101:5000/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -125,7 +125,7 @@ export default function Checkout() {
         total: totalAmount
       };
 
-      const response = await fetch('https://fast2-backend.onrender.com/api/orders/create', {
+      const response = await fetch('http://193.203.163.101:5000/api/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export default function Checkout() {
       const order = await response.json();
       
       // Clear cart after successful order
-      await fetch('https://fast2-backend.onrender.com/api/cart/clear', {
+      await fetch('http://193.203.163.101:5000/api/cart/clear', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

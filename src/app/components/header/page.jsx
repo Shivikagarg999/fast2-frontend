@@ -109,7 +109,7 @@ export default function Header() {
     const fetchCategories = async () => {
       setLoadingCategories(true);
       try {
-        const response = await fetch('https://fast2-backend.onrender.com/api/category/');
+        const response = await fetch('http://193.203.163.101:5000/api/category/');
         if (response.ok) {
           const data = await response.json();
           setCategories(data);

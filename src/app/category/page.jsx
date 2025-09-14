@@ -14,7 +14,7 @@ export default function CategoryPage() {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://fast2-backend.onrender.com/api/category/');
+        const response = await fetch('http://193.203.163.101:5000/api/category/');
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -44,27 +44,7 @@ export default function CategoryPage() {
     <>
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Category Filter Tabs */}
-          <div className="flex overflow-x-auto pb-2 mb-6 hide-scrollbar">
-            <div className="flex space-x-2">
-              <button
-                className={`px-4 py-2 rounded-full text-sm font-medium ${selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                onClick={() => handleCategorySelect('all')}
-              >
-                All Categories
-              </button>
-              {categories.map((category) => (
-                <button
-                  key={category._id}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${selectedCategory === category._id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                  onClick={() => handleCategorySelect(category._id)}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
+         
           {/* Error State */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">

@@ -34,27 +34,63 @@ const ProductListing = () => {
     };
   }, []);
 
+  // Helper function to safely get category name
+  const getCategoryName = (category) => {
+    if (!category) return 'Uncategorized';
+    
+    // If it's already a string, return it
+    if (typeof category === 'string') return category;
+    
+    // If it's an object with a name property
+    if (typeof category === 'object' && category !== null && category.name) {
+      return category.name;
+    }
+    
+    // If it's an object but no name, try to stringify safely
+    if (typeof category === 'object' && category !== null) {
+      return category._id || 'Unknown Category';
+    }
+    
+    // Fallback
+    return 'Unknown Category';
+  };
+
+  // Helper function to safely get category ID
+  const getCategoryId = (category) => {
+    if (!category) return null;
+    
+    if (typeof category === 'string') return category;
+    
+    if (typeof category === 'object' && category !== null && category._id) {
+      return category._id;
+    }
+    
+    return null;
+  };
+
   // Fetch products and categories
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        const productsResponse = await fetch('https://fast2-backend.onrender.com/api/product/');
+        const productsResponse = await fetch('http://193.203.163.101:5000/api/product/');
         if (!productsResponse.ok) {
           throw new Error('Failed to fetch products');
         }
         const productsData = await productsResponse.json();
         
-        const categoryIds = [...new Set(productsData.map(product => product.category))];
-        const categoryPromises = categoryIds.map(id => 
-          fetch(`https://fast2-backend.onrender.com/api/category/${id}`).then(res => res.json())
-        );
-        
-        const categoriesData = await Promise.all(categoryPromises);
+        // Create a map of category IDs to names
         const categoriesMap = {};
-        categoriesData.forEach(category => {
-          categoriesMap[category._id] = category.name;
+        productsData.forEach(product => {
+          if (product.category) {
+            const categoryId = getCategoryId(product.category);
+            const categoryName = getCategoryName(product.category);
+            
+            if (categoryId) {
+              categoriesMap[categoryId] = categoryName;
+            }
+          }
         });
         
         setProducts(productsData);
@@ -76,7 +112,7 @@ const ProductListing = () => {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+        const response = await fetch('http://193.203.163.101:5000/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -114,7 +150,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://fast2-backend.onrender.com/api/cart/add', {
+      const response = await fetch('http://193.203.163.101:5000/api/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,13 +163,10 @@ const ProductListing = () => {
       });
 
       if (response.ok) {
-        // Update local quantity state
         setCartQuantities(prev => ({
           ...prev,
           [productId]: (prev[productId] || 0) + quantity
         }));
-        
-        // Trigger cart update in header
         window.dispatchEvent(new Event('cartUpdated'));
       } else {
         const errorData = await response.json();
@@ -158,7 +191,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+      const cartItems = await fetch('http://193.203.163.101:5000/api/cart/', {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -168,7 +201,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`https://fast2-backend.onrender.com/api/cart/update/${cartItem._id}`, {
+        const response = await fetch(`http://193.203.163.101:5000/api/cart/update/${cartItem._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -195,7 +228,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('https://fast2-backend.onrender.com/api/cart/', {
+      const cartItems = await fetch('http://193.203.163.101:5000/api/cart/', {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -205,7 +238,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`https://fast2-backend.onrender.com/api/cart/remove/${cartItem._id}`, {
+        const response = await fetch(`http://193.203.163.101:5000/api/cart/remove/${cartItem._id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -233,20 +266,34 @@ const ProductListing = () => {
     }).format(price);
   };
 
-  const availableCategories = [...new Set(products.map(product => categories[product.category]))];
-  availableCategories.unshift('All');
+  // Get available categories for filtering
+  const availableCategories = ['All'];
+  Object.values(categories).forEach(categoryName => {
+    if (categoryName && !availableCategories.includes(categoryName)) {
+      availableCategories.push(categoryName);
+    }
+  });
 
+  // Filter products by selected category
   const filteredProducts = selectedCategory === 'All' 
     ? products 
-    : products.filter(product => categories[product.category] === selectedCategory);
+    : products.filter(product => {
+        const categoryName = getCategoryName(product.category);
+        return categoryName === selectedCategory;
+      });
 
+  // Group products by category for "All" view - FIXED THIS PART
   const productsByCategory = {};
   products.forEach(product => {
-    const categoryName = categories[product.category];
-    if (!productsByCategory[categoryName]) {
-      productsByCategory[categoryName] = [];
+    const categoryName = getCategoryName(product.category);
+    
+    // Ensure categoryName is a string
+    const safeCategoryName = typeof categoryName === 'string' ? categoryName : String(categoryName);
+    
+    if (!productsByCategory[safeCategoryName]) {
+      productsByCategory[safeCategoryName] = [];
     }
-    productsByCategory[categoryName].push(product);
+    productsByCategory[safeCategoryName].push(product);
   });
 
   const handleProductClick = (product) => {
@@ -257,37 +304,18 @@ const ProductListing = () => {
   };
 
   if (loading) {
-    return (
-      <div className="bg-white min-h-screen">
-        <div className="max-w-8xl mx-auto px-4 py-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {[...Array(10)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg p-4 space-y-3">
-                  <div className="h-28 bg-gray-200 rounded"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-8 bg-gray-200 rounded"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="bg-white min-h-screen">Loading...</div>;
   }
 
   if (error) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
-        <div className="text-center bg-white p-8 rounded-lg shadow-md">
-          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+        <div className="text-center">
           <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Products</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
           >
             Try Again
           </button>
@@ -298,23 +326,39 @@ const ProductListing = () => {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Login Prompt Toast */}
       {showLoginPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
 
+      {/* Category Filter */}
+      <div className="max-w-8xl mx-auto px-4 py-4">
+        <div className="flex flex-wrap gap-2 mb-6">
+          {availableCategories.map(category => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-full text-sm font-medium ${
+                selectedCategory === category
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="max-w-8xl mx-auto px-4 py-6">
-        {/* Product Grid */}
         {selectedCategory === 'All' ? (
           <div className="space-y-8">
             {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
               <div key={category} className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="px-6 py-4">
-                  <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                    <span className="w-3 h-3 rounded-full mr-3"></span>
-                    {category}
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {category} {/* This should now be a string, not an object */}
                     <span className="ml-3 text-sm font-normal text-gray-500">
                       ({categoryProducts.length} items)
                     </span>
@@ -328,7 +372,7 @@ const ProductListing = () => {
                         product={product} 
                         formatPrice={formatPrice} 
                         onProductClick={handleProductClick}
-                        categoryName={categories[product.category]}
+                        categoryName={getCategoryName(product.category)}
                         cartQuantity={cartQuantities[product._id] || 0}
                         onAddToCart={addToCart}
                         onUpdateQuantity={updateCartQuantity}
@@ -343,9 +387,8 @@ const ProductListing = () => {
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b">
-              <h2 className="text-xl font-bold text-gray-900 flex items-center">
-                <span className="w-3 h-3 rounded-full mr-3"></span>
+            <div className="px-6 py-4 border-b">
+              <h2 className="text-xl font-bold text-gray-900">
                 {selectedCategory}
                 <span className="ml-3 text-sm font-normal text-gray-500">
                   ({filteredProducts.length} items)
@@ -360,7 +403,7 @@ const ProductListing = () => {
                     product={product} 
                     formatPrice={formatPrice} 
                     onProductClick={handleProductClick}
-                    categoryName={categories[product.category]}
+                    categoryName={getCategoryName(product.category)}
                     cartQuantity={cartQuantities[product._id] || 0}
                     onAddToCart={addToCart}
                     onUpdateQuantity={updateCartQuantity}
@@ -373,9 +416,8 @@ const ProductListing = () => {
           </div>
         )}
 
-        {/* Empty state */}
         {filteredProducts.length === 0 && !loading && (
-          <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+          <div className="text-center py-16">
             <div className="text-gray-300 text-6xl mb-4">🛒</div>
             <h3 className="text-xl font-medium text-gray-600 mb-2">No products found</h3>
             <p className="text-gray-500">Try selecting a different category</p>

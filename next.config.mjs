@@ -1,7 +1,7 @@
 const nextConfig = {
   images: {
     domains: ['i.pinimg.com', 'images.unsplash.com','ik.imagekit.io',
-      'fast2-backend.onrender.com'],
+      '193.203.163.101:5000'],
   },
   experimental: {
     esmExternals: 'loose'

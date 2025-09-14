@@ -6,7 +6,7 @@ const ProductCard = ({
   product, 
   formatPrice, 
   onProductClick, 
-  categoryName, 
+  categoryName,  // This should be a string, not an object
   cartQuantity,
   onAddToCart,
   onUpdateQuantity,
@@ -60,7 +60,7 @@ const ProductCard = ({
       {/* Product Image */}
       <div className="relative h-32 bg-white flex items-center justify-center p-3">
         {discountPercent && (
-          <div className="absolute top-2 left-2 text-white text-xs px-2 py-1 rounded font-medium z-10">
+          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-medium z-10">
             {discountPercent}% OFF
           </div>
         )}
@@ -90,6 +90,14 @@ const ProductCard = ({
           <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
             {product.name}
           </h3>
+          
+          {/* Display category name if available */}
+          {categoryName && typeof categoryName === 'string' && (
+            <p className="text-xs text-gray-500 mb-1 line-clamp-1">
+              {categoryName}
+            </p>
+          )}
+          
           <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.description}</p>
         </div>
         
