@@ -287,7 +287,7 @@ const ProductDetailPage = () => {
       </div>
       
       <Footer/>
-    </div>
+    </div> 
   );
 };
 
