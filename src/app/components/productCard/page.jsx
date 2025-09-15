@@ -3,40 +3,46 @@ import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 
 const ProductCard = ({ 
-  product, 
+  product = {}, 
   formatPrice, 
-  onProductClick, 
-  categoryName,  // This should be a string, not an object
-  cartQuantity,
-  onAddToCart,
-  onUpdateQuantity,
-  isAddingToCart,
-  isLoggedIn
+  onProductClick = () => {}, 
+  categoryName = "", 
+  cartQuantity = 0,
+  onAddToCart = () => {}, 
+  onUpdateQuantity = () => {}, 
+  isAddingToCart = false, 
+  isLoggedIn = false
 }) => {
   const handleAdd = async (e) => {
     e.stopPropagation();
-    await onAddToCart(product._id, 1);
+    if (product?._id) {
+      await onAddToCart(product._id, 1);
+    }
   };
 
   const handleRemove = async (e) => {
     e.stopPropagation();
-    if (cartQuantity > 0) {
+    if (cartQuantity > 0 && product?._id) {
       await onUpdateQuantity(product._id, cartQuantity - 1);
     }
   };
 
   const handleIncrement = async (e) => {
     e.stopPropagation();
-    await onUpdateQuantity(product._id, cartQuantity + 1);
+    if (product?._id) {
+      await onUpdateQuantity(product._id, cartQuantity + 1);
+    }
   };
 
   const handleCardClick = () => {
-    onProductClick(product);
+    if (product) {
+      onProductClick(product);
+    }
   };
 
   // Get the primary image or first image from the images array
   const getProductImage = () => {
-    if (!product.images || product.images.length === 0) {
+    if (!product?.images || product.images.length === 0) {
       return "https://via.placeholder.com/200x200?text=No+Image";
     }
     
@@ -50,7 +56,10 @@ const ProductCard = ({
 
   const deliveryTime = `${Math.floor(Math.random() * 11) + 5} mins`;
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
-  const discountPercent = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : null;
+
+  const discountPercent = product?.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : null;
 
   return (
     <div 
@@ -66,7 +75,7 @@ const ProductCard = ({
         )}
         <img 
           src={getProductImage()} 
-          alt={product.name}
+          alt={product?.name || "Product"}
           className="object-contain h-full w-full"
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/200x200?text=No+Image";
@@ -88,7 +97,7 @@ const ProductCard = ({
           </div>
           
           <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
-            {product.name}
+            {product?.name || "Unnamed Product"}
           </h3>
           
           {/* Display category name if available */}
@@ -98,15 +107,21 @@ const ProductCard = ({
             </p>
           )}
           
-          <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.description}</p>
+          <p className="text-xs text-gray-500 mb-2 line-clamp-1">
+            {product?.description || ""}
+          </p>
         </div>
         
         {/* Price Section */}
         <div className="mb-3">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-bold text-gray-900">₹{product.price}</span>
-            {product.oldPrice && (
-              <span className="text-xs text-gray-400 line-through">₹{product.oldPrice}</span>
+            <span className="text-sm font-bold text-gray-900">
+              ₹{product?.price ?? 0}
+            </span>
+            {product?.oldPrice && (
+              <span className="text-xs text-gray-400 line-through">
+                ₹{product.oldPrice}
+              </span>
             )}
           </div>
         </div>
