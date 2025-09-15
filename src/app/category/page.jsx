@@ -14,7 +14,7 @@ export default function CategoryPage() {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://193.203.163.101:5000/api/category/');
+        const response = await fetch('https://api.fast2.in/api/category/');
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

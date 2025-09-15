@@ -74,7 +74,7 @@ const ProductListing = () => {
       try {
         setLoading(true);
         
-        const productsResponse = await fetch('http://193.203.163.101:5000/api/product/');
+        const productsResponse = await fetch('https://api.fast2.in/api/product/');
         if (!productsResponse.ok) {
           throw new Error('Failed to fetch products');
         }
@@ -112,7 +112,7 @@ const ProductListing = () => {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://193.203.163.101:5000/api/cart/', {
+        const response = await fetch('https://api.fast2.in/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -150,7 +150,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://193.203.163.101:5000/api/cart/add', {
+      const response = await fetch('https://api.fast2.in/api/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('http://193.203.163.101:5000/api/cart/', {
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -201,7 +201,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`http://193.203.163.101:5000/api/cart/update/${cartItem._id}`, {
+        const response = await fetch(`https://api.fast2.in/api/cart/update/${cartItem._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -228,7 +228,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('http://193.203.163.101:5000/api/cart/', {
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -238,7 +238,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`http://193.203.163.101:5000/api/cart/remove/${cartItem._id}`, {
+        const response = await fetch(`https://api.fast2.in/api/cart/remove/${cartItem._id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cartEvents } from '../header/page';
-import { useRouter } from 'next/navigation'; // Add this import
+import { useRouter } from 'next/navigation';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +11,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const router = useRouter(); // Add this line
+  const router = useRouter();
 
   // Check authentication status
   useEffect(() => {
@@ -43,7 +43,7 @@ const Cart = () => {
     const handleOpenCart = () => {
       setIsOpen(true);
       if (isLoggedIn) {
-        fetchCartItems(); // Refresh cart when opened
+        fetchCartItems();
       }
     };
 
@@ -88,7 +88,7 @@ const Cart = () => {
     setError(null);
     
     try {
-      const data = await makeAuthenticatedRequest('http://193.203.163.101/api/cart/');
+      const data = await makeAuthenticatedRequest('https://api.fast2.in/api/cart/');
       setCartItems(data.items || []);
     } catch (err) {
       console.error('Error fetching cart:', err);
@@ -109,7 +109,7 @@ const Cart = () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest('http://193.203.163.101/api/cart/add', {
+      await makeAuthenticatedRequest('https://api.fast2.in/api/cart/add', {
         method: 'POST',
         body: JSON.stringify({
           productId,
@@ -154,7 +154,7 @@ const Cart = () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest(`http://193.203.163.101/api/cart/remove/${itemId}`, {
+      await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/remove/${itemId}`, {
         method: 'DELETE'
       });
       
@@ -198,6 +198,13 @@ const Cart = () => {
   };
 
   const itemCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+
+  // Truncate description to specified length
+  const truncateDescription = (text, maxLength = 40) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
 
   // Show login prompt if not logged in
   if (!isLoggedIn && isOpen) {
@@ -318,44 +325,64 @@ const Cart = () => {
                 const product = item.product || item;
                 const itemId = item._id || item.id;
                 const productName = product.name || product.title || 'Unknown Product';
-                const productDescription = product.description || '';
+                const productDescription = truncateDescription(product.description || '');
                 const productPrice = product.price || 0;
-                const productImage = product.image || product.imageUrl || '';
+                // Handle image from different response structures
+                let productImage = '';
+                if (product.images && product.images.length > 0) {
+                  productImage = product.images[0].url || '';
+                } else if (product.image) {
+                  productImage = product.image;
+                } else if (product.imageUrl) {
+                  productImage = product.imageUrl;
+                }
                 const quantity = item.quantity || 1;
 
                 return (
-                  <div key={itemId} className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-lg border border-gray-100 shadow-sm">
-                    <div className="flex items-center space-x-3 sm:space-x-4">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                        {productImage ? (
-                          <img 
-                            src={productImage} 
-                            alt={productName}
-                            className="object-cover w-full h-full"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.nextSibling.style.display = 'flex';
-                            }}
-                          />
-                        ) : null}
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs" style={{display: productImage ? 'none' : 'flex'}}>
-                          No Image
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-800 text-sm truncate">{productName}</h3>
-                        {productDescription && (
-                          <p className="text-gray-500 text-xs mt-1 truncate">{productDescription}</p>
-                        )}
-                        <p className="text-blue-600 font-bold mt-1">₹{productPrice}</p>
+                  <div key={itemId} className="flex items-center p-3 sm:p-4 bg-white rounded-lg border border-gray-100 shadow-sm">
+                    {/* Product Image */}
+                    <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden mr-3 sm:mr-4">
+                      {productImage ? (
+                        <img 
+                          src={productImage} 
+                          alt={productName}
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs" style={{display: productImage ? 'none' : 'flex'}}>
+                        No Image
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    {/* Product Info */}
+                    <div className="flex-1 min-w-0 mr-2">
+                      <h3 className="font-medium text-gray-800 text-sm sm:text-base truncate">{productName}</h3>
+                      {productDescription && (
+                        <p className="text-gray-500 text-xs mt-1 line-clamp-2">{productDescription}</p>
+                      )}
+                      <p className="text-blue-600 font-bold mt-1 text-sm sm:text-base">₹{productPrice}</p>
+                    </div>
+                    
+                    {/* Quantity Controls */}
+                    <div className="flex flex-col items-end justify-between h-16">
+                      <button
+                        onClick={() => removeItem(itemId)}
+                        disabled={loading}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-1 disabled:opacity-50 mb-2"
+                      >
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                      
                       <div className="flex items-center bg-blue-50 rounded-full px-2 py-1">
                         <button
                           onClick={() => updateQuantity(itemId, quantity - 1)}
-                          disabled={loading}
+                          disabled={loading || quantity <= 1}
                           className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors disabled:opacity-50"
                         >
                           -
@@ -369,15 +396,6 @@ const Cart = () => {
                           +
                         </button>
                       </div>
-                      <button
-                        onClick={() => removeItem(itemId)}
-                        disabled={loading}
-                        className="ml-1 text-gray-400 hover:text-red-500 transition-colors p-1 disabled:opacity-50"
-                      >
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
                 );
@@ -406,8 +424,8 @@ const Cart = () => {
             disabled={cartItems.length === 0 || loading}
             onClick={() => {
               if (cartItems.length > 0 && !loading) {
-                closeCart(); // Close the cart sidebar
-                router.push('/checkout'); // Navigate to checkout page
+                closeCart();
+                router.push('/checkout');
               }
             }}
             className={`w-full py-3 rounded-lg font-bold transition-all ${
@@ -439,7 +457,7 @@ const Cart = () => {
     }
 
     try {
-      const response = await fetch('http://193.203.163.101/api/cart/add', {
+      const response = await fetch('https://api.fast2.in/api/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

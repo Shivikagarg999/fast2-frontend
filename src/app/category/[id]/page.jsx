@@ -25,7 +25,7 @@ export default function CategoryProductsPage() {
         setError(null);
         
         // Fetch category details
-        const categoryResponse = await fetch(`http://193.203.163.101:5000/api/category/${categoryId}`);
+        const categoryResponse = await fetch(`https://api.fast2.in/api/category/${categoryId}`);
         if (!categoryResponse.ok) {
           throw new Error(`Failed to fetch category: ${categoryResponse.status}`);
         }
@@ -33,7 +33,7 @@ export default function CategoryProductsPage() {
         setCategory(categoryData);
         
         // Fetch products for this category using your local API
-        const productsResponse = await fetch(`http://193.203.163.101:5000/api/product/category/${categoryId}`);
+        const productsResponse = await fetch(`https://api.fast2.in/api/product/category/${categoryId}`);
         
         if (!productsResponse.ok) {
           throw new Error(`Failed to fetch products: ${productsResponse.status}`);

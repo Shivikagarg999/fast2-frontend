@@ -9,7 +9,11 @@ import {
   InformationCircleIcon,
   MapPinIcon,
   ChevronDownIcon,
-  ClockIcon
+  ClockIcon,
+  Cog6ToothIcon,
+  MapIcon,
+  InboxIcon,
+  ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
@@ -30,17 +34,19 @@ const cartEvents = {
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState();
+  const [cartItemCount, setCartItemCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('Select your location');
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const locationDropdownRef = useRef(null);
+  const profileDropdownRef = useRef(null);
   const router = useRouter();
 
-  // Sample locations data - you can replace with your actual data
+  // Sample locations data
   const locations = [
     { id: 1, name: "Connaught Place", area: "New Delhi", deliveryTime: "10-15 min" },
     { id: 2, name: "Karol Bagh", area: "New Delhi", deliveryTime: "15-20 min" },
@@ -62,12 +68,16 @@ export default function Header() {
     location.area.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
         setIsLocationDropdownOpen(false);
         setSearchQuery('');
+      }
+      
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
       }
     };
 
@@ -85,7 +95,7 @@ export default function Header() {
     // Check initially
     checkAuthStatus();
 
-    // Listen for storage changes (if token is set/removed in other components)
+    // Listen for storage changes
     window.addEventListener('storage', checkAuthStatus);
     
     // Custom event listener for login/logout
@@ -109,7 +119,7 @@ export default function Header() {
     const fetchCategories = async () => {
       setLoadingCategories(true);
       try {
-        const response = await fetch('http://193.203.163.101:5000/api/category/');
+        const response = await fetch('https://api.fast2.in/api/category/');
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
@@ -160,20 +170,27 @@ export default function Header() {
     router.push('/pages/profile');
   };
 
-  const handleAboutClick = () => {
+  const handleSavedAddresses = () => {
     closeMenu();
-    router.push('/about');
+    router.push('/pages/addresses');
+  };
+
+  const handleOrdersClick = () => {
+    closeMenu();
+    router.push('/pages/orders');
   };
 
   const handleLogout = () => {
     closeMenu();
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    setIsProfileDropdownOpen(false);
     window.dispatchEvent(new Event('authChange'));
     router.push('/');
   };
 
   const handleCartClick = () => {
+    if (!isLoggedIn) return; // Don't open cart if not logged in
     closeMenu();
     cartEvents.publish();
   };
@@ -196,6 +213,10 @@ export default function Header() {
     if (!isLocationDropdownOpen) {
       setSearchQuery('');
     }
+  };
+
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
   return (
@@ -333,28 +354,67 @@ export default function Header() {
 
             {/* Right: Actions */}
             <div className="flex items-center space-x-4">
-           
-              
               {/* Login/Signup or Profile */}
               {isLoggedIn ? (
-                <div className="hidden md:flex items-center space-x-3">
-                  {/* Profile Icon */}
+                <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
+                  {/* Profile Dropdown */}
                   <div 
                     className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
-                    onClick={handleProfileClick}
+                    onClick={toggleProfileDropdown}
                   >
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <UserIcon className="w-5 h-5 text-blue-600" />
                     </div>
+                    <span className="text-sm font-medium text-gray-700">My Account</span>
+                    <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                      isProfileDropdownOpen ? 'rotate-180' : ''
+                    }`} />
                   </div>
                   
-                  {/* Logout Button */}
-                  <button 
-                    onClick={handleLogout}
-                    className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-                  >
-                    Logout
-                  </button>
+                  {/* Profile Dropdown Menu */}
+                  {isProfileDropdownOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                      <div className="py-1">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-sm font-medium text-gray-900">Welcome!</p>
+                        </div>
+                        
+                        <div 
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={handleProfileClick}
+                        >
+                          <Cog6ToothIcon className="w-5 h-5 mr-3 text-gray-400" />
+                          <span>My Profile</span>
+                        </div>
+                        
+                        <div 
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={handleSavedAddresses}
+                        >
+                          <MapIcon className="w-5 h-5 mr-3 text-gray-400" />
+                          <span>Saved Addresses</span>
+                        </div>
+                        
+                        <div 
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={handleOrdersClick}
+                        >
+                          <InboxIcon className="w-5 h-5 mr-3 text-gray-400" />
+                          <span>My Orders</span>
+                        </div>
+                        
+                        <div className="border-t border-gray-100 my-1"></div>
+                        
+                        <div 
+                          className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={handleLogout}
+                        >
+                          <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+                          <span>Log Out</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div 
@@ -366,14 +426,18 @@ export default function Header() {
                 </div>
               )}
 
-              {/* Cart */}
+              {/* Cart - Disabled when not logged in */}
               <div 
-                className="flex items-center space-x-1 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
-                onClick={handleCartClick}
+                className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${
+                  isLoggedIn 
+                    ? 'text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-gray-50' 
+                    : 'text-gray-400 cursor-not-allowed opacity-60'
+                }`}
+                onClick={isLoggedIn ? handleCartClick : undefined}
               >
                 <div className="relative">
                   <ShoppingCartIcon className="w-7 h-7" />
-                  {cartItemCount > 0 && (
+                  {isLoggedIn && cartItemCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
                       {cartItemCount}
                     </span>
@@ -439,8 +503,23 @@ export default function Header() {
                 </div>
                 <div 
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  onClick={handleSavedAddresses}
+                >
+                  <MapIcon className="w-5 h-5" />
+                  <span>Saved Addresses</span>
+                </div>
+                <div 
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  onClick={handleOrdersClick}
+                >
+                  <InboxIcon className="w-5 h-5" />
+                  <span>My Orders</span>
+                </div>
+                <div 
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleLogout}
                 >
+                  <ArrowRightOnRectangleIcon className="w-5 h-5" />
                   <span>Logout</span>
                 </div>
               </>
