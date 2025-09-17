@@ -9,7 +9,6 @@ export default function CategoryPage() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {

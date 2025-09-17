@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeftIcon, StarIcon, ClockIcon, ShieldCheckIcon, TruckIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, StarIcon, ClockIcon, ShieldCheckIcon, TruckIcon, ArrowPathIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
 
@@ -13,6 +13,8 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [loadingRelated, setLoadingRelated] = useState(false);
 
   useEffect(() => {
     // Check authentication status
@@ -23,7 +25,9 @@ const ProductDetailPage = () => {
     if (typeof window !== 'undefined') {
       const storedProduct = sessionStorage.getItem('selectedProduct');
       if (storedProduct) {
-        setProduct(JSON.parse(storedProduct));
+        const productData = JSON.parse(storedProduct);
+        setProduct(productData);
+     
       }
     }
     setLoading(false);
@@ -53,6 +57,11 @@ const ProductDetailPage = () => {
     }).format(price);
   };
 
+  // Function to create HTML from string
+  const createMarkup = (htmlContent) => {
+    return { __html: htmlContent };
+  };
+
   const handleAdd = () => {
     setQuantity(quantity + 1);
   };
@@ -79,11 +88,27 @@ const ProductDetailPage = () => {
     // You can integrate this with your cart state management
   };
 
+  const handleBuyNow = () => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      setTimeout(() => setShowLoginPrompt(false), 3000);
+      return;
+    }
+
+    // Add your buy now logic here
+    console.log(`Buying ${quantity} of ${product?.name} now`);
+  };
+
   const calculateDiscount = () => {
     if (product?.oldPrice && product.oldPrice > product.price) {
       return Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
     }
     return 0;
+  };
+
+  const handleProductClick = (product) => {
+    sessionStorage.setItem('selectedProduct', JSON.stringify(product));
+    window.location.reload();
   };
 
   const discount = calculateDiscount();
@@ -121,19 +146,6 @@ const ProductDetailPage = () => {
         </div>
       )}
 
-      {/* Header with Back Button */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <button 
-            onClick={handleBack}
-            className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
-          >
-            <ArrowLeftIcon className="w-5 h-5 mr-2" />
-            Back to Products
-          </button>
-        </div>
-      </div>
-
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="md:flex">
@@ -156,7 +168,7 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Product Info */}
+            {/* Product Info - Right Side */}
             <div className="md:w-1/2 p-8">
               <div className="mb-6">
                 <span className="inline-block bg-blue-100 text-blue-800 text-sm px-4 py-2 rounded-full font-medium">
@@ -167,20 +179,45 @@ const ProductDetailPage = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-4 leading-tight">
                 {product.name}
               </h1>
-              
-              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
-                {product.description}
-              </p>
+
+              {/* Product Qualities */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Key Features:</h3>
+                <ul className="space-y-2 text-gray-600">
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                    <span>High quality {product.brand || 'product'}</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                    <span>Perfect for daily use</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                    <span>Fresh and premium quality</span>
+                  </li>
+                  {product.weight && (
+                    <li className="flex items-center">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <span>Net weight: {product.weight}{product.weightUnit}</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
 
               {/* Rating and Delivery Time */}
               <div className="flex items-center space-x-6 mb-6">
                 <div className="flex items-center bg-green-50 px-4 py-2 rounded-full">
                   <StarIconSolid className="w-5 h-5 text-yellow-400 mr-2" />
-                  <span className="text-sm font-semibold text-green-800">4.5 • 2.5k ratings</span>
+                  <span className="text-sm font-semibold text-green-800">
+                    {product.ratings?.average || 4.5} • {product.ratings?.count || '2.5k'} ratings
+                  </span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <ClockIcon className="w-5 h-5 mr-2" />
-                  <span className="text-sm font-medium">Delivery in 15-25 mins</span>
+                  <span className="text-sm font-medium">
+                    Delivery in {product.delivery?.estimatedDeliveryTime || '15-25 mins'}
+                  </span>
                 </div>
               </div>
 
@@ -256,7 +293,10 @@ const ProductDetailPage = () => {
                   Add to Cart
                 </button>
                 
-                <button className="w-full border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-colors">
+                <button 
+                  onClick={handleBuyNow}
+                  className="w-full border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-colors"
+                >
                   Buy Now
                 </button>
               </div>
@@ -264,27 +304,65 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
-        {/* Product Details Section */}
+        {/* Product Description Section with Read More */}
         <div className="bg-white rounded-xl shadow-md p-8 mt-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Product Details</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3">Specifications</h3>
-              <div className="space-y-2 text-gray-600">
-                <p><span className="font-medium">Brand:</span> {product.brand || 'Generic'}</p>
-                <p><span className="font-medium">Category:</span> {product.category?.name || 'Uncategorized'}</p>
-                <p><span className="font-medium">Weight:</span> {product.weight || 'N/A'}</p>
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3">Description</h3>
-              <p className="text-gray-600 leading-relaxed">
-                {product.fullDescription || product.description || 'No detailed description available.'}
-              </p>
-            </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Product Description</h2>
+          
+          <div className={`text-gray-600 leading-relaxed product-description ${!showFullDescription ? 'max-h-32 overflow-hidden' : ''}`}>
+            <div dangerouslySetInnerHTML={createMarkup(product.description || 'No detailed description available.')} />
           </div>
+          
+          {product.description && product.description.length > 200 && (
+            <button 
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className="mt-4 flex items-center text-blue-600 font-medium"
+            >
+              {showFullDescription ? (
+                <>
+                  <ChevronUpIcon className="w-5 h-5 mr-1" />
+                  Read Less
+                </>
+              ) : (
+                <>
+                  <ChevronDownIcon className="w-5 h-5 mr-1" />
+                  Read More
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
+      
+      <style jsx>{`
+        .product-description :global(p) {
+          margin-bottom: 1rem;
+        }
+        .product-description :global(strong) {
+          font-weight: bold;
+        }
+        .product-description :global(em) {
+          font-style: italic;
+        }
+        .product-description :global(ul) {
+          list-style-type: disc;
+          margin-left: 1.5rem;
+          margin-bottom: 1rem;
+        }
+        .product-description :global(ol) {
+          list-style-type: decimal;
+          margin-left: 1.5rem;
+          margin-bottom: 1rem;
+        }
+        .product-description :global(li) {
+          margin-bottom: 0.5rem;
+        }
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
       
       <Footer/>
     </div> 

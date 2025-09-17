@@ -35,7 +35,10 @@ const ProfilePage = () => {
 
   // Check authentication status and get token
   const getToken = () => {
-    return localStorage.getItem('token');
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
   };
 
   // Check auth status on component mount
@@ -291,7 +294,7 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blinkit-blue"></div>
       </div>
     );
   }
@@ -307,7 +310,7 @@ const ProfilePage = () => {
           <p className="text-gray-600 mb-6">Access your orders, addresses, and account settings</p>
           <button 
             onClick={handleLoginRedirect}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md"
+            className="bg-blinkit-blue text-white px-8 py-3 rounded-lg font-medium hover:bg-blinkit-dark transition-colors shadow-md"
           >
             Login to Continue
           </button>
@@ -318,13 +321,13 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header with gradient background */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white pb-24 pt-6">
+      {/* Header with Blinkit-style gradient background */}
+      <div className="bg-gradient-to-r from-blinkit-orange to-blinkit-blue text-black pb-24 pt-6">
         <div className="max-w-2xl mx-auto px-4">
           <div className="flex items-center mb-6">
             <button 
               onClick={() => router.back()}
-              className="p-2 hover:bg-blue-500 rounded-full transition-colors"
+              className="p-2 hover:bg-white/10 rounded-full"
             >
               <ArrowLeftIcon className="w-6 h-6" />
             </button>
@@ -333,15 +336,15 @@ const ProfilePage = () => {
               {!editing ? (
                 <button
                   onClick={() => setEditing(true)}
-                  className="flex items-center text-white font-medium bg-blue-500 px-4 py-2 rounded-lg hover:bg-blue-400 transition-colors"
+                  className="flex items-center text-black font-medium bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors"
                 >
-                  <PencilIcon className="w-4 h-4 mr-1" />
+                  <PencilIcon className="w-4 h-4 mr-1"   />
                   Edit
                 </button>
               ) : (
                 <button
                   onClick={() => setEditing(false)}
-                  className="text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors"
+                  className="text-white font-medium px-4 py-2 rounded-lg hover:bg-white/10"
                 >
                   Cancel
                 </button>
@@ -353,7 +356,7 @@ const ProfilePage = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6 text-gray-800">
             <div className="flex items-center space-x-4 mb-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-blue-100 overflow-hidden flex items-center justify-center border-4 border-blue-50">
+                <div className="w-20 h-20 rounded-full bg-blue-100 overflow-hidden flex items-center justify-center border-4 border-white shadow-md">
                   {avatarPreview ? (
                     <img 
                       src={avatarPreview} 
@@ -365,7 +368,7 @@ const ProfilePage = () => {
                   )}
                 </div>
                 
-                <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white cursor-pointer shadow-md hover:bg-blue-500 transition-colors">
+                <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-blinkit-blue p-2 rounded-full text-white cursor-pointer shadow-md hover:bg-blinkit-dark transition-colors">
                   <CameraIcon className="w-4 h-4" />
                   <input
                     id="avatar-upload"
@@ -388,7 +391,7 @@ const ProfilePage = () => {
               <button
                 onClick={uploadAvatar}
                 disabled={saving}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                className="w-full bg-blinkit-blue text-white py-2 rounded-lg text-sm font-medium hover:bg-blinkit-dark disabled:opacity-50 transition-colors"
               >
                 {saving ? 'Uploading...' : 'Save Profile Picture'}
               </button>
@@ -413,43 +416,18 @@ const ProfilePage = () => {
           </div>
         )}
         {success && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
             <div className="flex justify-between items-center">
               <span>{success}</span>
               <button 
                 onClick={() => setSuccess('')}
-                className="text-blue-800 font-bold text-lg"
+                className="text-green-800 font-bold text-lg"
               >
                 ×
               </button>
             </div>
           </div>
         )}
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-sm p-4 text-center">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <GiftIcon className="w-5 h-5 text-blue-600" />
-            </div>
-            <p className="text-xs text-gray-600">Orders</p>
-            <p className="font-bold text-gray-800">12</p>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-4 text-center">
-            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <HeartIcon className="w-5 h-5 text-purple-600" />
-            </div>
-            <p className="text-xs text-gray-600">Wishlist</p>
-            <p className="font-bold text-gray-800">7</p>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-4 text-center">
-            <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <StarIcon className="w-5 h-5 text-amber-600" />
-            </div>
-            <p className="text-xs text-gray-600">Reviews</p>
-            <p className="font-bold text-gray-800">23</p>
-          </div>
-        </div>
 
         {/* Personal Information Section */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -463,7 +441,7 @@ const ProfilePage = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
                   placeholder="Enter your full name"
                 />
               ) : (
@@ -481,7 +459,7 @@ const ProfilePage = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
                   placeholder="Enter your email"
                 />
               ) : (
@@ -499,7 +477,7 @@ const ProfilePage = () => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
                   placeholder="Enter your phone number"
                 />
               ) : (
@@ -528,12 +506,12 @@ const ProfilePage = () => {
                   type="text"
                   value={newAddress}
                   onChange={(e) => setNewAddress(e.target.value)}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
                   placeholder="Add a new address"
                 />
                 <button
                   onClick={addAddress}
-                  className="bg-blue-600 text-white px-4 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                  className="bg-blinkit-blue text-white px-4 py-3 rounded-xl font-medium hover:bg-blinkit-dark transition-colors"
                 >
                   Add
                 </button>
@@ -557,7 +535,7 @@ const ProfilePage = () => {
             <div className="space-y-3">
               {user?.address && user.address.length > 0 ? (
                 user.address.map((address, index) => (
-                  <div key={index} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                  <div key={index} className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-colors">
                     <p className="text-gray-800">{address}</p>
                   </div>
                 ))
@@ -611,7 +589,7 @@ const ProfilePage = () => {
             <button
               onClick={updateProfile}
               disabled={saving}
-              className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-md"
+              className="w-full bg-blinkit-blue text-white py-4 rounded-xl font-bold hover:bg-blinkit-dark disabled:opacity-50 transition-colors shadow-md"
             >
               {saving ? 'Saving Changes...' : 'Save Changes'}
             </button>
@@ -631,6 +609,34 @@ const ProfilePage = () => {
           </button>
         </div>
       </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg flex justify-around items-center p-3 border-t border-gray-200">
+        <button className="text-gray-400 flex flex-col items-center">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span className="text-xs mt-1">Home</span>
+        </button>
+        <button className="text-gray-400 flex flex-col items-center">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <span className="text-xs mt-1">Search</span>
+        </button>
+        <button className="text-gray-400 flex flex-col items-center">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          <span className="text-xs mt-1">Cart</span>
+        </button>
+        <button className="text-blinkit-blue flex flex-col items-center">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span className="text-xs mt-1">Profile</span>
+        </button>
+      </nav>
     </div>
   );
 };

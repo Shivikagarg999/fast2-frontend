@@ -7,26 +7,25 @@ export default function Footer() {
     <footer className="bg-gray-900 text-white py-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
           <div>
-                       <div className="flex items-center space-x-6">
-                         
-                         <div className="flex items-center">
-                           <Image
-                             src={Logo}
-                             alt="Blinkit"
-                             width={220}
-                             height={100}
-                             className="h-22 w-auto object-contain"
-                           />
-                         </div>
-           
-                       </div>
+            <div className="flex items-center space-x-6">
+
+              <div className="flex items-center">
+                <Image
+                  src={Logo}
+                  alt="Blinkit"
+                  width={220}
+                  height={100}
+                  className="h-22 w-auto object-contain"
+                />
+              </div>
+
+            </div>
             <p className="text-gray-400 text-sm">
               Your trusted partner for quick grocery delivery. Fresh products at your doorstep in minutes.
             </p>
           </div>
-          
+
           {/* Quick Links */}
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
@@ -37,17 +36,17 @@ export default function Footer() {
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
             </ul>
           </div>
-          
+
           {/* Contact Info */}
           <div>
             <h4 className="font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>support@Fast2.com</li>
-              <li>+91 98765 43210</li>
-              <li>Mumbai, India</li>
+              <li>support@fast2.in</li>
+              <li>+91 98********</li>
+              <li>Gwalior, Madhya Pradesh</li>
             </ul>
           </div>
-          
+
           {/* Social Media */}
           <div>
             <h4 className="font-semibold mb-4">Follow Us</h4>
@@ -70,7 +69,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        
+
         {/* Copyright */}
         <div className="border-t border-gray-800 mt-8 pt-6 text-sm text-gray-400 text-center">
           <p>© {new Date().getFullYear()} Fast2. All rights reserved.</p>
