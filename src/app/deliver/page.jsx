@@ -156,7 +156,7 @@ export default function DeliveryPartnerPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Great Earnings</h3>
+              <h3 className="text-black text-xl font-semibold mb-3">Great Earnings</h3>
               <p className="text-gray-600">Earn competitive rates for each delivery with additional incentives during peak hours.</p>
               <div className="mt-6 bg-blue-100 text-blue-700 py-2 px-4 rounded-full inline-block text-sm font-medium">
                 Up to ₹1,500 per day
@@ -169,7 +169,7 @@ export default function DeliveryPartnerPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 01118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Flexible Schedule</h3>
+              <h3 className="text-black text-xl font-semibold mb-3">Flexible Schedule</h3>
               <p className="text-gray-600">You're your own boss. Work whenever you want, for as long as you want.</p>
               <div className="mt-6 bg-blue-100 text-blue-700 py-2 px-4 rounded-full inline-block text-sm font-medium">
                 Choose your hours
@@ -182,7 +182,7 @@ export default function DeliveryPartnerPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Insurance Coverage</h3>
+              <h3 className="text-black text-xl font-semibold mb-3">Insurance Coverage</h3>
               <p className="text-gray-600">We provide accidental insurance coverage for all our delivery partners.</p>
               <div className="mt-6 bg-blue-100 text-blue-700 py-2 px-4 rounded-full inline-block text-sm font-medium">
                 ₹5 Lakh coverage
@@ -202,7 +202,7 @@ export default function DeliveryPartnerPage() {
             <div className="relative flex-1 text-center mb-16 md:mb-0 step-connector">
               <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold shadow-lg">1</div>
               <div className="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
-                <h3 className="text-xl font-semibold mb-3">Sign Up</h3>
+                <h3 className="text-black text-black text-xl font-semibold mb-3">Sign Up</h3>
                 <p className="text-gray-600">Complete the application form with your details</p>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function DeliveryPartnerPage() {
             <div className="relative flex-1 text-center mb-16 md:mb-0 step-connector">
               <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold shadow-lg">2</div>
               <div className="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
-                <h3 className="text-xl font-semibold mb-3">Verify</h3>
+                <h3 className="text-black text-black text-xl font-semibold mb-3">Verify</h3>
                 <p className="text-gray-600">Submit required documents for verification</p>
               </div>
             </div>
@@ -218,71 +218,11 @@ export default function DeliveryPartnerPage() {
             <div className="relative flex-1 text-center">
               <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold shadow-lg">3</div>
               <div className="bg-white p-6 rounded-2xl shadow-lg border border-blue-100">
-                <h3 className="text-xl font-semibold mb-3">Start Delivering</h3>
+                <h3 className="text-black text-black text-xl font-semibold mb-3">Start Delivering</h3>
                 <p className="text-gray-600">Get the app, accept orders, and start earning</p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">What Our Partners Say</h2>
-          <p className="text-xl text-center text-gray-600 mb-12 max-w-3xl mx-auto">Hear from our delivery partners about their experience</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl testimonial-card border border-blue-100">
-              <div className="flex items-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mr-5 flex items-center justify-center text-white font-bold text-lg">RS</div>
-                <div>
-                  <h4 className="font-semibold text-lg">Rahul Sharma</h4>
-                  <p className="text-gray-600">Delivery Partner since 2021</p>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-6">"The flexibility is amazing. I can work around my college schedule and still make enough to cover my expenses. The weekly payments are always on time."</p>
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl testimonial-card border border-blue-100">
-              <div className="flex items-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mr-5 flex items-center justify-center text-white font-bold text-lg">VS</div>
-                <div>
-                  <h4 className="font-semibold text-lg">Vikram Singh</h4>
-                  <p className="text-gray-600">Delivery Partner since 2020</p>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-6">"I've been delivering with Fast2 for over two years now. The earnings have allowed me to support my family and even save for the future."</p>
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-12 bg-gradient-to-r from-blue-500 to-blue-700 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Start Your Delivery Journey Today</h2>
-          <p className="mb-6 max-w-2xl mx-auto">Join our growing community of delivery partners and start earning on your own terms.</p>
-          <button 
-            onClick={() => window.open('/delivery-apply', '_blank')}
-            className="bg-white text-blue-600 font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-50 transition duration-300 transform hover:-translate-y-1"
-          >
-            Apply Now
-          </button>
         </div>
       </section>
     </div>
