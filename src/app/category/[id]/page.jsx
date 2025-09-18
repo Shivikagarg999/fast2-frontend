@@ -40,7 +40,11 @@ export default function CategoryProductsPage() {
         }
         
         const productsData = await productsResponse.json();
-        setProducts(productsData.products || []);
+        
+        // FIX: Check the actual structure of the API response
+        // Based on your example JSON, the products are directly in the response
+        // not in a products property
+        setProducts(productsData.products || productsData || []);
         
       } catch (err) {
         console.error('Error fetching category data:', err);
@@ -276,8 +280,8 @@ export default function CategoryProductsPage() {
                     viewMode === 'list' ? 'w-48 flex-shrink-0' : 'h-48'
                   }`}>
                     <Image
-                      src={product.image || fallbackImage}
-                      alt={product.name}
+                      src={product.images?.[0]?.url || fallbackImage}
+                      alt={product.images?.[0]?.altText || product.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
