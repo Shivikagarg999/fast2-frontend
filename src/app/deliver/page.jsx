@@ -1,8 +1,7 @@
-"use client"
+// app/delivery-partner/page.js
+"use client";
 
 import { useState } from 'react';
-import Head from 'next/head';
-import Footer from '../components/footer/page';
 
 export default function DeliveryPartnerPage() {
   const [formData, setFormData] = useState({
@@ -27,15 +26,8 @@ export default function DeliveryPartnerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white font-sans">
-      <Head>
-        <title>Become a Delivery Partner | Fast2</title>
-        <meta name="description" content="Join as a delivery partner and earn competitive pay with flexible schedules" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       {/* Hero Section */}
-      <section className="relative gradient-bg text-white py-16 md:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800"></div>
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 md:py-24 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full mix-blend-overlay animate-float"></div>
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full mix-blend-overlay animate-float" style={{animationDelay: '2s'}}></div>
@@ -174,7 +166,7 @@ export default function DeliveryPartnerPage() {
             <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl text-center card-hover border border-blue-100">
               <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 01118 0z" />
                 </svg>
               </div>
               <h3 className="text-xl font-semibold mb-3">Flexible Schedule</h3>
@@ -280,54 +272,19 @@ export default function DeliveryPartnerPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 gradient-bg text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800"></div>
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-10 left-20 w-64 h-64 bg-white rounded-full mix-blend-overlay animate-float"></div>
-          <div className="absolute bottom-10 right-20 w-80 h-80 bg-white rounded-full mix-blend-overlay animate-float" style={{animationDelay: '2s'}}></div>
-        </div>
-        
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-3xl font-bold mb-6">Ready to Start Earning?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">Join thousands of delivery partners who are earning money on their own schedule.</p>
-          <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-50 transition duration-300 transform hover:-translate-y-1">
+      {/* Final CTA */}
+      <section className="py-12 bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-4">Start Your Delivery Journey Today</h2>
+          <p className="mb-6 max-w-2xl mx-auto">Join our growing community of delivery partners and start earning on your own terms.</p>
+          <button 
+            onClick={() => window.open('/delivery-apply', '_blank')}
+            className="bg-white text-blue-600 font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-blue-50 transition duration-300 transform hover:-translate-y-1"
+          >
             Apply Now
           </button>
         </div>
       </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">Frequently Asked Questions</h2>
-          <p className="text-xl text-center text-gray-600 mb-12 max-w-3xl mx-auto">Get answers to common questions about becoming a delivery partner</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-blue-50 p-6 rounded-2xl">
-              <h3 className="text-lg font-semibold mb-3">How much can I earn as a delivery partner?</h3>
-              <p className="text-gray-600">Our delivery partners typically earn between ₹800 to ₹1,500 per day, depending on hours worked and order volume.</p>
-            </div>
-            
-            <div className="bg-blue-50 p-6 rounded-2xl">
-              <h3 className="text-lg font-semibold mb-3">What documents do I need to apply?</h3>
-              <p className="text-gray-600">You'll need a valid ID proof, address proof, and vehicle documents to complete the verification process.</p>
-            </div>
-            
-            <div className="bg-blue-50 p-6 rounded-2xl">
-              <h3 className="text-lg font-semibold mb-3">How flexible are the working hours?</h3>
-              <p className="text-gray-600">You can choose your own working hours. Work full-time, part-time, or just during peak hours - it's completely up to you.</p>
-            </div>
-            
-            <div className="bg-blue-50 p-6 rounded-2xl">
-              <h3 className="text-lg font-semibold mb-3">How often will I get paid?</h3>
-              <p className="text-gray-600">We process payments weekly. You can also make instant withdrawals for a small fee whenever you need access to your earnings.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    <Footer/>
     </div>
   );
 }
