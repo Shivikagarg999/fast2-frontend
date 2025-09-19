@@ -196,7 +196,7 @@ export default function VerifyPage() {
                   {otp.map((data, index) => (
                     <input
                       key={index}
-                      type="text"
+                      type="tel"
                       name="otp"
                       maxLength="1"
                       value={data}
