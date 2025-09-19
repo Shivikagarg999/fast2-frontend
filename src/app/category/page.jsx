@@ -42,7 +42,7 @@ export default function CategoryPage() {
   return (
     <>
       <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-8">
          
           {/* Error State */}
           {error && (
@@ -55,7 +55,7 @@ export default function CategoryPage() {
           {isLoading && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {[...Array(10)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div key={i} className="bg-white overflow-hidden">
                   <div className="skeleton h-32 w-full"></div>
                   <div className="p-3">
                     <div className="skeleton h-5 w-3/4 mb-2"></div>
@@ -73,7 +73,7 @@ export default function CategoryPage() {
                 <Link 
                   key={category._id} 
                   href={`/category/${category._id}`}
-                  className="block bg-white rounded-lg shadow-sm overflow-hidden transition-transform duration-200 hover:shadow-md hover:scale-105"
+                  className="block bg-white overflow-hidden transition-transform duration-200 hover:shadow-md hover:scale-105"
                 >
                   <div className="relative h-32 overflow-hidden">
                     <Image

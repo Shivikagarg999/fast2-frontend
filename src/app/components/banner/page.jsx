@@ -80,7 +80,7 @@ const Banner = () => {
   };
 
   return (
-    <div className="relative mt-8 w-full px-4 mb-6">
+    <div className="relative bg-white mt-8 w-full px-4 mb-6">
       <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-white">
         {bannerData.map((slide, index) => (
           <div
