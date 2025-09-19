@@ -274,13 +274,6 @@ const ProductDetailPage = () => {
                       </button>
                     </div>
                   </div>
-
-                  <div className="text-right">
-                    <div className="text-sm text-gray-500 font-medium">Total Amount</div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {formatPrice(product.price * quantity)}
-                    </div>
-                  </div>
                 </div>
               </div>
 

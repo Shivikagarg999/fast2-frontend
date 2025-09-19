@@ -282,7 +282,7 @@ const ProductListing = () => {
         return categoryName === selectedCategory;
       });
 
-  // Group products by category for "All" view - FIXED THIS PART
+  // Group products by category for "All" view
   const productsByCategory = {};
   products.forEach(product => {
     const categoryName = getCategoryName(product.category);
@@ -304,7 +304,14 @@ const ProductListing = () => {
   };
 
   if (loading) {
-    return <div className="bg-white min-h-screen">Loading...</div>;
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -339,9 +346,9 @@ const ProductListing = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-blue-600 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -358,14 +365,14 @@ const ProductListing = () => {
               <div key={category} className="bg-white rounded-xl shadow-sm overflow-hidden">
                 <div className="px-6 py-4">
                   <h2 className="text-xl font-bold text-gray-900">
-                    {category} {/* This should now be a string, not an object */}
+                    {category}
                     <span className="ml-3 text-sm font-normal text-gray-500">
                       ({categoryProducts.length} items)
                     </span>
                   </h2>
                 </div>
                 <div className="p-6">
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {categoryProducts.map(product => (
                       <ProductCard 
                         key={product._id} 
@@ -396,7 +403,7 @@ const ProductListing = () => {
               </h2>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {filteredProducts.map(product => (
                   <ProductCard 
                     key={product._id} 
