@@ -14,40 +14,71 @@ const ProductDetailPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [loadingRelated, setLoadingRelated] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [cartMessage, setCartMessage] = useState('');
 
   useEffect(() => {
-    // Check authentication status
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    checkAuthStatus();
+    getProductData();
+  }, []);
 
-    // Get product data from sessionStorage
+  const checkAuthStatus = () => {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      // Verify token format and expiration
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          throw new Error('Invalid token format');
+        }
+        
+        const payload = JSON.parse(atob(parts[1]));
+        const isExpired = payload.exp * 1000 < Date.now();
+        
+        if (isExpired) {
+          console.log('Token expired');
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+        } else {
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.log('Invalid token:', error.message);
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  };
+
+  const getProductData = () => {
     if (typeof window !== 'undefined') {
       const storedProduct = sessionStorage.getItem('selectedProduct');
       if (storedProduct) {
-        const productData = JSON.parse(storedProduct);
-        setProduct(productData);
-     
+        try {
+          const productData = JSON.parse(storedProduct);
+          setProduct(productData);
+        } catch (error) {
+          console.error('Error parsing product data:', error);
+        }
       }
     }
     setLoading(false);
-  }, []);
+  };
 
-  // Get the primary image or first image from the images array
   const getProductImage = () => {
     if (!product?.images || product.images.length === 0) {
       return "https://via.placeholder.com/400x400?text=No+Image";
     }
     
-    // Try to find primary image first
     const primaryImage = product.images.find(img => img.isPrimary);
     if (primaryImage) return primaryImage.url;
     
-    // Otherwise return the first image
     return product.images[0].url;
   };
 
-  // Format price in Indian rupees
   const formatPrice = (price) => {
     if (!price) return '₹0';
     return new Intl.NumberFormat('en-IN', {
@@ -57,9 +88,8 @@ const ProductDetailPage = () => {
     }).format(price);
   };
 
-  // Function to create HTML from string
   const createMarkup = (htmlContent) => {
-    return { __html: htmlContent };
+    return { __html: htmlContent || 'No detailed description available.' };
   };
 
   const handleAdd = () => {
@@ -76,16 +106,61 @@ const ProductDetailPage = () => {
     router.back();
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 3000);
       return;
     }
 
-    // Add your cart logic here
-    console.log(`Added ${quantity} of ${product?.name} to cart`);
-    // You can integrate this with your cart state management
+    setAddingToCart(true);
+    setCartMessage('');
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setShowLoginPrompt(true);
+        setTimeout(() => setShowLoginPrompt(false), 3000);
+        return;
+      }
+
+      const response = await fetch('https://api.fast2.in/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          quantity: quantity
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token is invalid or expired
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          setCartMessage('Session expired. Please login again.');
+          setTimeout(() => setCartMessage(''), 3000);
+          return;
+        }
+        throw new Error(data.error || data.message || 'Failed to add to cart');
+      }
+
+      setCartMessage('Product added to cart successfully!');
+      setTimeout(() => setCartMessage(''), 3000);
+      
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setCartMessage(error.message || 'Failed to add to cart. Please try again.');
+      setTimeout(() => setCartMessage(''), 3000);
+    } finally {
+      setAddingToCart(false);
+    }
   };
 
   const handleBuyNow = () => {
@@ -95,7 +170,7 @@ const ProductDetailPage = () => {
       return;
     }
 
-    // Add your buy now logic here
+    // Implement buy now logic here
     console.log(`Buying ${quantity} of ${product?.name} now`);
   };
 
@@ -104,11 +179,6 @@ const ProductDetailPage = () => {
       return Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
     }
     return 0;
-  };
-
-  const handleProductClick = (product) => {
-    sessionStorage.setItem('selectedProduct', JSON.stringify(product));
-    window.location.reload();
   };
 
   const discount = calculateDiscount();
@@ -146,7 +216,25 @@ const ProductDetailPage = () => {
         </div>
       )}
 
+      {/* Cart Message Toast */}
+      {cartMessage && (
+        <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 ${
+          cartMessage.includes('success') ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+        }`}>
+          <p className="text-sm font-medium">{cartMessage}</p>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Back Button */}
+        <button
+          onClick={handleBack}
+          className="flex items-center text-gray-600 hover:text-gray-800 mb-6 transition-colors"
+        >
+          <ArrowLeftIcon className="w-6 h-6 mr-2" />
+          Back
+        </button>
+
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="md:flex">
             {/* Product Image */}
@@ -281,16 +369,10 @@ const ProductDetailPage = () => {
               <div className="space-y-3">
                 <button
                   onClick={handleAddToCart}
-                  className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-colors shadow-md"
+                  disabled={addingToCart}
+                  className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add to Cart
-                </button>
-                
-                <button 
-                  onClick={handleBuyNow}
-                  className="w-full border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-semibold text-lg hover:bg-blue-50 transition-colors"
-                >
-                  Buy Now
+                  {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
                 </button>
               </div>
             </div>
@@ -302,7 +384,7 @@ const ProductDetailPage = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Product Description</h2>
           
           <div className={`text-gray-600 leading-relaxed product-description ${!showFullDescription ? 'max-h-32 overflow-hidden' : ''}`}>
-            <div dangerouslySetInnerHTML={createMarkup(product.description || 'No detailed description available.')} />
+            <div dangerouslySetInnerHTML={createMarkup(product.description)} />
           </div>
           
           {product.description && product.description.length > 200 && (

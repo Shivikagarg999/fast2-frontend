@@ -19,6 +19,7 @@ const ProductListing = () => {
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('token');
+      console.log('🔐 Auth check - Token exists:', !!token);
       setIsLoggedIn(!!token);
     };
 
@@ -37,34 +38,23 @@ const ProductListing = () => {
   // Helper function to safely get category name
   const getCategoryName = (category) => {
     if (!category) return 'Uncategorized';
-    
-    // If it's already a string, return it
     if (typeof category === 'string') return category;
-    
-    // If it's an object with a name property
     if (typeof category === 'object' && category !== null && category.name) {
       return category.name;
     }
-    
-    // If it's an object but no name, try to stringify safely
     if (typeof category === 'object' && category !== null) {
       return category._id || 'Unknown Category';
     }
-    
-    // Fallback
     return 'Unknown Category';
   };
 
   // Helper function to safely get category ID
   const getCategoryId = (category) => {
     if (!category) return null;
-    
     if (typeof category === 'string') return category;
-    
     if (typeof category === 'object' && category !== null && category._id) {
       return category._id;
     }
-    
     return null;
   };
 
@@ -108,18 +98,27 @@ const ProductListing = () => {
   // Fetch cart quantities if logged in
   useEffect(() => {
     const fetchCartQuantities = async () => {
-      if (!isLoggedIn) return;
+      if (!isLoggedIn) {
+        console.log('🚫 Not logged in, skipping cart fetch');
+        return;
+      }
 
       try {
         const token = localStorage.getItem('token');
+        console.log('🛒 Fetching cart with token:', token ? 'Present' : 'Missing');
+        
         const response = await fetch('https://api.fast2.in/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
+        console.log('📡 Cart response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('🛒 Cart data received:', data);
+          
           const cartItems = data.items || data.cart?.items || data || [];
           const quantities = {};
           
@@ -129,6 +128,11 @@ const ProductListing = () => {
           });
           
           setCartQuantities(quantities);
+          console.log('🛒 Cart quantities set:', quantities);
+        } else if (response.status === 401) {
+          console.log('🔴 401 Unauthorized - clearing token');
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
         }
       } catch (err) {
         console.error('Error fetching cart quantities:', err);
@@ -138,7 +142,7 @@ const ProductListing = () => {
     fetchCartQuantities();
   }, [isLoggedIn]);
 
-  // Add to cart API call
+  // Add to cart API call - FIXED ENDPOINT
   const addToCart = async (productId, quantity = 1) => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
@@ -150,7 +154,10 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://api.fast2.in/api/cart/add', {
+      console.log('➕ Adding to cart - Product:', productId, 'Qty:', quantity);
+      console.log('➕ Using token:', token);
+
+      const response = await fetch('https://api.fast2.in/api/cart/add', {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,25 +169,37 @@ const ProductListing = () => {
         })
       });
 
+      console.log('📡 Add to cart response status:', response.status);
+      
+      const responseData = await response.json();
+      console.log('📡 Add to cart response data:', responseData);
+
       if (response.ok) {
         setCartQuantities(prev => ({
           ...prev,
           [productId]: (prev[productId] || 0) + quantity
         }));
         window.dispatchEvent(new Event('cartUpdated'));
+        console.log('✅ Added to cart successfully');
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add to cart');
+        if (response.status === 401) {
+          console.log('🔴 401 Unauthorized - clearing token');
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          setShowLoginPrompt(true);
+          setTimeout(() => setShowLoginPrompt(false), 3000);
+        }
+        throw new Error(responseData.error || responseData.message || 'Failed to add to cart');
       }
     } catch (err) {
       console.error('Error adding to cart:', err);
-      alert('Failed to add item to cart. Please try again.');
+      alert(err.message || 'Failed to add item to cart. Please try again.');
     } finally {
       setAddingToCart(prev => ({ ...prev, [productId]: false }));
     }
   };
 
-  // Update cart quantity
+  // Update cart quantity - FIXED ENDPOINT
   const updateCartQuantity = async (productId, newQuantity) => {
     if (!isLoggedIn) return;
 
@@ -191,7 +210,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('https://api.fast2.in/api/cart/', {
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -201,7 +220,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`https://api.fast2.in/api/cart/update/${cartItem._id}`, {
+        const response = await fetch(`https://api.fast2.in/api/cart/update/${cartItem._id}`, {  
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -222,13 +241,13 @@ const ProductListing = () => {
     }
   };
 
-  // Remove from cart
+  // Remove from cart - FIXED ENDPOINT
   const removeFromCart = async (productId) => {
     if (!isLoggedIn) return;
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('https://api.fast2.in/api/cart/', {
+      const cartItems = await fetch('/api/cart/', {  // CHANGED TO RELATIVE PATH
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -238,7 +257,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`https://api.fast2.in/api/cart/remove/${cartItem._id}`, {
+        const response = await fetch(`/api/cart/remove/${cartItem._id}`, {  // CHANGED TO RELATIVE PATH
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -286,8 +305,6 @@ const ProductListing = () => {
   const productsByCategory = {};
   products.forEach(product => {
     const categoryName = getCategoryName(product.category);
-    
-    // Ensure categoryName is a string
     const safeCategoryName = typeof categoryName === 'string' ? categoryName : String(categoryName);
     
     if (!productsByCategory[safeCategoryName]) {
