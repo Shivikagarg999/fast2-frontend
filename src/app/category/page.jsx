@@ -42,7 +42,7 @@ export default function CategoryPage() {
   return (
     <>
       <div className="bg-white">
-        <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl bg-white px-4 sm:px-6 lg:px-8">
          
           {/* Error State */}
           {error && (

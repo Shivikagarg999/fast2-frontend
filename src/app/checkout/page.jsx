@@ -295,7 +295,7 @@ const CheckoutPage = () => {
                         name="firstName"
                         value={shippingInfo.firstName}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 border border-gray-300  text-black  rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -306,7 +306,7 @@ const CheckoutPage = () => {
                         name="lastName"
                         value={shippingInfo.lastName}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 border border-gray-300  text-black rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -320,7 +320,7 @@ const CheckoutPage = () => {
                         name="email"
                         value={shippingInfo.email}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -331,7 +331,7 @@ const CheckoutPage = () => {
                         name="phone"
                         value={shippingInfo.phone}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                         maxLength="10"
                       />
@@ -339,13 +339,13 @@ const CheckoutPage = () => {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Address Line *</label>
+                    <label className="block text-sm  font-medium text-gray-700 mb-1">Address Line *</label>
                     <input
                       type="text"
                       name="addressLine"
                       value={shippingInfo.addressLine}
                       onChange={handleShippingChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-2 text-black border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                       required
                       placeholder="Street address, apartment, floor, etc."
                     />
@@ -359,7 +359,7 @@ const CheckoutPage = () => {
                         name="city"
                         value={shippingInfo.city}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 py-2 text-black border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -370,7 +370,7 @@ const CheckoutPage = () => {
                         name="state"
                         value={shippingInfo.state}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 text-black py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                       />
                     </div>
@@ -381,7 +381,7 @@ const CheckoutPage = () => {
                         name="pinCode"
                         value={shippingInfo.pinCode}
                         onChange={handleShippingChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-4 text-black py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                         required
                         maxLength="6"
                       />
@@ -394,7 +394,7 @@ const CheckoutPage = () => {
                       name="country"
                       value={shippingInfo.country}
                       onChange={handleShippingChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-2 text-black border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="India">India</option>
                       <option value="United States">United States</option>

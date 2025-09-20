@@ -128,7 +128,7 @@ const Cart = () => {
     if (newQuantity < 1 || !isLoggedIn) return;
     
     try {
-      await makeAuthenticatedRequest(`http://193.203.163.101/api/cart/update/${itemId}`, {
+      await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/update/${itemId}`, {
         method: 'PUT',
         body: JSON.stringify({
           quantity: newQuantity
@@ -173,7 +173,7 @@ const Cart = () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest('http://193.203.163.101/api/cart/clear', {
+      await makeAuthenticatedRequest('https://api.fast2.in/api/cart/clear', {
         method: 'DELETE'
       });
       setCartItems([]);
@@ -409,14 +409,14 @@ const Cart = () => {
           <div className="space-y-3 mb-4">
             <div className="flex justify-between items-center">
               <span className="text-gray-600 text-sm">Subtotal:</span>
-              <span className="font-medium">₹{calculateTotal()}</span>
+              <span className="font-medium text-black">₹{calculateTotal()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600 text-sm">Delivery:</span>
-              <span className="font-medium">{calculateTotal() > 0 ? '₹25' : '₹0'}</span>
+              <span className="font-medium text-black">{calculateTotal() > 0 ? '₹25' : '₹0'}</span>
             </div>
             <div className="border-t border-gray-100 pt-2 flex justify-between items-center text-lg">
-              <span className="font-bold">Total:</span>
+              <span className="font-bold text-black">Total:</span>
               <span className="font-bold text-blue-600">₹{calculateTotal() > 0 ? calculateTotal() + 25 : 0}</span>
             </div>
           </div>
