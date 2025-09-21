@@ -104,7 +104,7 @@ export default function DeliveryPartnerPage() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300  rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 border border-gray-300 text-black rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
                     >
                       <option value="">Select your city</option>
@@ -115,13 +115,13 @@ export default function DeliveryPartnerPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2 font-medium" htmlFor="vehicle">Vehicle Type</label>
+                    <label className="block text-black mb-2 font-medium" htmlFor="vehicle">Vehicle Type</label>
                     <select 
                       id="vehicle" 
                       name="vehicle"
                       value={formData.vehicle}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 border border-gray-300  text-black rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
                     >
                       <option value="">Select vehicle</option>
