@@ -62,6 +62,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [useMapboxSearch, setUseMapboxSearch] = useState(false);
   const locationDropdownRef = useRef(null);
+  const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const router = useRouter();
 
@@ -91,6 +92,12 @@ export default function Header() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
+        setIsLocationDropdownOpen(false);
+        setSearchQuery('');
+        setUseMapboxSearch(false);
+      }
+      
+      if (mobileLocationDropdownRef.current && !mobileLocationDropdownRef.current.contains(event.target)) {
         setIsLocationDropdownOpen(false);
         setSearchQuery('');
         setUseMapboxSearch(false);
@@ -569,7 +576,122 @@ export default function Header() {
                 <span className="text-xs text-gray-500">Delivering to</span>
                 <span className="text-sm font-medium">{selectedLocation}</span>
               </div>
+              <ChevronDownIcon className={`w-4 h-4 text-gray-500 ml-1 flex-shrink-0 transition-transform duration-200 ${
+                isLocationDropdownOpen ? 'rotate-180' : ''
+              }`} />
             </div>
+            
+            {/* Location Dropdown for Mobile */}
+            {isLocationDropdownOpen && (
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4" ref={mobileLocationDropdownRef}>
+                {/* Header */}
+                <div className="mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
+                  <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
+                </div>
+                
+                {/* Search */}
+                <div className="mb-3">
+                  {useMapboxSearch ? (
+                    <MapboxGeocoder 
+                      onSelectLocation={handleLocationSelect}
+                      placeholder="Search for area, street name..."
+                    />
+                  ) : (
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Search for area, street name..."
+                        className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        onFocus={handleSearchFocus}
+                        autoFocus
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Locations List - Only show when not using Mapbox search */}
+                {!useMapboxSearch && (
+                  <div className="max-h-48 overflow-y-auto">
+                    {filteredLocations.length > 0 ? (
+                      <div className="space-y-2">
+                        {filteredLocations.map((location) => (
+                          <div 
+                            key={location.id}
+                            className="p-2 hover:bg-blue-50 cursor-pointer transition-colors rounded border-b border-gray-50 last:border-0"
+                            onClick={() => handleLocationSelect(location)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900 text-sm">
+                                  {location.name}
+                                </div>
+                                <div className="text-xs text-gray-500 mt-0.5">
+                                  {location.area}
+                                </div>
+                              </div>
+                              <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                <ClockIcon className="w-3 h-3 mr-1" />
+                                {location.deliveryTime}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : searchQuery.length > 0 ? (
+                      <div className="p-4 text-center">
+                        <div className="text-gray-400 mb-2">
+                          <MapPinIcon className="w-6 h-6 mx-auto" />
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          No locations found
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          Try a different search term
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {locations.map((location) => (
+                          <div 
+                            key={location.id}
+                            className="p-2 hover:bg-blue-50 cursor-pointer transition-colors rounded border-b border-gray-50 last:border-0"
+                            onClick={() => handleLocationSelect(location)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900 text-sm">
+                                  {location.name}
+                                </div>
+                                <div className="text-xs text-gray-500 mt-0.5">
+                                  {location.area}
+                                </div>
+                              </div>
+                              <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                <ClockIcon className="w-3 h-3 mr-1" />
+                                {location.deliveryTime}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Footer */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="text-xs text-gray-500 text-center">
+                    Can't find your location? We're expanding soon!
+                  </div>
+                </div>
+              </div>
+            )}
             
             {isLoggedIn ? (
               <>

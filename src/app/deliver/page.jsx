@@ -1,4 +1,3 @@
-// app/delivery-partner/page.js
 "use client";
 
 import { useState } from 'react';
