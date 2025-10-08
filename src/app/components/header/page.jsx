@@ -12,7 +12,8 @@ import {
   Cog6ToothIcon,
   MapIcon,
   InboxIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  DevicePhoneMobileIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
@@ -61,6 +62,8 @@ export default function Header() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [useMapboxSearch, setUseMapboxSearch] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [locationError, setLocationError] = useState('');
   const locationDropdownRef = useRef(null);
   const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
@@ -95,12 +98,14 @@ export default function Header() {
         setIsLocationDropdownOpen(false);
         setSearchQuery('');
         setUseMapboxSearch(false);
+        setLocationError('');
       }
       
       if (mobileLocationDropdownRef.current && !mobileLocationDropdownRef.current.contains(event.target)) {
         setIsLocationDropdownOpen(false);
         setSearchQuery('');
         setUseMapboxSearch(false);
+        setLocationError('');
       }
       
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
@@ -146,7 +151,7 @@ export default function Header() {
     const fetchCategories = async () => {
       setLoadingCategories(true);
       try {
-        const response = await fetch('https://api.fast2.in/api/category/');
+        const response = await fetch('https://api.fast2.in/api/category/getall');
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
@@ -182,6 +187,110 @@ export default function Header() {
 
     fetchCategories();
   }, []);
+
+  // Get current location using Geolocation API (simplified version)
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setIsGettingLocation(true);
+    setLocationError('');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        try {
+          // Try to get location name using browser's built-in geolocation
+          const location = await getLocationNameFromCoords(latitude, longitude);
+          handleLocationSelect(location);
+        } catch (error) {
+          console.error('Error getting location name:', error);
+          // Ultimate fallback - just use coordinates
+          const fallbackLocation = {
+            text: 'Current Location',
+            place_name: `Your location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+            center: [longitude, latitude]
+          };
+          handleLocationSelect(fallbackLocation);
+          setLocationError('Location detected! You can search for exact address if needed.');
+        } finally {
+          setIsGettingLocation(false);
+        }
+      },
+      (error) => {
+        setIsGettingLocation(false);
+        handleGeolocationError(error);
+      },
+      {
+        enableHighAccuracy: false, // Set to false for better compatibility
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    );
+  };
+
+  // Fallback function to get location name
+  const getLocationNameFromCoords = async (latitude, longitude) => {
+    try {
+      // First try: Use Mapbox if available
+      const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      if (mapboxToken) {
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxToken}&limit=1`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.features && data.features.length > 0) {
+            return data.features[0];
+          }
+        }
+      }
+      
+      // Second try: Use OpenStreetMap Nominatim (free, no token required)
+      const osmResponse = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+      );
+      
+      if (osmResponse.ok) {
+        const data = await osmResponse.json();
+        if (data.display_name) {
+          return {
+            text: data.display_name.split(',')[0], // First part of address
+            place_name: data.display_name,
+            center: [longitude, latitude]
+          };
+        }
+      }
+      
+      // Final fallback
+      throw new Error('Could not get location name');
+      
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // Handle geolocation errors
+  const handleGeolocationError = (error) => {
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        setLocationError('Location access denied. Please enable location permissions in your browser settings and refresh the page.');
+        break;
+      case error.POSITION_UNAVAILABLE:
+        setLocationError('Your location is unavailable. Please check your device location services.');
+        break;
+      case error.TIMEOUT:
+        setLocationError('Location request timed out. Please try again.');
+        break;
+      default:
+        setLocationError('Could not get your location. Please try again or search manually.');
+        break;
+    }
+  };
 
   const closeMenu = () => {
     setIsMenuOpen(false);
@@ -244,6 +353,7 @@ export default function Header() {
     setIsLocationDropdownOpen(false);
     setSearchQuery('');
     setUseMapboxSearch(false);
+    setLocationError('');
   };
 
   const handleLocationClick = () => {
@@ -251,6 +361,7 @@ export default function Header() {
     if (!isLocationDropdownOpen) {
       setSearchQuery('');
       setUseMapboxSearch(false);
+      setLocationError('');
     }
   };
 
@@ -271,7 +382,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white text-black shadow-md sticky top-0 w-full z-50">
+    <header className="bg-white text-black sticky top-0 w-full z-50">
       {/* Top Section */}
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
@@ -316,6 +427,30 @@ export default function Header() {
                     <div className="p-4 border-b border-gray-100 bg-gray-50">
                       <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
                       <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
+                    </div>
+                    
+                    {/* Current Location Button */}
+                    <div className="p-4 border-b border-gray-100">
+                      <button
+                        onClick={getCurrentLocation}
+                        disabled={isGettingLocation}
+                        className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
+                          isGettingLocation
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
+                        }`}
+                      >
+                        <DevicePhoneMobileIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
+                        </span>
+                      </button>
+                      
+                      {locationError && (
+                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-xs text-red-600">{locationError}</p>
+                        </div>
+                      )}
                     </div>
                     
                     {/* Search - Show either Mapbox or regular search, not both */}
@@ -588,6 +723,30 @@ export default function Header() {
                 <div className="mb-3">
                   <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
                   <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
+                </div>
+                
+                {/* Current Location Button for Mobile */}
+                <div className="mb-3">
+                  <button
+                    onClick={getCurrentLocation}
+                    disabled={isGettingLocation}
+                    className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
+                      isGettingLocation
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
+                    }`}
+                  >
+                    <DevicePhoneMobileIcon className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
+                    </span>
+                  </button>
+                  
+                  {locationError && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-xs text-red-600">{locationError}</p>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Search */}

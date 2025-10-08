@@ -11,7 +11,7 @@ export default function Footer() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('https://api.fast2.in/api/category/');
+        const response = await fetch('https://api.fast2.in/api/category/getall');
         const data = await response.json();
         setCategories(data);
       } catch (error) {

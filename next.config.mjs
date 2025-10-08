@@ -1,7 +1,18 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['i.pinimg.com', 'images.unsplash.com','ik.imagekit.io',
-      '193.203.163.101:5000'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Allows all HTTPS domains
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // Allows all HTTP domains (for local development)
+      },
+    ],
+    // Alternative approach - disable image optimization entirely
+    // unoptimized: true
   },
   experimental: {
     esmExternals: 'loose'

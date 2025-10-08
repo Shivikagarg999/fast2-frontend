@@ -5,61 +5,44 @@ import Image from 'next/image';
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [bannerData, setBannerData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Professional banner data with high-quality working images
-  const bannerData = [
-    {
-      id: 1,
-      title: "Get FREE delivery",
-      subtitle: "on your first order",
-      description: "Order groceries & get them delivered in 10 minutes",
-      image: "https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=720/layout-engine/2022-05/Group-33704.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&q=80",
-      cta: "Order Now",
-      ctaColor: "bg-[#0c831f]",
-      gradient: "from-green-50 to-green-100",
-      accentColor: "text-green-700"
-    },
-    {
-      id: 2,
-      title: "MEGA Monsoon Sale",
-      subtitle: "Up to 50% OFF",
-      description: "Fresh fruits & vegetables at unbeatable prices",
-      image: "https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=720/layout-engine/2023-07/pharmacy-WEB.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=600&q=80",
-      cta: "Shop Now",
-      ctaColor: "bg-[#ff6b35]",
-      gradient: "from-orange-50 to-red-50",
-      accentColor: "text-orange-600"
-    },
-    {
-      id: 3,
-      title: "Buy 1 Get 1 FREE",
-      subtitle: "on beverages",
-      description: "Refresh yourself with amazing deals on drinks",
-      image: "https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=720/layout-engine/2023-03/babycare-WEB.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80",
-      cta: "Grab Deal",
-      ctaColor: "bg-[#1976d2]",
-      gradient: "from-blue-50 to-cyan-50",
-      accentColor: "text-blue-600"
-    },
-    {
-      id: 4,
-      title: "Daily Essentials",
-      subtitle: "delivered instantly",
-      description: "Everything you need for your home, in minutes",
-      image: "https://cdn.grofers.com/cdn-cgi/image/f=auto,fit=scale-down,q=70,metadata=none,w=720/layout-engine/2023-07/Pet-Care_WEB.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=600&q=80",
-      cta: "Explore",
-      ctaColor: "bg-[#9c27b0]",
-      gradient: "from-purple-50 to-pink-50",
-      accentColor: "text-purple-600"
-    }
-  ];
+  // Fetch banners from API
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://api.fast2.in/api/admin/banners/getall');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch banners: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          setBannerData(result.data);
+        } else {
+          throw new Error(result.message || 'Failed to fetch banners');
+        }
+      } catch (err) {
+        console.error('Error fetching banners:', err);
+        setError(err.message);
+        setBannerData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBanners();
+  }, []);
 
   // Auto-rotate slides every 4 seconds
   useEffect(() => {
+    if (bannerData.length === 0) return;
+    
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % bannerData.length);
     }, 4000);
@@ -79,54 +62,122 @@ const Banner = () => {
     setCurrentSlide((prev) => (prev + 1) % bannerData.length);
   };
 
+  // Safe image URL handling
+  const getSafeImageUrl = (url) => {
+    if (!url) return '/fallback-banner.jpg';
+    
+    try {
+      new URL(url);
+      return url;
+    } catch {
+      return '/fallback-banner.jpg';
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="relative bg-white w-full px-4 py-4">
+        <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-gray-200 animate-pulse">
+          <div className="flex items-center h-full px-6 md:px-8 lg:px-12">
+            <div className="flex-1 space-y-4">
+              <div className="h-8 bg-gray-300 rounded w-3/4"></div>
+              <div className="h-6 bg-gray-300 rounded w-1/2"></div>
+              <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+            </div>
+            <div className="flex-1">
+              <div className="w-full h-32 bg-gray-300 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="relative bg-white w-full px-4 py-4">
+        <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-red-50 border border-red-200">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-red-600 text-lg font-semibold">Failed to load banners</p>
+              <p className="text-red-500 text-sm mt-2">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No banners state
+  if (bannerData.length === 0) {
+    return (
+      <div className="relative bg-white w-full px-4 py-4">
+        <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-gray-100 border border-gray-200">
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500 text-lg">No banners available</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative bg-white w-full px-4 py-4">
       <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-white">
         {bannerData.map((slide, index) => (
           <div
-            key={slide.id}
-            className={`absolute inset-0 bg-gradient-to-br ${slide.gradient} transition-all duration-700 ease-in-out transform ${
+            key={slide._id || slide.id}
+            className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
               index === currentSlide 
                 ? 'opacity-100 translate-x-0 scale-100' 
                 : 'opacity-0 translate-x-full scale-95'
             }`}
+            style={{ 
+              background: slide.gradient || slide.accentColor || '#f3f4f6'
+            }}
           >
             <div className="flex items-center h-full px-6 md:px-8 lg:px-12 relative overflow-hidden">
               {/* Content Section */}
-              <div className="flex-1 max-w-[55%] z-20 space-y-2 md:space-y-3">
+              <div className="flex-1 max-w-[60%] z-20 space-y-2 md:space-y-3">
                 <div className="space-y-1">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black leading-tight">
                     {slide.title}
                   </h1>
-                  <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold ${slide.accentColor} leading-tight`}>
+                  <h2 
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-black leading-tight"
+                  >
                     {slide.subtitle}
                   </h2>
                 </div>
                 <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed max-w-md">
                   {slide.description}
                 </p>
-                <div className="pt-2">
-                  <button 
-                    className={`${slide.ctaColor} text-white px-6 py-2.5 md:px-8 md:py-3 rounded-full text-sm md:text-base font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 uppercase tracking-wide`}
-                  >
-                    {slide.cta}
-                  </button>
-                </div>
+                {/* Button removed as requested */}
               </div>
               
               {/* Image Section */}
-              <div className="flex-1 max-w-[45%] h-full relative">
+              <div className="flex-1 max-w-[40%] h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="relative w-full h-[80%] max-w-sm">
                     <Image
-                      src={slide.fallbackImage}
-                      alt={slide.title}
+                      src={getSafeImageUrl(slide.image)}
+                      alt={slide.title || 'Banner image'}
                       fill
                       className="object-contain drop-shadow-2xl"
                       priority={index === 0}
-                      sizes="(max-width: 768px) 45vw, (max-width: 1200px) 35vw, 30vw"
+                      sizes="(max-width: 768px) 40vw, (max-width: 1200px) 30vw, 25vw"
                       onError={(e) => {
-                        console.log('Image failed to load:', slide.image);
+                        if (slide.fallbackImage) {
+                          e.target.src = slide.fallbackImage;
+                        }
                       }}
                     />
                   </div>
@@ -141,41 +192,47 @@ const Banner = () => {
         ))}
         
         {/* Navigation Arrows */}
-        <button 
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
-          onClick={goToPrevSlide}
-          aria-label="Previous slide"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-gray-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        
-        <button 
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
-          onClick={goToNextSlide}
-          aria-label="Next slide"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-gray-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        {bannerData.length > 1 && (
+          <>
+            <button 
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
+              onClick={goToPrevSlide}
+              aria-label="Previous slide"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-gray-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <button 
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
+              onClick={goToNextSlide}
+              aria-label="Next slide"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-gray-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </>
+        )}
         
         {/* Progress Dots */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
-          {bannerData.map((_, index) => (
-            <button
-              key={index}
-              className={`transition-all duration-300 rounded-full ${
-                index === currentSlide 
-                  ? 'w-8 h-3 bg-white shadow-md' 
-                  : 'w-3 h-3 bg-white/60 hover:bg-white/80'
-              }`}
-              onClick={() => goToSlide(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+        {bannerData.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
+            {bannerData.map((_, index) => (
+              <button
+                key={index}
+                className={`transition-all duration-300 rounded-full ${
+                  index === currentSlide 
+                    ? 'w-8 h-3 bg-white shadow-md' 
+                    : 'w-3 h-3 bg-white/60 hover:bg-white/80'
+                }`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
