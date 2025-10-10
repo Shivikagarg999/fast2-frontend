@@ -351,7 +351,7 @@ const ProductListing = () => {
   return (
     <div className="bg-white min-h-screen">
       {showLoginPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
@@ -365,7 +365,7 @@ const ProductListing = () => {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -379,7 +379,7 @@ const ProductListing = () => {
         {selectedCategory === 'All' ? (
           <div className="space-y-8">
             {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
-              <div key={category} className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div key={category} className="bg-white rounded-xl overflow-hidden">
                 <div className="px-6 py-4">
                   <h2 className="text-xl font-bold text-gray-900">
                     {category}
@@ -410,7 +410,7 @@ const ProductListing = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl overflow-hidden">
             <div className="px-6 py-4 border-b">
               <h2 className="text-xl font-bold text-gray-900">
                 {selectedCategory}

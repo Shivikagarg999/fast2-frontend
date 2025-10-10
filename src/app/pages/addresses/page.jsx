@@ -10,7 +10,8 @@ import {
   HomeIcon,
   BuildingOfficeIcon,
   MapIcon,
-  XMarkIcon
+  XMarkIcon,
+  CheckIcon
 } from '@heroicons/react/24/outline';
 import { 
   MapPinIcon as MapPinSolidIcon,
@@ -33,14 +34,15 @@ const AddressPage = () => {
 
   // Form state for adding/editing addresses
   const [addressForm, setAddressForm] = useState({
-    type: 'home',
-    name: '',
-    phone: '',
-    address: '',
-    landmark: '',
+    label: 'home',
+    fullName: '',
+    phoneNumber: '',
+    addressLine1: '',
+    addressLine2: '',
     city: '',
     state: '',
     pincode: '',
+    country: 'India',
     isDefault: false
   });
 
@@ -52,19 +54,28 @@ const AddressPage = () => {
     return null;
   };
 
+  const getAuthHeaders = () => {
+    const token = getToken();
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+  };
+
   useEffect(() => {
     const token = getToken();
     setIsLoggedIn(!!token);
     
     if (token) {
-      fetchUserProfile();
+      fetchAddresses();
     } else {
       setLoading(false);
       setError('Please login to view your addresses');
     }
   }, []);
 
-  const fetchUserProfile = async () => {
+  // Fetch addresses from your API
+  const fetchAddresses = async () => {
     try {
       setLoading(true);
       const token = getToken();
@@ -75,25 +86,26 @@ const AddressPage = () => {
         return;
       }
 
-      const response = await fetch('https://api.fast2.in/api/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await fetch('https://api.fast2.in/api/user/addresses/get', {
+        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
         if (response.status === 401) {
           localStorage.removeItem('token');
           setIsLoggedIn(false);
-          setError('Session expired. Please login again.');
+          setError('Session expired. Please login again.');a
           return;
         }
-        throw new Error('Failed to fetch profile');
+        throw new Error('Failed to fetch addresses');
       }
 
       const data = await response.json();
-      // Assuming addresses are stored in user.addresses
-      setAddresses(data.user?.addresses || []);
+      if (data.success) {
+        setAddresses(data.addresses || []);
+      } else {
+        throw new Error(data.message || 'Failed to fetch addresses');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -101,68 +113,28 @@ const AddressPage = () => {
     }
   };
 
-  const saveAddress = async () => {
+  // Create new address
+  const createAddress = async () => {
     try {
       setSaving(true);
       setError('');
       setSuccess('');
-      
-      const token = getToken();
-      if (!token) {
-        setError('Please login to save addresses');
-        return;
-      }
 
-      // Get current profile to update addresses array
-      const profileResponse = await fetch('https://api.fast2.in/api/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await fetch('https://api.fast2.in/api/user/addresses/create', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(addressForm),
       });
 
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch profile');
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to create address');
       }
 
-      const profileData = await profileResponse.json();
-      const currentAddresses = profileData.user?.addresses || [];
-      
-      let updatedAddresses;
-      if (editingAddress) {
-        // Update existing address
-        updatedAddresses = currentAddresses.map(addr => 
-          addr.id === editingAddress.id ? { ...addressForm, id: editingAddress.id } : addr
-        );
-      } else {
-        // Add new address
-        const newAddress = { 
-          ...addressForm, 
-          id: Date.now().toString() 
-        };
-        updatedAddresses = [...currentAddresses, newAddress];
-      }
-
-      // Update the profile with new addresses
-      const updateResponse = await fetch('https://api.fast2.in/api/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          addresses: updatedAddresses
-        }),
-      });
-
-      if (!updateResponse.ok) {
-        throw new Error(editingAddress ? 'Failed to update address' : 'Failed to add address');
-      }
-
-      const updateData = await updateResponse.json();
-      setAddresses(updateData.user?.addresses || []);
-      
-      setSuccess(editingAddress ? 'Address updated successfully!' : 'Address added successfully!');
+      setSuccess('Address added successfully!');
       resetForm();
+      fetchAddresses(); // Refresh the list
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.message);
@@ -171,53 +143,55 @@ const AddressPage = () => {
     }
   };
 
+  // Update existing address
+  const updateAddress = async () => {
+    try {
+      setSaving(true);
+      setError('');
+      setSuccess('');
+
+      const response = await fetch(`https://api.fast2.in/api/user/addresses/update/${editingAddress._id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(addressForm),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to update address');
+      }
+
+      setSuccess('Address updated successfully!');
+      resetForm();
+      fetchAddresses(); // Refresh the list
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Delete address
   const deleteAddress = async (addressId) => {
     try {
       setDeleting(addressId);
       setError('');
-      
-      const token = getToken();
-      if (!token) {
-        setError('Please login to delete addresses');
-        return;
-      }
 
-      // Get current profile
-      const profileResponse = await fetch('https://api.fast2.in/api/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await fetch(`https://api.fast2.in/api/user/addresses/delete/${addressId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
       });
 
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch profile');
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to delete address');
       }
 
-      const profileData = await profileResponse.json();
-      const currentAddresses = profileData.user?.addresses || [];
-      
-      // Remove the address
-      const updatedAddresses = currentAddresses.filter(addr => addr.id !== addressId);
-
-      // Update the profile
-      const updateResponse = await fetch('https://api.fast2.in/api/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          addresses: updatedAddresses
-        }),
-      });
-
-      if (!updateResponse.ok) {
-        throw new Error('Failed to delete address');
-      }
-
-      const updateData = await updateResponse.json();
-      setAddresses(updateData.user?.addresses || []);
       setSuccess('Address deleted successfully!');
+      fetchAddresses(); // Refresh the list
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.message);
@@ -226,71 +200,49 @@ const AddressPage = () => {
     }
   };
 
+  // Set default address
   const setDefaultAddress = async (addressId) => {
     try {
       setError('');
-      
-      const token = getToken();
-      if (!token) {
-        setError('Please login to set default address');
-        return;
-      }
 
-      // Get current profile
-      const profileResponse = await fetch('https://api.fast2.in/api/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await fetch(`https://api.fast2.in/api/user/addresses/${addressId}/default`, {
+        method: 'PATCH',
+        headers: getAuthHeaders(),
       });
 
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch profile');
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to set default address');
       }
 
-      const profileData = await profileResponse.json();
-      const currentAddresses = profileData.user?.addresses || [];
-      
-      // Set the address as default and remove default from others
-      const updatedAddresses = currentAddresses.map(addr => ({
-        ...addr,
-        isDefault: addr.id === addressId
-      }));
-
-      // Update the profile
-      const updateResponse = await fetch('https://api.fast2.in/api/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          addresses: updatedAddresses
-        }),
-      });
-
-      if (!updateResponse.ok) {
-        throw new Error('Failed to set default address');
-      }
-
-      const updateData = await updateResponse.json();
-      setAddresses(updateData.user?.addresses || []);
       setSuccess('Default address updated!');
+      fetchAddresses(); // Refresh the list
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.message);
     }
   };
 
+  const saveAddress = async () => {
+    if (editingAddress) {
+      await updateAddress();
+    } else {
+      await createAddress();
+    }
+  };
+
   const resetForm = () => {
     setAddressForm({
-      type: 'home',
-      name: '',
-      phone: '',
-      address: '',
-      landmark: '',
+      label: 'home',
+      fullName: '',
+      phoneNumber: '',
+      addressLine1: '',
+      addressLine2: '',
       city: '',
       state: '',
       pincode: '',
+      country: 'India',
       isDefault: false
     });
     setShowAddForm(false);
@@ -300,33 +252,34 @@ const AddressPage = () => {
   const startEdit = (address) => {
     setEditingAddress(address);
     setAddressForm({
-      type: address.type || 'home',
-      name: address.name || '',
-      phone: address.phone || '',
-      address: address.address || '',
-      landmark: address.landmark || '',
+      label: address.label || 'home',
+      fullName: address.fullName || '',
+      phoneNumber: address.phoneNumber || '',
+      addressLine1: address.addressLine1 || '',
+      addressLine2: address.addressLine2 || '',
       city: address.city || '',
       state: address.state || '',
       pincode: address.pincode || '',
+      country: address.country || 'India',
       isDefault: address.isDefault || false
     });
     setShowAddForm(true);
   };
 
-  const getAddressIcon = (type, isSelected = false) => {
+  const getAddressIcon = (label, isSelected = false) => {
     const IconComponent = isSelected ? 
-      (type === 'home' ? HomeSolidIcon : type === 'work' ? OfficeSolidIcon : MapPinSolidIcon) :
-      (type === 'home' ? HomeIcon : type === 'work' ? BuildingOfficeIcon : MapPinIcon);
+      (label === 'home' ? HomeSolidIcon : label === 'work' ? OfficeSolidIcon : MapPinSolidIcon) :
+      (label === 'home' ? HomeIcon : label === 'work' ? BuildingOfficeIcon : MapPinIcon);
     
-    const colorClass = type === 'home' ? 'text-green-600' : 
-                      type === 'work' ? 'text-blue-600' : 'text-purple-600';
+    const colorClass = label === 'home' ? 'text-green-600' : 
+                      label === 'work' ? 'text-blue-600' : 'text-purple-600';
     
     return <IconComponent className={`w-5 h-5 ${colorClass}`} />;
   };
 
-  const getAddressBadgeColor = (type) => {
-    return type === 'home' ? 'bg-green-100 text-green-800' : 
-           type === 'work' ? 'bg-blue-100 text-blue-800' : 
+  const getAddressBadgeColor = (label) => {
+    return label === 'home' ? 'bg-green-100 text-green-800' : 
+           label === 'work' ? 'bg-blue-100 text-blue-800' : 
            'bg-purple-100 text-purple-800';
   };
 
@@ -337,7 +290,7 @@ const AddressPage = () => {
   if (loading && addresses.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blinkit-blue"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -353,7 +306,7 @@ const AddressPage = () => {
           <p className="text-gray-600 mb-6">Manage your delivery addresses</p>
           <button 
             onClick={handleLoginRedirect}
-            className="bg-blinkit-blue text-white px-8 py-3 rounded-lg font-medium hover:bg-blinkit-dark transition-colors shadow-md"
+            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md"
           >
             Login to Continue
           </button>
@@ -406,7 +359,7 @@ const AddressPage = () => {
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full bg-white border-2 border-dashed border-blinkit-blue text-blinkit-blue rounded-xl p-6 mb-6 hover:bg-blue-50 transition-colors"
+            className="w-full bg-white border-2 border-dashed border-blue-600 text-blue-600 rounded-xl p-6 mb-6 hover:bg-blue-50 transition-colors"
           >
             <div className="flex items-center justify-center">
               <PlusIcon className="w-6 h-6 mr-2" />
@@ -442,10 +395,10 @@ const AddressPage = () => {
                   <button
                     key={value}
                     type="button"
-                    onClick={() => setAddressForm({...addressForm, type: value})}
+                    onClick={() => setAddressForm({...addressForm, label: value})}
                     className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-                      addressForm.type === value
-                        ? 'border-blinkit-blue bg-blue-50 text-blinkit-blue'
+                      addressForm.label === value
+                        ? 'border-blue-600 bg-blue-50 text-blue-600'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -461,9 +414,9 @@ const AddressPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
               <input
                 type="text"
-                value={addressForm.name}
-                onChange={(e) => setAddressForm({...addressForm, name: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                value={addressForm.fullName}
+                onChange={(e) => setAddressForm({...addressForm, fullName: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 placeholder="Enter your full name"
               />
             </div>
@@ -473,34 +426,34 @@ const AddressPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
               <input
                 type="tel"
-                value={addressForm.phone}
-                onChange={(e) => setAddressForm({...addressForm, phone: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                value={addressForm.phoneNumber}
+                onChange={(e) => setAddressForm({...addressForm, phoneNumber: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 placeholder="Enter your phone number"
               />
             </div>
 
-            {/* Address Field */}
+            {/* Address Line 1 Field */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Complete Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
               <textarea
-                value={addressForm.address}
-                onChange={(e) => setAddressForm({...addressForm, address: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
-                placeholder="Enter your complete address"
-                rows={3}
+                value={addressForm.addressLine1}
+                onChange={(e) => setAddressForm({...addressForm, addressLine1: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                placeholder="House no., Building, Street, Area"
+                rows={2}
               />
             </div>
 
-            {/* Landmark Field */}
+            {/* Address Line 2 Field */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Landmark (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
               <input
                 type="text"
-                value={addressForm.landmark}
-                onChange={(e) => setAddressForm({...addressForm, landmark: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
-                placeholder="Nearby landmark"
+                value={addressForm.addressLine2}
+                onChange={(e) => setAddressForm({...addressForm, addressLine2: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                placeholder="Landmark, Nearby location"
               />
             </div>
 
@@ -512,7 +465,7 @@ const AddressPage = () => {
                   type="text"
                   value={addressForm.city}
                   onChange={(e) => setAddressForm({...addressForm, city: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   placeholder="City"
                 />
               </div>
@@ -522,7 +475,7 @@ const AddressPage = () => {
                   type="text"
                   value={addressForm.state}
                   onChange={(e) => setAddressForm({...addressForm, state: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   placeholder="State"
                 />
               </div>
@@ -532,10 +485,22 @@ const AddressPage = () => {
                   type="text"
                   value={addressForm.pincode}
                   onChange={(e) => setAddressForm({...addressForm, pincode: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   placeholder="Pincode"
                 />
               </div>
+            </div>
+
+            {/* Country Field */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+              <input
+                type="text"
+                value={addressForm.country}
+                onChange={(e) => setAddressForm({...addressForm, country: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                placeholder="Country"
+              />
             </div>
 
             {/* Default Address Checkbox */}
@@ -545,7 +510,7 @@ const AddressPage = () => {
                 id="defaultAddress"
                 checked={addressForm.isDefault}
                 onChange={(e) => setAddressForm({...addressForm, isDefault: e.target.checked})}
-                className="h-4 w-4 text-blinkit-blue focus:ring-blinkit-blue border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
               />
               <label htmlFor="defaultAddress" className="ml-2 block text-sm text-gray-900">
                 Set as default address
@@ -557,7 +522,7 @@ const AddressPage = () => {
               <button
                 onClick={saveAddress}
                 disabled={saving}
-                className="flex-1 bg-blinkit-blue text-white py-3 rounded-lg font-medium hover:bg-blinkit-dark disabled:opacity-50 transition-colors"
+                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
               >
                 {saving ? 'Saving...' : (editingAddress ? 'Update Address' : 'Save Address')}
               </button>
@@ -575,32 +540,34 @@ const AddressPage = () => {
         <div className="space-y-4">
           {addresses.length > 0 ? (
             addresses.map((address) => (
-              <div key={address.id} className={`bg-white rounded-xl shadow-sm p-5 border-l-4 ${
+              <div key={address._id} className={`bg-white rounded-xl shadow-sm p-5 border-l-4 ${
                 address.isDefault ? 'border-green-500' : 'border-gray-300'
               }`}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center mb-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAddressBadgeColor(address.type)}`}>
-                        {getAddressIcon(address.type)}
-                        <span className="ml-1 capitalize">{address.type}</span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getAddressBadgeColor(address.label)}`}>
+                        {getAddressIcon(address.label)}
+                        <span className="ml-1 capitalize">{address.label}</span>
                       </span>
                       {address.isDefault && (
-                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
+                          <CheckIcon className="w-3 h-3 mr-1" />
                           Default
                         </span>
                       )}
                     </div>
                     
-                    <p className="text-gray-800 font-medium">{address.name}</p>
-                    <p className="text-gray-600">{address.phone}</p>
-                    <p className="text-gray-600 mt-2">{address.address}</p>
-                    {address.landmark && (
-                      <p className="text-gray-500 text-sm mt-1">Landmark: {address.landmark}</p>
+                    <p className="text-gray-800 font-medium">{address.fullName}</p>
+                    <p className="text-gray-600">{address.phoneNumber}</p>
+                    <p className="text-gray-600 mt-2">{address.addressLine1}</p>
+                    {address.addressLine2 && (
+                      <p className="text-gray-500 text-sm mt-1">{address.addressLine2}</p>
                     )}
                     <p className="text-gray-600">
                       {address.city}, {address.state} - {address.pincode}
                     </p>
+                    <p className="text-gray-500 text-sm">{address.country}</p>
                   </div>
                   
                   <div className="flex flex-col space-y-2 ml-3">
@@ -611,11 +578,11 @@ const AddressPage = () => {
                       <PencilIcon className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => deleteAddress(address.id)}
-                      disabled={deleting === address.id}
+                      onClick={() => deleteAddress(address._id)}
+                      disabled={deleting === address._id}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50"
                     >
-                      {deleting === address.id ? (
+                      {deleting === address._id ? (
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
                       ) : (
                         <TrashIcon className="w-5 h-5" />
@@ -627,13 +594,17 @@ const AddressPage = () => {
                 <div className="mt-4 pt-3 border-t border-gray-100">
                   {!address.isDefault ? (
                     <button
-                      onClick={() => setDefaultAddress(address.id)}
-                      className="text-blinkit-blue font-medium hover:text-blinkit-dark transition-colors"
+                      onClick={() => setDefaultAddress(address._id)}
+                      className="text-blue-600 font-medium hover:text-blue-700 transition-colors flex items-center"
                     >
+                      <CheckIcon className="w-4 h-4 mr-1" />
                       Set as Default
                     </button>
                   ) : (
-                    <span className="text-green-600 font-medium">Default Address</span>
+                    <span className="text-green-600 font-medium flex items-center">
+                      <CheckIcon className="w-4 h-4 mr-1" />
+                      Default Address
+                    </span>
                   )}
                 </div>
               </div>
@@ -646,7 +617,7 @@ const AddressPage = () => {
                 <p className="text-gray-500 mb-6">Add your first address to get started with deliveries</p>
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="bg-blinkit-blue text-white px-6 py-3 rounded-lg font-medium hover:bg-blinkit-dark transition-colors"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
                   <PlusIcon className="w-5 h-5 mr-1 inline" />
                   Add New Address
@@ -657,33 +628,6 @@ const AddressPage = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-lg flex justify-around items-center p-3 border-t border-gray-200">
-        <button className="text-gray-400 flex flex-col items-center">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span className="text-xs mt-1">Home</span>
-        </button>
-        <button className="text-gray-400 flex flex-col items-center">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <span className="text-xs mt-1">Search</span>
-        </button>
-        <button className="text-gray-400 flex flex-col items-center">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <span className="text-xs mt-1">Cart</span>
-        </button>
-        <button className="text-blinkit-blue flex flex-col items-center">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          <span className="text-xs mt-1">Profile</span>
-        </button>
-      </nav>
     </div>
   );
 };

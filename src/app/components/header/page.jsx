@@ -13,7 +13,9 @@ import {
   MapIcon,
   InboxIcon,
   ArrowRightOnRectangleIcon,
-  DevicePhoneMobileIcon
+  DevicePhoneMobileIcon,
+  BanknotesIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
@@ -64,6 +66,7 @@ export default function Header() {
   const [useMapboxSearch, setUseMapboxSearch] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
   const locationDropdownRef = useRef(null);
   const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
@@ -145,6 +148,31 @@ export default function Header() {
       window.removeEventListener('authChange', handleAuthChange);
     };
   }, []);
+
+  // Fetch user data including wallet balance when logged in
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!isLoggedIn) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('https://api.fast2.in/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setWalletBalance(userData.wallet || 0);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [isLoggedIn]);
 
   // Fetch categories from API
   useEffect(() => {
@@ -316,11 +344,22 @@ export default function Header() {
     router.push('/pages/orders');
   };
 
+  const handleWalletClick = () => {
+    closeMenu();
+    router.push('/pages/wallet');
+  };
+
+  const handleReferralsClick = () => {
+    closeMenu();
+    router.push('/referrals');
+  };
+
   const handleLogout = () => {
     closeMenu();
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     setIsProfileDropdownOpen(false);
+    setWalletBalance(0);
     window.dispatchEvent(new Event('authChange'));
     router.push('/');
   };
@@ -381,6 +420,11 @@ export default function Header() {
     }
   };
 
+  // Format wallet balance to display with 2 decimal places
+  const formatWalletBalance = (balance) => {
+    return parseFloat(balance).toFixed(2);
+  };
+
   return (
     <header className="bg-white text-black sticky top-0 w-full z-50">
       {/* Top Section */}
@@ -400,7 +444,164 @@ export default function Header() {
                 />
               </div>
 
-              {/* Location Selector Dropdown */}
+              {/* Location Selector Dropdown (Visible on Mobile) */}
+              <div className="md:hidden relative" ref={mobileLocationDropdownRef}>
+                <div 
+                  className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
+                  onClick={handleLocationClick}
+                >
+                  <MapPinIcon className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs text-gray-500 whitespace-nowrap">Delivering to</span>
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium text-gray-800 max-w-[140px] truncate">
+                        {selectedLocation}
+                      </span>
+                      <ChevronDownIcon className={`w-4 h-4 text-gray-500 ml-1 flex-shrink-0 transition-transform duration-200 ${
+                        isLocationDropdownOpen ? 'rotate-180' : ''
+                      }`} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location Dropdown for Mobile */}
+                {isLocationDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
+                    {/* Header */}
+                    <div className="p-4 border-b border-gray-100 bg-gray-50">
+                      <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
+                      <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
+                    </div>
+                    
+                    {/* Current Location Button */}
+                    <div className="p-4 border-b border-gray-100">
+                      <button
+                        onClick={getCurrentLocation}
+                        disabled={isGettingLocation}
+                        className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
+                          isGettingLocation
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
+                        }`}
+                      >
+                        <DevicePhoneMobileIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
+                        </span>
+                      </button>
+                      
+                      {locationError && (
+                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-xs text-red-600">{locationError}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Search - Show either Mapbox or regular search, not both */}
+                    <div className="p-4 border-b border-gray-100">
+                      {useMapboxSearch ? (
+                        <MapboxGeocoder 
+                          onSelectLocation={handleLocationSelect}
+                          placeholder="Search for area, street name..."
+                        />
+                      ) : (
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Search for area, street name..."
+                            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            onFocus={handleSearchFocus}
+                            autoFocus
+                          />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Locations List - Only show when not using Mapbox search */}
+                    {!useMapboxSearch && (
+                      <div className="max-h-72 overflow-y-auto">
+                        {filteredLocations.length > 0 ? (
+                          <div className="py-2">
+                            {filteredLocations.map((location) => (
+                              <div 
+                                key={location.id}
+                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
+                                onClick={() => handleLocationSelect(location)}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900 text-sm">
+                                      {location.name}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-0.5">
+                                      {location.area}
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                    <ClockIcon className="w-3 h-3 mr-1" />
+                                    {location.deliveryTime}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : searchQuery.length > 0 ? (
+                          <div className="p-6 text-center">
+                            <div className="text-gray-400 mb-2">
+                              <MapPinIcon className="w-8 h-8 mx-auto" />
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              No locations found
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              Try a different search term
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="py-2">
+                            {locations.map((location) => (
+                              <div 
+                                key={location.id}
+                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
+                                onClick={() => handleLocationSelect(location)}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-gray-900 text-sm">
+                                      {location.name}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-0.5">
+                                      {location.area}
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                    <ClockIcon className="w-3 h-3 mr-1" />
+                                    {location.deliveryTime}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Footer */}
+                    <div className="p-4 border-t border-gray-100 bg-gray-50">
+                      <div className="text-xs text-gray-500 text-center">
+                        Can't find your location? We're expanding soon!
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Location Selector Dropdown (Hidden on Mobile) */}
               <div className="hidden md:block relative" ref={locationDropdownRef}>
                 <div 
                   className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
@@ -578,6 +779,14 @@ export default function Header() {
               {/* Login/Signup or Profile */}
               {isLoggedIn ? (
                 <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
+                  {/* Wallet Balance - Simple coins icon and amount */}
+                  <div className="flex items-center space-x-1 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
+                    <BanknotesIcon className="w-5 h-5 text-yellow-600" />
+                    <span className="text-sm font-medium text-yellow-700">
+                      ₹{formatWalletBalance(walletBalance)}
+                    </span>
+                  </div>
+
                   {/* Profile Dropdown */}
                   <div 
                     className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
@@ -586,7 +795,6 @@ export default function Header() {
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <UserIcon className="w-5 h-5 text-blue-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700">My Account</span>
                     <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
                       isProfileDropdownOpen ? 'rotate-180' : ''
                     }`} />
@@ -596,10 +804,6 @@ export default function Header() {
                   {isProfileDropdownOpen && (
                     <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
                       <div className="py-1">
-                        <div className="px-4 py-2 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">Welcome!</p>
-                        </div>
-                        
                         <div 
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={handleProfileClick}
@@ -622,6 +826,22 @@ export default function Header() {
                         >
                           <InboxIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>My Orders</span>
+                        </div>
+
+                        <div 
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={handleWalletClick}
+                        >
+                          <BanknotesIcon className="w-5 h-5 mr-3 text-gray-400" />
+                          <span>My Wallet</span>
+                        </div>
+
+                        <div 
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          onClick={handleReferralsClick}
+                        >
+                          <UserGroupIcon className="w-5 h-5 mr-3 text-gray-400" />
+                          <span>Refer & Earn</span>
                         </div>
                         
                         <div className="border-t border-gray-100 my-1"></div>
@@ -701,153 +921,15 @@ export default function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
-            {/* Location in Mobile Menu */}
-            <div 
-              className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
-              onClick={handleLocationClick}
-            >
-              <MapPinIcon className="w-5 h-5 text-blue-600" />
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500">Delivering to</span>
-                <span className="text-sm font-medium">{selectedLocation}</span>
-              </div>
-              <ChevronDownIcon className={`w-4 h-4 text-gray-500 ml-1 flex-shrink-0 transition-transform duration-200 ${
-                isLocationDropdownOpen ? 'rotate-180' : ''
-              }`} />
-            </div>
-            
-            {/* Location Dropdown for Mobile */}
-            {isLocationDropdownOpen && (
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4" ref={mobileLocationDropdownRef}>
-                {/* Header */}
-                <div className="mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
-                  <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
-                </div>
-                
-                {/* Current Location Button for Mobile */}
-                <div className="mb-3">
-                  <button
-                    onClick={getCurrentLocation}
-                    disabled={isGettingLocation}
-                    className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
-                      isGettingLocation
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
-                    }`}
-                  >
-                    <DevicePhoneMobileIcon className="w-4 h-4" />
-                    <span className="text-sm font-medium">
-                      {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
-                    </span>
-                  </button>
-                  
-                  {locationError && (
-                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-xs text-red-600">{locationError}</p>
-                    </div>
-                  )}
-                </div>
-                
-                {/* Search */}
-                <div className="mb-3">
-                  {useMapboxSearch ? (
-                    <MapboxGeocoder 
-                      onSelectLocation={handleLocationSelect}
-                      placeholder="Search for area, street name..."
-                    />
-                  ) : (
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search for area, street name..."
-                        className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        onFocus={handleSearchFocus}
-                        autoFocus
-                      />
-                    </div>
-                  )}
-                </div>
-                
-                {/* Locations List - Only show when not using Mapbox search */}
-                {!useMapboxSearch && (
-                  <div className="max-h-48 overflow-y-auto">
-                    {filteredLocations.length > 0 ? (
-                      <div className="space-y-2">
-                        {filteredLocations.map((location) => (
-                          <div 
-                            key={location.id}
-                            className="p-2 hover:bg-blue-50 cursor-pointer transition-colors rounded border-b border-gray-50 last:border-0"
-                            onClick={() => handleLocationSelect(location)}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <div className="font-medium text-gray-900 text-sm">
-                                  {location.name}
-                                </div>
-                                <div className="text-xs text-gray-500 mt-0.5">
-                                  {location.area}
-                                </div>
-                              </div>
-                              <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                                <ClockIcon className="w-3 h-3 mr-1" />
-                                {location.deliveryTime}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : searchQuery.length > 0 ? (
-                      <div className="p-4 text-center">
-                        <div className="text-gray-400 mb-2">
-                          <MapPinIcon className="w-6 h-6 mx-auto" />
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          No locations found
-                        </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          Try a different search term
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {locations.map((location) => (
-                          <div 
-                            key={location.id}
-                            className="p-2 hover:bg-blue-50 cursor-pointer transition-colors rounded border-b border-gray-50 last:border-0"
-                            onClick={() => handleLocationSelect(location)}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
-                                <div className="font-medium text-gray-900 text-sm">
-                                  {location.name}
-                                </div>
-                                <div className="text-xs text-gray-500 mt-0.5">
-                                  {location.area}
-                                </div>
-                              </div>
-                              <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                                <ClockIcon className="w-3 h-3 mr-1" />
-                                {location.deliveryTime}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {/* Footer */}
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <div className="text-xs text-gray-500 text-center">
-                    Can't find your location? We're expanding soon!
-                  </div>
+            {/* Wallet Balance in Mobile Menu - Simple display */}
+            {isLoggedIn && (
+              <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <BanknotesIcon className="w-6 h-6 text-yellow-600" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">Wallet Balance</p>
+                  <p className="text-lg font-bold text-yellow-700">
+                    ₹{formatWalletBalance(walletBalance)}
+                  </p>
                 </div>
               </div>
             )}
@@ -874,6 +956,20 @@ export default function Header() {
                 >
                   <InboxIcon className="w-5 h-5" />
                   <span>My Orders</span>
+                </div>
+                <div 
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  onClick={handleWalletClick}
+                >
+                  <BanknotesIcon className="w-5 h-5" />
+                  <span>My Wallet</span>
+                </div>
+                <div 
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  onClick={handleReferralsClick}
+                >
+                  <UserGroupIcon className="w-5 h-5" />
+                  <span>Refer & Earn</span>
                 </div>
                 <div 
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
