@@ -247,7 +247,7 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('/api/cart/', {  // CHANGED TO RELATIVE PATH
+      const cartItems = await fetch('/api/cart/', {  
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -257,7 +257,7 @@ const ProductListing = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`/api/cart/remove/${cartItem._id}`, {  // CHANGED TO RELATIVE PATH
+        const response = await fetch(`/api/cart/remove/${cartItem._id}`, {  
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
