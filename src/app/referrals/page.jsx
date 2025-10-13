@@ -261,9 +261,6 @@ export default function ReferAndEarn() {
                             )}
                           </button>
                         </div>
-                        <p className="text-sm text-gray-500 mt-3">
-                          Share the link: <span className="font-mono text-gray-700 text-xs">{referralLink}</span>
-                        </p>
                       </div>
                     </div>
                   </div>

@@ -365,7 +365,7 @@ export default function Header() {
   };
 
   const handleCartClick = () => {
-    if (!isLoggedIn) return; // Don't open cart if not logged in
+    if (!isLoggedIn) return; 
     closeMenu();
     cartEvents.publish();
   };
@@ -376,10 +376,8 @@ export default function Header() {
   };
 
   const handleLocationSelect = (location) => {
-    // Handle both Mapbox results and our sample locations
     let locationName;
     if (location.place_name) {
-      // This is a Mapbox result
       locationName = location.text || location.place_name;
     } else {
       // This is a sample location
@@ -414,20 +412,17 @@ export default function Header() {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    // Switch to Mapbox search if the user starts typing
     if (e.target.value.length > 0) {
       setUseMapboxSearch(true);
     }
   };
 
-  // Format wallet balance to display with 2 decimal places
   const formatWalletBalance = (balance) => {
     return parseFloat(balance).toFixed(2);
   };
 
   return (
     <header className="bg-white text-black sticky top-0 w-full z-50">
-      {/* Top Section */}
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -774,12 +769,9 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Right: Actions */}
             <div className="flex items-center space-x-4">
-              {/* Login/Signup or Profile */}
               {isLoggedIn ? (
                 <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
-                  {/* Wallet Balance - Simple coins icon and amount */}
                   <div className="flex items-center space-x-1 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
                     <BanknotesIcon className="w-5 h-5 text-yellow-600" />
                     <span className="text-sm font-medium text-yellow-700">
@@ -787,7 +779,6 @@ export default function Header() {
                     </span>
                   </div>
 
-                  {/* Profile Dropdown */}
                   <div 
                     className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     onClick={toggleProfileDropdown}
@@ -828,13 +819,6 @@ export default function Header() {
                           <span>My Orders</span>
                         </div>
 
-                        <div 
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
-                          onClick={handleWalletClick}
-                        >
-                          <BanknotesIcon className="w-5 h-5 mr-3 text-gray-400" />
-                          <span>My Wallet</span>
-                        </div>
 
                         <div 
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
@@ -921,7 +905,6 @@ export default function Header() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
-            {/* Wallet Balance in Mobile Menu - Simple display */}
             {isLoggedIn && (
               <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <BanknotesIcon className="w-6 h-6 text-yellow-600" />
@@ -956,13 +939,6 @@ export default function Header() {
                 >
                   <InboxIcon className="w-5 h-5" />
                   <span>My Orders</span>
-                </div>
-                <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
-                  onClick={handleWalletClick}
-                >
-                  <BanknotesIcon className="w-5 h-5" />
-                  <span>My Wallet</span>
                 </div>
                 <div 
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"

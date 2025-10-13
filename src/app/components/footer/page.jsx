@@ -96,9 +96,7 @@ export default function Footer() {
               <li><a href="#" className="hover:text-gray-900 transition-colors">Contact</a></li>
               <li><a href="#" className="hover:text-gray-900 transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-gray-900 transition-colors">Terms of Service</a></li>
-               <li><a href="#" className="hover:text-gray-900 transition-colors">Franchise</a></li>
               <li><a href="#" className="hover:text-gray-900 transition-colors">Warehouse</a></li>
-              <li><a href="#" className="hover:text-gray-900 transition-colors">Seller</a></li>
               <li><a href="#" className="hover:text-gray-900 transition-colors">Deliver</a></li>
             </ul>
           </div>

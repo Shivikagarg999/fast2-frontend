@@ -166,29 +166,7 @@ const CheckoutPage = () => {
   };
 
   const validateShipping = () => {
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'addressLine', 'city', 'state', 'pinCode'];
-    
-    for (let field of requiredFields) {
-      if (!shippingInfo[field]) {
-        setError(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-        return false;
-      }
-    }
-
-    if (!/\S+@\S+\.\S+/.test(shippingInfo.email)) {
-      setError('Please enter a valid email address');
-      return false;
-    }
-
-    if (!/^\d{10}$/.test(shippingInfo.phone)) {
-      setError('Please enter a valid 10-digit phone number');
-      return false;
-    }
-
-    if (!/^\d{6}$/.test(shippingInfo.pinCode)) {
-      setError('Please enter a valid 6-digit PIN code');
-      return false;
-    }
+  
 
     setError(null);
     return true;
