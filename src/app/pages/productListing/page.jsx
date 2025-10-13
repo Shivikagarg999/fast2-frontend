@@ -1,10 +1,12 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const ProductListing = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
@@ -15,11 +17,11 @@ const ProductListing = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  // Check authentication status
+  const searchQuery = searchParams.get('search') || '';
+
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('token');
-      console.log('🔐 Auth check - Token exists:', !!token);
       setIsLoggedIn(!!token);
     };
 
@@ -35,7 +37,6 @@ const ProductListing = () => {
     };
   }, []);
 
-  // Helper function to safely get category name
   const getCategoryName = (category) => {
     if (!category) return 'Uncategorized';
     if (typeof category === 'string') return category;
@@ -48,7 +49,6 @@ const ProductListing = () => {
     return 'Unknown Category';
   };
 
-  // Helper function to safely get category ID
   const getCategoryId = (category) => {
     if (!category) return null;
     if (typeof category === 'string') return category;
@@ -58,7 +58,6 @@ const ProductListing = () => {
     return null;
   };
 
-  // Fetch products and categories
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,7 +69,6 @@ const ProductListing = () => {
         }
         const productsData = await productsResponse.json();
         
-        // Create a map of category IDs to names
         const categoriesMap = {};
         productsData.forEach(product => {
           if (product.category) {
@@ -95,30 +93,23 @@ const ProductListing = () => {
     fetchData();
   }, []);
 
-  // Fetch cart quantities if logged in
   useEffect(() => {
     const fetchCartQuantities = async () => {
       if (!isLoggedIn) {
-        console.log('🚫 Not logged in, skipping cart fetch');
         return;
       }
 
       try {
         const token = localStorage.getItem('token');
-        console.log('🛒 Fetching cart with token:', token ? 'Present' : 'Missing');
         
         const response = await fetch('https://api.fast2.in/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-
-        console.log('📡 Cart response status:', response.status);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('🛒 Cart data received:', data);
-          
           const cartItems = data.items || data.cart?.items || data || [];
           const quantities = {};
           
@@ -128,9 +119,7 @@ const ProductListing = () => {
           });
           
           setCartQuantities(quantities);
-          console.log('🛒 Cart quantities set:', quantities);
         } else if (response.status === 401) {
-          console.log('🔴 401 Unauthorized - clearing token');
           localStorage.removeItem('token');
           setIsLoggedIn(false);
         }
@@ -142,7 +131,6 @@ const ProductListing = () => {
     fetchCartQuantities();
   }, [isLoggedIn]);
 
-  // Add to cart API call - FIXED ENDPOINT
   const addToCart = async (productId, quantity = 1) => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
@@ -154,8 +142,6 @@ const ProductListing = () => {
 
     try {
       const token = localStorage.getItem('token');
-      console.log('➕ Adding to cart - Product:', productId, 'Qty:', quantity);
-      console.log('➕ Using token:', token);
 
       const response = await fetch('https://api.fast2.in/api/cart/add', {  
         method: 'POST',
@@ -168,11 +154,8 @@ const ProductListing = () => {
           quantity
         })
       });
-
-      console.log('📡 Add to cart response status:', response.status);
       
       const responseData = await response.json();
-      console.log('📡 Add to cart response data:', responseData);
 
       if (response.ok) {
         setCartQuantities(prev => ({
@@ -180,10 +163,8 @@ const ProductListing = () => {
           [productId]: (prev[productId] || 0) + quantity
         }));
         window.dispatchEvent(new Event('cartUpdated'));
-        console.log('✅ Added to cart successfully');
       } else {
         if (response.status === 401) {
-          console.log('🔴 401 Unauthorized - clearing token');
           localStorage.removeItem('token');
           setIsLoggedIn(false);
           setShowLoginPrompt(true);
@@ -199,7 +180,6 @@ const ProductListing = () => {
     }
   };
 
-  // Update cart quantity - FIXED ENDPOINT
   const updateCartQuantity = async (productId, newQuantity) => {
     if (!isLoggedIn) return;
 
@@ -241,7 +221,6 @@ const ProductListing = () => {
     }
   };
 
-  // Remove from cart - FIXED ENDPOINT
   const removeFromCart = async (productId) => {
     if (!isLoggedIn) return;
 
@@ -285,7 +264,6 @@ const ProductListing = () => {
     }).format(price);
   };
 
-  // Get available categories for filtering
   const availableCategories = ['All'];
   Object.values(categories).forEach(categoryName => {
     if (categoryName && !availableCategories.includes(categoryName)) {
@@ -293,17 +271,24 @@ const ProductListing = () => {
     }
   });
 
-  // Filter products by selected category
+  const searchedProducts = useMemo(() => {
+    if (!searchQuery) {
+      return products;
+    }
+    return products.filter(product =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [products, searchQuery]);
+
   const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(product => {
+    ? searchedProducts 
+    : searchedProducts.filter(product => {
         const categoryName = getCategoryName(product.category);
         return categoryName === selectedCategory;
       });
 
-  // Group products by category for "All" view
   const productsByCategory = {};
-  products.forEach(product => {
+  searchedProducts.forEach(product => {
     const categoryName = getCategoryName(product.category);
     const safeCategoryName = typeof categoryName === 'string' ? categoryName : String(categoryName);
     
@@ -333,7 +318,7 @@ const ProductListing = () => {
 
   if (error) {
     return (
-      <div className="bg-white min-h-screen flex items-center justify-center">
+      <div className="bg-white flex items-center justify-center">
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Products</h3>
           <p className="text-gray-600 mb-4">{error}</p>
@@ -349,65 +334,57 @@ const ProductListing = () => {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white">
       {showLoginPrompt && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
-
-      {/* Category Filter */}
-      <div className="max-w-8xl mx-auto px-4 py-4">
-        <div className="flex flex-wrap gap-2 mb-6">
-          {availableCategories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                selectedCategory === category
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <div className="max-w-8xl mx-auto px-4 py-6">
         {selectedCategory === 'All' ? (
           <div className="space-y-8">
-            {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
-              <div key={category} className="bg-white rounded-xl overflow-hidden">
-                <div className="px-6 py-4">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {category}
-                    <span className="ml-3 text-sm font-normal text-gray-500">
-                      ({categoryProducts.length} items)
-                    </span>
-                  </h2>
-                </div>
-                <div className="p-6">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                    {categoryProducts.map(product => (
-                      <ProductCard 
-                        key={product._id} 
-                        product={product} 
-                        formatPrice={formatPrice} 
-                        onProductClick={handleProductClick}
-                        categoryName={getCategoryName(product.category)}
-                        cartQuantity={cartQuantities[product._id] || 0}
-                        onAddToCart={addToCart}
-                        onUpdateQuantity={updateCartQuantity}
-                        isAddingToCart={addingToCart[product._id] || false}
-                        isLoggedIn={isLoggedIn}
-                      />
-                    ))}
+            {Object.keys(productsByCategory).length > 0 ? (
+              Object.entries(productsByCategory).map(([category, categoryProducts]) => (
+                <div key={category} className="bg-white rounded-xl overflow-hidden">
+                  <div className="px-6 py-4">
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {category}
+                      <span className="ml-3 text-sm font-normal text-gray-500">
+                        ({categoryProducts.length} items)
+                      </span>
+                    </h2>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                      {categoryProducts.map(product => (
+                        <ProductCard 
+                          key={product._id} 
+                          product={product} 
+                          formatPrice={formatPrice} 
+                          onProductClick={handleProductClick}
+                          categoryName={getCategoryName(product.category)}
+                          cartQuantity={cartQuantities[product._id] || 0}
+                          onAddToCart={addToCart}
+                          onUpdateQuantity={updateCartQuantity}
+                          isAddingToCart={addingToCart[product._id] || false}
+                          isLoggedIn={isLoggedIn}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+                <div className="text-center py-16">
+                    <div className="text-gray-300 text-6xl mb-4">
+                      <MagnifyingGlassIcon className="h-16 w-16 mx-auto" />
+                    </div>
+                    <h3 className="text-xl font-medium text-gray-600 mb-2">
+                      No products found for "{searchQuery}"
+                    </h3>
+                    <p className="text-gray-500">Try a different search term.</p>
+                </div>
+            )}
           </div>
         ) : (
           <div className="bg-white rounded-xl overflow-hidden">
@@ -440,11 +417,15 @@ const ProductListing = () => {
           </div>
         )}
 
-        {filteredProducts.length === 0 && !loading && (
+        {filteredProducts.length === 0 && !loading && searchQuery && selectedCategory !== 'All' && (
           <div className="text-center py-16">
-            <div className="text-gray-300 text-6xl mb-4">🛒</div>
-            <h3 className="text-xl font-medium text-gray-600 mb-2">No products found</h3>
-            <p className="text-gray-500">Try selecting a different category</p>
+            <div className="text-gray-300 text-6xl mb-4">
+              <MagnifyingGlassIcon className="h-16 w-16 mx-auto" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-600 mb-2">
+              No products found for "{searchQuery}" in this category
+            </h3>
+            <p className="text-gray-500">Try a different search term or check other categories.</p>
           </div>
         )}
       </div>

@@ -19,10 +19,9 @@ import {
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
-// Dynamically import MapboxGeocoder to avoid SSR issues
 const MapboxGeocoder = dynamic(() => import('../mapbox/mapboxGeocoder'), {
   ssr: false,
   loading: () => (
@@ -63,6 +62,7 @@ export default function Header() {
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [productSearchQuery, setProductSearchQuery] = useState('');
   const [useMapboxSearch, setUseMapboxSearch] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState('');
@@ -71,8 +71,25 @@ export default function Header() {
   const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Sample locations data
+  useEffect(() => {
+    const query = searchParams.get('search') || '';
+    setProductSearchQuery(query);
+  }, [searchParams]);
+
+  const handleProductSearchChange = (e) => {
+    const query = e.target.value;
+    setProductSearchQuery(query);
+    const params = new URLSearchParams(searchParams);
+    if (query) {
+      params.set('search', query);
+    } else {
+      params.delete('search');
+    }
+    router.push(`/?${params.toString()}`, { scroll: false });
+  };
+
   const locations = [
     { id: 1, name: "Connaught Place", area: "New Delhi", deliveryTime: "10-15 min" },
     { id: 2, name: "Karol Bagh", area: "New Delhi", deliveryTime: "15-20 min" },
@@ -88,13 +105,11 @@ export default function Header() {
     { id: 12, name: "DLF Phase 1", area: "Gurugram", deliveryTime: "8-13 min" }
   ];
 
-  // Filter locations based on search query
   const filteredLocations = locations.filter(location => 
     location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     location.area.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
@@ -120,24 +135,16 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Check if token exists on component mount and when token changes
   useEffect(() => {
     const checkAuthStatus = () => {
       const token = localStorage.getItem('token');
       setIsLoggedIn(!!token);
     };
 
-    // Check initially
     checkAuthStatus();
-
-    // Listen for storage changes
     window.addEventListener('storage', checkAuthStatus);
-    
-    // Custom event listener for login/logout
     const handleAuthChange = () => checkAuthStatus();
     window.addEventListener('authChange', handleAuthChange);
-
-    // Check for saved location
     const savedLocation = localStorage.getItem('selectedLocation');
     if (savedLocation) {
       setSelectedLocation(savedLocation);
@@ -149,7 +156,6 @@ export default function Header() {
     };
   }, []);
 
-  // Fetch user data including wallet balance when logged in
   useEffect(() => {
     const fetchUserData = async () => {
       if (!isLoggedIn) return;
@@ -174,7 +180,6 @@ export default function Header() {
     fetchUserData();
   }, [isLoggedIn]);
 
-  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       setLoadingCategories(true);
@@ -185,7 +190,6 @@ export default function Header() {
           setCategories(data);
         } else {
           console.error('Failed to fetch categories');
-          // Fallback to hardcoded categories if API fails
           setCategories([
             { name: 'Groceries' },
             { name: 'Fruits & Vegetables' },
@@ -198,7 +202,6 @@ export default function Header() {
         }
       } catch (error) {
         console.error('Error fetching categories:', error);
-        // Fallback to hardcoded categories if API fails
         setCategories([
           { name: 'Groceries' },
           { name: 'Fruits & Vegetables' },
@@ -216,7 +219,6 @@ export default function Header() {
     fetchCategories();
   }, []);
 
-  // Get current location using Geolocation API (simplified version)
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by this browser.');
@@ -231,12 +233,10 @@ export default function Header() {
         const { latitude, longitude } = position.coords;
         
         try {
-          // Try to get location name using browser's built-in geolocation
           const location = await getLocationNameFromCoords(latitude, longitude);
           handleLocationSelect(location);
         } catch (error) {
           console.error('Error getting location name:', error);
-          // Ultimate fallback - just use coordinates
           const fallbackLocation = {
             text: 'Current Location',
             place_name: `Your location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
@@ -253,17 +253,15 @@ export default function Header() {
         handleGeolocationError(error);
       },
       {
-        enableHighAccuracy: false, // Set to false for better compatibility
+        enableHighAccuracy: false,
         timeout: 10000,
-        maximumAge: 300000 // 5 minutes
+        maximumAge: 300000
       }
     );
   };
 
-  // Fallback function to get location name
   const getLocationNameFromCoords = async (latitude, longitude) => {
     try {
-      // First try: Use Mapbox if available
       const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
       if (mapboxToken) {
         const response = await fetch(
@@ -278,7 +276,6 @@ export default function Header() {
         }
       }
       
-      // Second try: Use OpenStreetMap Nominatim (free, no token required)
       const osmResponse = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
       );
@@ -287,14 +284,13 @@ export default function Header() {
         const data = await osmResponse.json();
         if (data.display_name) {
           return {
-            text: data.display_name.split(',')[0], // First part of address
+            text: data.display_name.split(',')[0],
             place_name: data.display_name,
             center: [longitude, latitude]
           };
         }
       }
       
-      // Final fallback
       throw new Error('Could not get location name');
       
     } catch (error) {
@@ -302,7 +298,6 @@ export default function Header() {
     }
   };
 
-  // Handle geolocation errors
   const handleGeolocationError = (error) => {
     switch (error.code) {
       case error.PERMISSION_DENIED:
@@ -380,7 +375,6 @@ export default function Header() {
     if (location.place_name) {
       locationName = location.text || location.place_name;
     } else {
-      // This is a sample location
       locationName = `${location.name}, ${location.area}`;
     }
     
@@ -439,7 +433,6 @@ export default function Header() {
                 />
               </div>
 
-              {/* Location Selector Dropdown (Visible on Mobile) */}
               <div className="md:hidden relative" ref={mobileLocationDropdownRef}>
                 <div 
                   className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
@@ -459,16 +452,13 @@ export default function Header() {
                   </div>
                 </div>
 
-                {/* Location Dropdown for Mobile */}
                 {isLocationDropdownOpen && (
                   <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    {/* Header */}
                     <div className="p-4 border-b border-gray-100 bg-gray-50">
                       <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
                       <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
                     </div>
                     
-                    {/* Current Location Button */}
                     <div className="p-4 border-b border-gray-100">
                       <button
                         onClick={getCurrentLocation}
@@ -492,7 +482,6 @@ export default function Header() {
                       )}
                     </div>
                     
-                    {/* Search - Show either Mapbox or regular search, not both */}
                     <div className="p-4 border-b border-gray-100">
                       {useMapboxSearch ? (
                         <MapboxGeocoder 
@@ -517,7 +506,6 @@ export default function Header() {
                       )}
                     </div>
                     
-                    {/* Locations List - Only show when not using Mapbox search */}
                     {!useMapboxSearch && (
                       <div className="max-h-72 overflow-y-auto">
                         {filteredLocations.length > 0 ? (
@@ -586,7 +574,6 @@ export default function Header() {
                       </div>
                     )}
                     
-                    {/* Footer */}
                     <div className="p-4 border-t border-gray-100 bg-gray-50">
                       <div className="text-xs text-gray-500 text-center">
                         Can't find your location? We're expanding soon!
@@ -596,7 +583,6 @@ export default function Header() {
                 )}
               </div>
 
-              {/* Location Selector Dropdown (Hidden on Mobile) */}
               <div className="hidden md:block relative" ref={locationDropdownRef}>
                 <div 
                   className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
@@ -616,16 +602,13 @@ export default function Header() {
                   </div>
                 </div>
 
-                {/* Location Dropdown */}
                 {isLocationDropdownOpen && (
                   <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    {/* Header */}
                     <div className="p-4 border-b border-gray-100 bg-gray-50">
                       <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
                       <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
                     </div>
                     
-                    {/* Current Location Button */}
                     <div className="p-4 border-b border-gray-100">
                       <button
                         onClick={getCurrentLocation}
@@ -649,7 +632,6 @@ export default function Header() {
                       )}
                     </div>
                     
-                    {/* Search - Show either Mapbox or regular search, not both */}
                     <div className="p-4 border-b border-gray-100">
                       {useMapboxSearch ? (
                         <MapboxGeocoder 
@@ -674,7 +656,6 @@ export default function Header() {
                       )}
                     </div>
                     
-                    {/* Locations List - Only show when not using Mapbox search */}
                     {!useMapboxSearch && (
                       <div className="max-h-72 overflow-y-auto">
                         {filteredLocations.length > 0 ? (
@@ -743,7 +724,6 @@ export default function Header() {
                       </div>
                     )}
                     
-                    {/* Footer */}
                     <div className="p-4 border-t border-gray-100 bg-gray-50">
                       <div className="text-xs text-gray-500 text-center">
                         Can't find your location? We're expanding soon!
@@ -755,7 +735,6 @@ export default function Header() {
 
             </div>
 
-            {/* Center: Search Bar */}
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -765,6 +744,8 @@ export default function Header() {
                   type="text"
                   placeholder="Search any product..."
                   className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={productSearchQuery}
+                  onChange={handleProductSearchChange}
                 />
               </div>
             </div>
@@ -791,7 +772,6 @@ export default function Header() {
                     }`} />
                   </div>
                   
-                  {/* Profile Dropdown Menu */}
                   {isProfileDropdownOpen && (
                     <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
                       <div className="py-1">
@@ -851,7 +831,6 @@ export default function Header() {
                 </div>
               )}
 
-              {/* Cart - Disabled when not logged in */}
               <div 
                 className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${
                   isLoggedIn 
@@ -871,7 +850,6 @@ export default function Header() {
                 <span className="hidden sm:block text-sm font-medium">Cart</span>
               </div>
 
-              {/* Mobile Menu Button */}
               <button 
                 className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -887,7 +865,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
       <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -897,11 +874,12 @@ export default function Header() {
             type="text"
             placeholder="Search for products..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            value={productSearchQuery}
+            onChange={handleProductSearchChange}
           />
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
