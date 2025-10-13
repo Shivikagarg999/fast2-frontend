@@ -2,8 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/header/page";
 import Cart from "./components/cart/page";
+import { Suspense } from "react";
 
-// Google fonts
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,13 +24,27 @@ export const metadata = {
   },
 };
 
+const HeaderFallback = () => {
+  return (
+    <header className="bg-white sticky top-0 w-full z-50">
+      <div className="border-b border-gray-200 h-[70px]">
+      </div>
+    </header>
+  );
+};
+
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
+        {/* 3. Wrap the Header in a Suspense boundary */}
+        <Suspense fallback={<HeaderFallback />}>
+          <Header />
+        </Suspense>
+
         <main className="relative z-10">{children}</main>
         <Cart />
       </body>
