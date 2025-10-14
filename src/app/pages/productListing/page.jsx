@@ -1,10 +1,10 @@
 'use client'
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react'; 
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
-const ProductListing = () => {
+const ProductListingComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
@@ -430,6 +430,27 @@ const ProductListing = () => {
         )}
       </div>
     </div>
+  );
+};
+
+
+// ADDED: A new wrapper component to handle the Suspense boundary.
+const ProductListing = () => {
+  // This is the loading UI that was already in your component.
+  // We use it as a fallback for Suspense.
+  const fallback = (
+    <div className="bg-white min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading products...</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <Suspense fallback={fallback}>
+      <ProductListingComponent />
+    </Suspense>
   );
 };
 
