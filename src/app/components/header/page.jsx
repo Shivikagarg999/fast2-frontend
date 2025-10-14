@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
 import { 
   MagnifyingGlassIcon, 
   ShoppingCartIcon, 
@@ -39,6 +39,82 @@ const MapboxGeocoder = dynamic(() => import('../mapbox/mapboxGeocoder'), {
   )
 });
 
+// Search input component that uses useSearchParams
+function SearchInput({ productSearchQuery, setProductSearchQuery }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleProductSearchChange = (e) => {
+    const query = e.target.value;
+    setProductSearchQuery(query);
+    const params = new URLSearchParams(searchParams);
+    if (query) {
+      params.set('search', query);
+    } else {
+      params.delete('search');
+    }
+    router.push(`/?${params.toString()}`, { scroll: false });
+  };
+
+  return (
+    <input
+      type="text"
+      placeholder="Search any product..."
+      className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      value={productSearchQuery}
+      onChange={handleProductSearchChange}
+    />
+  );
+}
+
+// Mobile search input component
+function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleProductSearchChange = (e) => {
+    const query = e.target.value;
+    setProductSearchQuery(query);
+    const params = new URLSearchParams(searchParams);
+    if (query) {
+      params.set('search', query);
+    } else {
+      params.delete('search');
+    }
+    router.push(`/?${params.toString()}`, { scroll: false });
+  };
+
+  return (
+    <input
+      type="text"
+      placeholder="Search for products..."
+      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      value={productSearchQuery}
+      onChange={handleProductSearchChange}
+    />
+  );
+}
+
+// 2. Created fallback components for the search inputs
+const SearchInputFallback = () => (
+  <input
+    type="text"
+    placeholder="Search any product..."
+    className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg"
+    disabled
+  />
+);
+
+const MobileSearchInputFallback = () => (
+  <input
+    type="text"
+    placeholder="Search for products..."
+    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+    disabled
+  />
+);
+
+
 const cartEvents = {
   listeners: [],
   subscribe: (callback) => {
@@ -71,24 +147,15 @@ export default function Header() {
   const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const query = searchParams.get('search') || '';
-    setProductSearchQuery(query);
-  }, [searchParams]);
-
-  const handleProductSearchChange = (e) => {
-    const query = e.target.value;
-    setProductSearchQuery(query);
-    const params = new URLSearchParams(searchParams);
-    if (query) {
-      params.set('search', query);
-    } else {
-      params.delete('search');
+    // Initialize product search query from URL on client side
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQueryFromUrl = urlParams.get('search') || '';
+      setProductSearchQuery(searchQueryFromUrl);
     }
-    router.push(`/?${params.toString()}`, { scroll: false });
-  };
+  }, []);
 
   const locations = [
     { id: 1, name: "Connaught Place", area: "New Delhi", deliveryTime: "10-15 min" },
@@ -735,18 +802,18 @@ export default function Header() {
 
             </div>
 
+            {/* 3. Wrapped the component using the hook in Suspense */}
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search any product..."
-                  className="w-full pl-10 pr-4 text-black py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={productSearchQuery}
-                  onChange={handleProductSearchChange}
-                />
+                <Suspense fallback={<SearchInputFallback />}>
+                  <SearchInput 
+                    productSearchQuery={productSearchQuery}
+                    setProductSearchQuery={setProductSearchQuery}
+                  />
+                </Suspense>
               </div>
             </div>
 
@@ -864,19 +931,19 @@ export default function Header() {
           </div>
         </div>
       </div>
-
+      
+      {/* 3. Wrapped the mobile search component in Suspense */}
       <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
           </div>
-          <input
-            type="text"
-            placeholder="Search for products..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={productSearchQuery}
-            onChange={handleProductSearchChange}
-          />
+          <Suspense fallback={<MobileSearchInputFallback />}>
+            <MobileSearchInput 
+              productSearchQuery={productSearchQuery}
+              setProductSearchQuery={setProductSearchQuery}
+            />
+          </Suspense>
         </div>
       </div>
 
