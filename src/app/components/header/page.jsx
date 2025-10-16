@@ -95,7 +95,7 @@ function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
   );
 }
 
-// 2. Created fallback components for the search inputs
+// Fallback components for the search inputs
 const SearchInputFallback = () => (
   <input
     type="text"
@@ -113,7 +113,6 @@ const MobileSearchInputFallback = () => (
     disabled
   />
 );
-
 
 const cartEvents = {
   listeners: [],
@@ -177,8 +176,10 @@ export default function Header() {
     location.area.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Enhanced click outside handler for mobile
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // For desktop location dropdown
       if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
         setIsLocationDropdownOpen(false);
         setSearchQuery('');
@@ -186,6 +187,7 @@ export default function Header() {
         setLocationError('');
       }
       
+      // For mobile location dropdown
       if (mobileLocationDropdownRef.current && !mobileLocationDropdownRef.current.contains(event.target)) {
         setIsLocationDropdownOpen(false);
         setSearchQuery('');
@@ -193,13 +195,20 @@ export default function Header() {
         setLocationError('');
       }
       
+      // For profile dropdown
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
         setIsProfileDropdownOpen(false);
       }
     };
 
+    // Add both mouse and touch events for better mobile support
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
@@ -286,6 +295,7 @@ export default function Header() {
     fetchCategories();
   }, []);
 
+  // Enhanced geolocation function for mobile
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by this browser.');
@@ -295,6 +305,7 @@ export default function Header() {
     setIsGettingLocation(true);
     setLocationError('');
 
+    // Mobile browsers often require user gesture for geolocation
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
@@ -320,8 +331,8 @@ export default function Header() {
         handleGeolocationError(error);
       },
       {
-        enableHighAccuracy: false,
-        timeout: 10000,
+        enableHighAccuracy: true, // Better accuracy for mobile
+        timeout: 15000, // Longer timeout for mobile
         maximumAge: 300000
       }
     );
@@ -454,13 +465,21 @@ export default function Header() {
     setLocationError('');
   };
 
-  const handleLocationClick = () => {
+  // Enhanced location click handler for mobile
+  const handleLocationClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     setIsLocationDropdownOpen(!isLocationDropdownOpen);
     if (!isLocationDropdownOpen) {
       setSearchQuery('');
       setUseMapboxSearch(false);
       setLocationError('');
     }
+  };
+
+  // Enhanced location selection for mobile
+  const handleLocationItemClick = (location) => {
+    handleLocationSelect(location);
   };
 
   const toggleProfileDropdown = () => {
@@ -482,6 +501,141 @@ export default function Header() {
     return parseFloat(balance).toFixed(2);
   };
 
+  // Mobile-optimized location dropdown component
+  const LocationDropdown = ({ isMobile = false }) => (
+    <div className={`absolute top-full left-0 mt-2 ${
+      isMobile ? 'w-full' : 'w-80'
+    } bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden`}>
+      <div className="p-4 border-b border-gray-100 bg-gray-50">
+        <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
+        <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
+      </div>
+      
+      <div className="p-4 border-b border-gray-100">
+        <button
+          onClick={getCurrentLocation}
+          disabled={isGettingLocation}
+          className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-lg border transition-colors ${
+            isGettingLocation
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
+          }`}
+        >
+          <DevicePhoneMobileIcon className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
+          </span>
+        </button>
+        
+        {locationError && (
+          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-xs text-red-600">{locationError}</p>
+          </div>
+        )}
+      </div>
+      
+      <div className="p-4 border-b border-gray-100">
+        {useMapboxSearch ? (
+          <MapboxGeocoder 
+            onSelectLocation={handleLocationSelect}
+            placeholder="Search for area, street name..."
+          />
+        ) : (
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search for area, street name..."
+              className="w-full pl-9 pr-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={handleSearchFocus}
+              autoFocus={!isMobile} // Don't auto-focus on mobile to prevent keyboard popup
+            />
+          </div>
+        )}
+      </div>
+      
+      {!useMapboxSearch && (
+        <div className="max-h-72 overflow-y-auto">
+          {filteredLocations.length > 0 ? (
+            <div className="py-2">
+              {filteredLocations.map((location) => (
+                <div 
+                  key={location.id}
+                  className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0 active:bg-blue-100"
+                  onClick={() => handleLocationItemClick(location)}
+                  onTouchStart={() => {}} // Add touch handler
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900 text-sm">
+                        {location.name}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {location.area}
+                      </div>
+                    </div>
+                    <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                      <ClockIcon className="w-3 h-3 mr-1" />
+                      {location.deliveryTime}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : searchQuery.length > 0 ? (
+            <div className="p-6 text-center">
+              <div className="text-gray-400 mb-2">
+                <MapPinIcon className="w-8 h-8 mx-auto" />
+              </div>
+              <div className="text-sm text-gray-500">
+                No locations found
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                Try a different search term
+              </div>
+            </div>
+          ) : (
+            <div className="py-2">
+              {locations.map((location) => (
+                <div 
+                  key={location.id}
+                  className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0 active:bg-blue-100"
+                  onClick={() => handleLocationItemClick(location)}
+                  onTouchStart={() => {}}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900 text-sm">
+                        {location.name}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {location.area}
+                      </div>
+                    </div>
+                    <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                      <ClockIcon className="w-3 h-3 mr-1" />
+                      {location.deliveryTime}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
+      <div className="p-4 border-t border-gray-100 bg-gray-50">
+        <div className="text-xs text-gray-500 text-center">
+          Can't find your location? We're expanding soon!
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <header className="bg-white text-black sticky top-0 w-full z-50">
       <div className="border-b border-gray-200">
@@ -497,13 +651,16 @@ export default function Header() {
                   width={220}
                   height={100}
                   className="h-22 w-auto object-contain"
+                  priority // Add priority for mobile loading
                 />
               </div>
 
+              {/* Mobile Location Picker */}
               <div className="md:hidden relative" ref={mobileLocationDropdownRef}>
                 <div 
-                  className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
+                  className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0 active:bg-gray-100"
                   onClick={handleLocationClick}
+                  onTouchStart={handleLocationClick}
                 >
                   <MapPinIcon className="w-5 h-5 text-blue-600 flex-shrink-0" />
                   <div className="flex flex-col min-w-0">
@@ -519,137 +676,10 @@ export default function Header() {
                   </div>
                 </div>
 
-                {isLocationDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50">
-                      <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
-                      <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      <button
-                        onClick={getCurrentLocation}
-                        disabled={isGettingLocation}
-                        className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
-                          isGettingLocation
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
-                        }`}
-                      >
-                        <DevicePhoneMobileIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                          {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
-                        </span>
-                      </button>
-                      
-                      {locationError && (
-                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                          <p className="text-xs text-red-600">{locationError}</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      {useMapboxSearch ? (
-                        <MapboxGeocoder 
-                          onSelectLocation={handleLocationSelect}
-                          placeholder="Search for area, street name..."
-                        />
-                      ) : (
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-                          </div>
-                          <input
-                            type="text"
-                            placeholder="Search for area, street name..."
-                            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            onFocus={handleSearchFocus}
-                            autoFocus
-                          />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {!useMapboxSearch && (
-                      <div className="max-h-72 overflow-y-auto">
-                        {filteredLocations.length > 0 ? (
-                          <div className="py-2">
-                            {filteredLocations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : searchQuery.length > 0 ? (
-                          <div className="p-6 text-center">
-                            <div className="text-gray-400 mb-2">
-                              <MapPinIcon className="w-8 h-8 mx-auto" />
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              No locations found
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              Try a different search term
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="py-2">
-                            {locations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="p-4 border-t border-gray-100 bg-gray-50">
-                      <div className="text-xs text-gray-500 text-center">
-                        Can't find your location? We're expanding soon!
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {isLocationDropdownOpen && <LocationDropdown isMobile={true} />}
               </div>
 
+              {/* Desktop Location Picker */}
               <div className="hidden md:block relative" ref={locationDropdownRef}>
                 <div 
                   className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
@@ -669,140 +699,12 @@ export default function Header() {
                   </div>
                 </div>
 
-                {isLocationDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50">
-                      <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
-                      <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      <button
-                        onClick={getCurrentLocation}
-                        disabled={isGettingLocation}
-                        className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
-                          isGettingLocation
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
-                        }`}
-                      >
-                        <DevicePhoneMobileIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                          {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
-                        </span>
-                      </button>
-                      
-                      {locationError && (
-                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                          <p className="text-xs text-red-600">{locationError}</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      {useMapboxSearch ? (
-                        <MapboxGeocoder 
-                          onSelectLocation={handleLocationSelect}
-                          placeholder="Search for area, street name..."
-                        />
-                      ) : (
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-                          </div>
-                          <input
-                            type="text"
-                            placeholder="Search for area, street name..."
-                            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            onFocus={handleSearchFocus}
-                            autoFocus
-                          />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {!useMapboxSearch && (
-                      <div className="max-h-72 overflow-y-auto">
-                        {filteredLocations.length > 0 ? (
-                          <div className="py-2">
-                            {filteredLocations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : searchQuery.length > 0 ? (
-                          <div className="p-6 text-center">
-                            <div className="text-gray-400 mb-2">
-                              <MapPinIcon className="w-8 h-8 mx-auto" />
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              No locations found
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              Try a different search term
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="py-2">
-                            {locations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="p-4 border-t border-gray-100 bg-gray-50">
-                      <div className="text-xs text-gray-500 text-center">
-                        Can't find your location? We're expanding soon!
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {isLocationDropdownOpen && <LocationDropdown />}
               </div>
 
             </div>
 
-            {/* 3. Wrapped the component using the hook in Suspense */}
+            {/* Desktop Search */}
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -828,8 +730,9 @@ export default function Header() {
                   </div>
 
                   <div 
-                    className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                    className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 active:bg-gray-100"
                     onClick={toggleProfileDropdown}
+                    onTouchStart={toggleProfileDropdown}
                   >
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <UserIcon className="w-5 h-5 text-blue-600" />
@@ -843,33 +746,36 @@ export default function Header() {
                     <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
                       <div className="py-1">
                         <div 
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                           onClick={handleProfileClick}
+                          onTouchStart={handleProfileClick}
                         >
                           <Cog6ToothIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>My Profile</span>
                         </div>
                         
                         <div 
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                           onClick={handleSavedAddresses}
+                          onTouchStart={handleSavedAddresses}
                         >
                           <MapIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>Saved Addresses</span>
                         </div>
                         
                         <div 
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                           onClick={handleOrdersClick}
+                          onTouchStart={handleOrdersClick}
                         >
                           <InboxIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>My Orders</span>
                         </div>
 
-
                         <div 
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                           onClick={handleReferralsClick}
+                          onTouchStart={handleReferralsClick}
                         >
                           <UserGroupIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>Refer & Earn</span>
@@ -878,8 +784,9 @@ export default function Header() {
                         <div className="border-t border-gray-100 my-1"></div>
                         
                         <div 
-                          className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                           onClick={handleLogout}
+                          onTouchStart={handleLogout}
                         >
                           <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
                           <span>Log Out</span>
@@ -890,8 +797,9 @@ export default function Header() {
                 </div>
               ) : (
                 <div 
-                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
+                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors active:bg-gray-100 p-2 rounded-lg"
                   onClick={handleLoginClick}
+                  onTouchStart={handleLoginClick}
                 >
                   <UserIcon className="w-6 h-6 text-gray-600" />
                   <span className="text-sm font-medium text-gray-700">Login/Signup</span>
@@ -901,10 +809,11 @@ export default function Header() {
               <div 
                 className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${
                   isLoggedIn 
-                    ? 'text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-gray-50' 
+                    ? 'text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-gray-50 active:bg-gray-100' 
                     : 'text-gray-400 cursor-not-allowed opacity-60'
                 }`}
                 onClick={isLoggedIn ? handleCartClick : undefined}
+                onTouchStart={isLoggedIn ? handleCartClick : undefined}
               >
                 <div className="relative">
                   <ShoppingCartIcon className="w-7 h-7" />
@@ -918,8 +827,9 @@ export default function Header() {
               </div>
 
               <button 
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors active:bg-gray-200"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onTouchStart={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? (
                   <XMarkIcon className="w-6 h-6" />
@@ -932,7 +842,7 @@ export default function Header() {
         </div>
       </div>
       
-      {/* 3. Wrapped the mobile search component in Suspense */}
+      {/* Mobile Search */}
       <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -947,6 +857,7 @@ export default function Header() {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
@@ -965,36 +876,41 @@ export default function Header() {
             {isLoggedIn ? (
               <>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                   onClick={handleProfileClick}
+                  onTouchStart={handleProfileClick}
                 >
                   <UserIcon className="w-5 h-5" />
                   <span>My Profile</span>
                 </div>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                   onClick={handleSavedAddresses}
+                  onTouchStart={handleSavedAddresses}
                 >
                   <MapIcon className="w-5 h-5" />
                   <span>Saved Addresses</span>
                 </div>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                   onClick={handleOrdersClick}
+                  onTouchStart={handleOrdersClick}
                 >
                   <InboxIcon className="w-5 h-5" />
                   <span>My Orders</span>
                 </div>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                   onClick={handleReferralsClick}
+                  onTouchStart={handleReferralsClick}
                 >
                   <UserGroupIcon className="w-5 h-5" />
                   <span>Refer & Earn</span>
                 </div>
                 <div 
-                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                  className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                   onClick={handleLogout}
+                  onTouchStart={handleLogout}
                 >
                   <ArrowRightOnRectangleIcon className="w-5 h-5" />
                   <span>Logout</span>
@@ -1002,8 +918,9 @@ export default function Header() {
               </>
             ) : (
               <div 
-                className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+                className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                 onClick={handleLoginClick}
+                onTouchStart={handleLoginClick}
               >
                 <UserIcon className="w-5 h-5" />
                 <span>Login/Signup</span>
@@ -1019,8 +936,9 @@ export default function Header() {
                   categories.map((category, index) => (
                     <div 
                       key={index} 
-                      className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 cursor-pointer transition-colors py-2"
+                      className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 cursor-pointer transition-colors py-2 active:bg-gray-100 p-2 rounded-lg"
                       onClick={() => handleCategoryClick(category.name)}
+                      onTouchStart={() => handleCategoryClick(category.name)}
                     >
                       {category.image && (
                         <img 
