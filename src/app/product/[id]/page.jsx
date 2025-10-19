@@ -219,17 +219,16 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Login Prompt Toast */}
+      
       {showLoginPrompt && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
 
-      {/* Cart Message Toast */}
       {cartMessage && (
         <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 ${
-          cartMessage.includes('success') ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+          cartMessage.includes('success') ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'
         }`}>
           <p className="text-sm font-medium">{cartMessage}</p>
         </div>
@@ -280,16 +279,16 @@ const ProductDetailPage = () => {
 
               {/* Selected Variant Display */}
               {selectedVariant && (
-                <p className="text-green-600 font-medium mb-4">
+                <p className="text-blue-600 font-medium mb-4">
                   Selected: {selectedVariant.value}
                 </p>
               )}
 
               {/* Rating and Delivery Time */}
               <div className="flex items-center space-x-6 mb-6">
-                <div className="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                <div className="flex items-center bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
                   <StarIconSolid className="w-4 h-4 text-yellow-400 mr-1" />
-                  <span className="text-xs font-semibold text-green-800">
+                  <span className="text-xs font-semibold text-blue-800">
                     {product.ratings?.average || 4.5} • {product.ratings?.count || '2.5k'} ratings
                   </span>
                 </div>
@@ -310,7 +309,7 @@ const ProductDetailPage = () => {
                   )}
                 </div>
                 {discount > 0 && (
-                  <span className="text-green-600 font-semibold text-sm block mt-1">
+                  <span className="text-blue-600 font-semibold text-sm block mt-1">
                     You save {formatPrice(product.oldPrice - currentPrice)} ({discount}%)
                   </span>
                 )}
@@ -331,7 +330,7 @@ const ProductDetailPage = () => {
                         }}
                         className={`flex flex-col items-center justify-center w-24 px-3 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
                           selectedVariant?.value === option.value
-                            ? 'border-green-500 bg-green-50 text-green-700 shadow-sm'
+                            ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
                             : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                         }`}
                       >
@@ -346,7 +345,7 @@ const ProductDetailPage = () => {
               {/* Trust Badges */}
               <div className="grid grid-cols-3 gap-3 mb-6">
                 <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
-                  <ShieldCheckIcon className="w-4 h-4 text-green-600 mr-1" />
+                  <ShieldCheckIcon className="w-4 h-4 text-blue-600 mr-1" />
                   <span>Quality Assured</span>
                 </div>
                 <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
@@ -389,7 +388,7 @@ const ProductDetailPage = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={addingToCart}
-                  className="w-full bg-green-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
                 </button>
@@ -409,7 +408,7 @@ const ProductDetailPage = () => {
           {product.description && product.description.length > 200 && (
             <button 
               onClick={() => setShowFullDescription(!showFullDescription)}
-              className="mt-4 flex items-center text-green-600 font-medium"
+              className="mt-4 flex items-center text-blue-600 font-medium"
             >
               {showFullDescription ? (
                 <>
@@ -449,7 +448,7 @@ const ProductDetailPage = () => {
               )}
               <div className="flex justify-between py-2 border-b border-gray-100">
                 <span className="text-gray-500">Stock</span>
-                <span className={`font-medium ${product.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${product.quantity > 0 ? 'text-blue-600' : 'text-red-600'}`}>
                   {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>

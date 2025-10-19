@@ -271,14 +271,14 @@ const AddressPage = () => {
       (label === 'home' ? HomeSolidIcon : label === 'work' ? OfficeSolidIcon : MapPinSolidIcon) :
       (label === 'home' ? HomeIcon : label === 'work' ? BuildingOfficeIcon : MapPinIcon);
     
-    const colorClass = label === 'home' ? 'text-green-600' : 
+    const colorClass = label === 'home' ? 'text-blue-600' : 
                       label === 'work' ? 'text-blue-600' : 'text-purple-600';
     
     return <IconComponent className={`w-5 h-5 ${colorClass}`} />;
   };
 
   const getAddressBadgeColor = (label) => {
-    return label === 'home' ? 'bg-green-100 text-green-800' : 
+    return label === 'home' ? 'bg-blue-100 text-blue-800' : 
            label === 'work' ? 'bg-blue-100 text-blue-800' : 
            'bg-purple-100 text-purple-800';
   };
@@ -347,10 +347,10 @@ const AddressPage = () => {
         )}
         
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
             <div className="flex justify-between items-center">
               <span>{success}</span>
-              <button onClick={() => setSuccess('')} className="text-green-800 font-bold text-lg">×</button>
+              <button onClick={() => setSuccess('')} className="text-blue-800 font-bold text-lg">×</button>
             </div>
           </div>
         )}
@@ -541,7 +541,7 @@ const AddressPage = () => {
           {addresses.length > 0 ? (
             addresses.map((address) => (
               <div key={address._id} className={`bg-white rounded-xl shadow-sm p-5 border-l-4 ${
-                address.isDefault ? 'border-green-500' : 'border-gray-300'
+                address.isDefault ? 'border-blue-500' : 'border-gray-300'
               }`}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -551,7 +551,7 @@ const AddressPage = () => {
                         <span className="ml-1 capitalize">{address.label}</span>
                       </span>
                       {address.isDefault && (
-                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
+                        <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
                           <CheckIcon className="w-3 h-3 mr-1" />
                           Default
                         </span>
@@ -601,7 +601,7 @@ const AddressPage = () => {
                       Set as Default
                     </button>
                   ) : (
-                    <span className="text-green-600 font-medium flex items-center">
+                    <span className="text-blue-600 font-medium flex items-center">
                       <CheckIcon className="w-4 h-4 mr-1" />
                       Default Address
                     </span>

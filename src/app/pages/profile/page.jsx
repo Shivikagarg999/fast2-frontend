@@ -417,12 +417,12 @@ const ProfilePage = () => {
           </div>
         )}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
             <div className="flex justify-between items-center">
               <span>{success}</span>
               <button 
                 onClick={() => setSuccess('')}
-                className="text-green-800 font-bold text-lg"
+                className="text-blue-800 font-bold text-lg"
               >
                 ×
               </button>

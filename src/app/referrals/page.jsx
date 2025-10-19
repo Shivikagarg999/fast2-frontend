@@ -255,7 +255,7 @@ export default function ReferAndEarn() {
                             title="Copy code only"
                           >
                             {copied ? (
-                              <ClipboardDocumentCheckIcon className="w-5 h-5 text-green-500" />
+                              <ClipboardDocumentCheckIcon className="w-5 h-5 text-blue-500" />
                             ) : (
                               <ClipboardDocumentIcon className="w-5 h-5" />
                             )}
@@ -266,10 +266,10 @@ export default function ReferAndEarn() {
                   </div>
 
                   {copied && (
-                    <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
+                    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                       <div className="flex items-center space-x-2">
-                        <CheckCircleIcon className="w-5 h-5 text-green-600" />
-                        <span className="text-green-700 font-medium">Referral code copied!</span>
+                        <CheckCircleIcon className="w-5 h-5 text-blue-600" />
+                        <span className="text-blue-700 font-medium">Referral code copied!</span>
                       </div>
                     </div>
                   )}
@@ -296,8 +296,8 @@ export default function ReferAndEarn() {
                           <p className="text-sm text-gray-600 font-medium">Earned</p>
                           <p className="text-3xl font-bold text-gray-900 mt-2">₹{referralData.earnedAmount}</p>
                         </div>
-                        <div className="p-3 bg-green-50 rounded-xl">
-                          <BanknotesIcon className="w-8 h-8 text-green-600" />
+                        <div className="p-3 bg-blue-50 rounded-xl">
+                          <BanknotesIcon className="w-8 h-8 text-blue-600" />
                         </div>
                       </div>
                     </div>
@@ -329,21 +329,21 @@ export default function ReferAndEarn() {
                 {redeemResult && (
                   <div className={`p-4 rounded-xl mb-6 ${
                     redeemResult.success 
-                      ? 'bg-green-50 border border-green-200' 
+                      ? 'bg-blue-50 border border-blue-200' 
                       : 'bg-red-50 border border-red-200'
                   }`}>
                     <div className="flex items-center space-x-2">
                       {redeemResult.success ? (
-                        <CheckCircleIcon className="w-5 h-5 text-green-600" />
+                        <CheckCircleIcon className="w-5 h-5 text-blue-600" />
                       ) : (
                         <XCircleIcon className="w-5 h-5 text-red-600" />
                       )}
-                      <span className={redeemResult.success ? 'text-green-700' : 'text-red-700'}>
+                      <span className={redeemResult.success ? 'text-blue-700' : 'text-red-700'}>
                         {redeemResult.message || redeemResult.error}
                       </span>
                     </div>
                     {redeemResult.success && redeemResult.data && (
-                      <div className="mt-2 text-sm text-green-600">
+                      <div className="mt-2 text-sm text-blue-600">
                         ₹{redeemResult.data.bonusReceived} credited to your wallet
                       </div>
                     )}
@@ -352,7 +352,7 @@ export default function ReferAndEarn() {
 
                 {referralData?.hasUsedReferral ? (
                   <div className="bg-gray-50 rounded-xl p-6 text-center">
-                    <CheckCircleIcon className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                    <CheckCircleIcon className="w-12 h-12 text-blue-500 mx-auto mb-4" />
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">Referral Code Applied</h4>
                     <p className="text-gray-600">You have already redeemed a referral code and received your bonus.</p>
                   </div>
@@ -410,7 +410,7 @@ export default function ReferAndEarn() {
                       </div>
                       <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                         referral.status === 'completed' 
-                          ? 'bg-green-100 text-green-800' 
+                          ? 'bg-blue-100 text-blue-800' 
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {referral.status === 'completed' ? 'Paid' : 'Pending'}

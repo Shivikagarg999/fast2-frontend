@@ -19,7 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 const MapboxGeocoder = dynamic(() => import('../mapbox/mapboxGeocoder'), {
@@ -128,7 +128,8 @@ const cartEvents = {
   }
 };
 
-export default function Header() {
+// Main Header Component
+function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -147,6 +148,12 @@ export default function Header() {
   const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Hide header for deliver and warehouse routes
+  if (pathname.startsWith('/deliver') || pathname.startsWith('/warehouse')) {
+    return null;
+  }
 
   useEffect(() => {
     // Initialize product search query from URL on client side
@@ -592,7 +599,7 @@ export default function Header() {
                                       {location.area}
                                     </div>
                                   </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
                                     <ClockIcon className="w-3 h-3 mr-1" />
                                     {location.deliveryTime}
                                   </div>
@@ -629,7 +636,7 @@ export default function Header() {
                                       {location.area}
                                     </div>
                                   </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
                                     <ClockIcon className="w-3 h-3 mr-1" />
                                     {location.deliveryTime}
                                   </div>
@@ -742,7 +749,7 @@ export default function Header() {
                                       {location.area}
                                     </div>
                                   </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
                                     <ClockIcon className="w-3 h-3 mr-1" />
                                     {location.deliveryTime}
                                   </div>
@@ -779,7 +786,7 @@ export default function Header() {
                                       {location.area}
                                     </div>
                                   </div>
-                                  <div className="flex items-center text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
                                     <ClockIcon className="w-3 h-3 mr-1" />
                                     {location.deliveryTime}
                                   </div>
@@ -1043,6 +1050,10 @@ export default function Header() {
       )}
     </header>
   );
+}
+
+export default function Header() {
+  return <HeaderContent />;
 }
 
 export { cartEvents };

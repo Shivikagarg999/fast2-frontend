@@ -33,6 +33,15 @@ const HeaderFallback = () => {
   );
 };
 
+// Client component for conditional header
+const ConditionalHeader = () => {
+  // This will be rendered on client side
+  return (
+    <Suspense fallback={<HeaderFallback />}>
+      <Header />
+    </Suspense>
+  );
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -40,10 +49,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* 3. Wrap the Header in a Suspense boundary */}
-        <Suspense fallback={<HeaderFallback />}>
-          <Header />
-        </Suspense>
+        {/* Use the conditional header component */}
+        <ConditionalHeader />
 
         <main className="relative z-10">{children}</main>
         <Cart />
