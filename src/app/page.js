@@ -1,10 +1,11 @@
-import { Suspense } from 'react';
-import Footer from "./components/footer/page";
-import CategorySection from "../app/category/page";
-import ProductListingSection from "./pages/productListing/page";
-import Banner from "./components//banner/page";
+'use client';
 
-export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Footer from "./components/footer/page";
+import CategorySection from "./category/page";
+import ProductListingSection from "./pages/productListing/page";
+import Banner from "./components/banner/page";
 
 const LoadingProducts = () => {
   return (
@@ -15,8 +16,10 @@ const LoadingProducts = () => {
   );
 };
 
-export default function Home({ searchParams }) {
-  const hasSearchQuery = !!searchParams?.search;
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search');
+  const hasSearchQuery = !!searchQuery;
 
   return (
     <>
@@ -27,11 +30,17 @@ export default function Home({ searchParams }) {
         </>
       )}
       
-      <Suspense fallback={<LoadingProducts />}>
-        <ProductListingSection />
-      </Suspense>
+      <ProductListingSection searchQuery={searchQuery} />
       
       <Footer />
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<LoadingProducts />}>
+      <HomeContent />
+    </Suspense>
   );
 }

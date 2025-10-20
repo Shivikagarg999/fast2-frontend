@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "app/page.js": {
+      "maxDuration": 30
+    },
+    "app/api/**/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["bom1"]
+}
