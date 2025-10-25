@@ -6,38 +6,18 @@ import {
   UserIcon, 
   Bars3Icon,
   XMarkIcon,
-  MapPinIcon,
-  ChevronDownIcon,
-  ClockIcon,
   Cog6ToothIcon,
   MapIcon,
   InboxIcon,
   ArrowRightOnRectangleIcon,
-  DevicePhoneMobileIcon,
   BanknotesIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  MapPinIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic';
-
-const MapboxGeocoder = dynamic(() => import('../mapbox/mapboxGeocoder'), {
-  ssr: false,
-  loading: () => (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-      </div>
-      <input
-        type="text"
-        placeholder="Search for area, street name..."
-        className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-        disabled
-      />
-    </div>
-  )
-});
 
 // Search input component that uses useSearchParams
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
@@ -95,7 +75,7 @@ function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
   );
 }
 
-// 2. Created fallback components for the search inputs
+// Fallback components for the search inputs
 const SearchInputFallback = () => (
   <input
     type="text"
@@ -114,6 +94,322 @@ const MobileSearchInputFallback = () => (
   />
 );
 
+// Location Selector Component with Fixed Width
+function LocationSelector({ isMobile = false }) {
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const locationRef = useRef(null);
+
+  // Load saved location from localStorage on component mount
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('userLocation');
+    if (savedLocation) {
+      setSelectedLocation(savedLocation);
+    }
+  }, []);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setShowLocationDropdown(false);
+        setSearchResults([]);
+        setSearchQuery('');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Search locations using Mapbox API
+  const searchLocations = async (query) => {
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
+        `access_token=${token}` +
+        `&country=in` +
+        `&types=place,locality,neighborhood,address` +
+        `&autocomplete=true` +
+        `&limit=5`
+      );
+
+      if (!response.ok) {
+        throw new Error('Search failed');
+      }
+
+      const data = await response.json();
+      setSearchResults(data.features || []);
+    } catch (error) {
+      console.error('Location search error:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search input change with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery) {
+        searchLocations(searchQuery);
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  // Get current location using browser geolocation
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsGettingLocation(true);
+    setShowLocationDropdown(false);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const locationName = await reverseGeocode(latitude, longitude);
+          setSelectedLocation(locationName);
+          localStorage.setItem('userLocation', locationName);
+          setSearchQuery('');
+          setSearchResults([]);
+        } catch (error) {
+          console.error('Error getting location:', error);
+          alert('Unable to get your current location. Please search manually.');
+        } finally {
+          setIsGettingLocation(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setIsGettingLocation(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert('Location access denied. Please allow location access or search manually.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert('Location information unavailable. Please search manually.');
+            break;
+          case error.TIMEOUT:
+            alert('Location request timeout. Please try again.');
+            break;
+          default:
+            alert('Unable to get your current location. Please search manually.');
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  };
+
+  // Reverse geocode coordinates to get location name
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?` +
+        `access_token=${token}` +
+        `&types=place,locality,neighborhood,address` +
+        `&limit=1`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Reverse geocoding failed');
+      }
+
+      const data = await response.json();
+      
+      if (data.features && data.features.length > 0) {
+        return data.features[0].place_name;
+      } else {
+        throw new Error('No location found');
+      }
+    } catch (error) {
+      console.error('Reverse geocoding error:', error);
+      return `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    }
+  };
+
+  // Handle location selection from search results
+  const handleLocationSelect = (location) => {
+    const locationName = location.place_name;
+    setSelectedLocation(locationName);
+    localStorage.setItem('userLocation', locationName);
+    setShowLocationDropdown(false);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  // Common locations for quick selection
+  const commonLocations = [
+    'Connaught Place, New Delhi',
+    'Gurugram Sector 14',
+    'Noida Sector 18',
+    'Greater Kailash, Delhi',
+    'Saket, Delhi',
+    'Hauz Khas, Delhi'
+  ];
+
+  // Handle manual location selection from common locations
+  const handleManualLocationSelect = (location) => {
+    setSelectedLocation(location);
+    localStorage.setItem('userLocation', location);
+    setShowLocationDropdown(false);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  const displayLocation = selectedLocation || 'Select your location';
+
+  return (
+    <div className="relative" ref={locationRef}>
+      {/* Location Display - FIXED WIDTH */}
+      <div 
+        className={`flex items-center cursor-pointer group ${
+          isMobile ? 'w-full' : 'w-64' // Fixed width for desktop, full width for mobile
+        }`}
+        onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+      >
+        <div className={`
+          flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg 
+          transition-colors duration-200 border border-gray-200 w-full
+          ${isMobile ? 'justify-center' : ''}
+        `}>
+          <MapPinIcon className="w-4 h-4 text-red-500 flex-shrink-0" />
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-xs text-gray-500 whitespace-nowrap">Delivery to</span>
+            <span className="text-sm font-medium text-gray-900 truncate max-w-[180px]">
+              {displayLocation}
+            </span>
+          </div>
+          <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
+            showLocationDropdown ? 'rotate-180' : ''
+          }`} />
+        </div>
+      </div>
+
+      {/* Location Dropdown - FIXED WIDTH */}
+      {showLocationDropdown && (
+        <div className={`
+          absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden
+          ${isMobile ? 'w-full' : 'w-80'} // Fixed width for both mobile and desktop
+        `}>
+          <div className="p-4 border-b border-gray-100">
+            <h3 className="font-medium text-gray-900 mb-3">Select your location</h3>
+            
+            {/* Current Location Button */}
+            <button
+              onClick={getCurrentLocation}
+              disabled={isGettingLocation}
+              className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors duration-200 mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGettingLocation ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-blue-700 font-medium">Detecting location...</span>
+                </>
+              ) : (
+                <>
+                  <MapPinIcon className="w-4 h-4 text-blue-600" />
+                  <span className="text-blue-700 font-medium">Use current location</span>
+                </>
+              )}
+            </button>
+
+            {/* Search Location Input */}
+            <div className="relative mb-3">
+              <input
+                type="text"
+                placeholder="Search for area, street name..."
+                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <MagnifyingGlassIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              
+              {/* Loading indicator for search */}
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
+
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="mb-3 max-h-40 overflow-y-auto">
+                <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  Search Results
+                </h4>
+                <div className="space-y-1">
+                  {searchResults.map((location, index) => (
+                    <div
+                      key={location.id || index}
+                      onClick={() => handleLocationSelect(location)}
+                      className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                    >
+                      <MapPinIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span className="text-sm text-gray-700 truncate">
+                        {location.place_name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Common Locations */}
+            <div>
+              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                Popular Locations
+              </h4>
+              <div className="space-y-1">
+                {commonLocations.map((location, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleManualLocationSelect(location)}
+                    className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                  >
+                    <MapPinIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <span className="text-sm text-gray-700 truncate">{location}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-4 py-3 border-t border-gray-100">
+            <p className="text-xs text-gray-500 text-center">
+              Delivery available in select areas
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const cartEvents = {
   listeners: [],
@@ -135,17 +431,9 @@ function HeaderContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState('Select your location');
-  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [productSearchQuery, setProductSearchQuery] = useState('');
-  const [useMapboxSearch, setUseMapboxSearch] = useState(false);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [locationError, setLocationError] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
-  const locationDropdownRef = useRef(null);
-  const mobileLocationDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -164,42 +452,8 @@ function HeaderContent() {
     }
   }, []);
 
-  const locations = [
-    { id: 1, name: "Connaught Place", area: "New Delhi", deliveryTime: "10-15 min" },
-    { id: 2, name: "Karol Bagh", area: "New Delhi", deliveryTime: "15-20 min" },
-    { id: 3, name: "Rajouri Garden", area: "New Delhi", deliveryTime: "12-17 min" },
-    { id: 4, name: "Hauz Khas", area: "New Delhi", deliveryTime: "8-12 min" },
-    { id: 5, name: "Saket", area: "New Delhi", deliveryTime: "10-15 min" },
-    { id: 6, name: "Greater Kailash", area: "New Delhi", deliveryTime: "12-18 min" },
-    { id: 7, name: "Pitampura", area: "New Delhi", deliveryTime: "15-20 min" },
-    { id: 8, name: "Dwarka", area: "New Delhi", deliveryTime: "18-25 min" },
-    { id: 9, name: "Gurgaon Sector 14", area: "Gurugram", deliveryTime: "12-18 min" },
-    { id: 10, name: "Cyber City", area: "Gurugram", deliveryTime: "10-15 min" },
-    { id: 11, name: "MG Road", area: "Gurugram", deliveryTime: "15-20 min" },
-    { id: 12, name: "DLF Phase 1", area: "Gurugram", deliveryTime: "8-13 min" }
-  ];
-
-  const filteredLocations = locations.filter(location => 
-    location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    location.area.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
-        setIsLocationDropdownOpen(false);
-        setSearchQuery('');
-        setUseMapboxSearch(false);
-        setLocationError('');
-      }
-      
-      if (mobileLocationDropdownRef.current && !mobileLocationDropdownRef.current.contains(event.target)) {
-        setIsLocationDropdownOpen(false);
-        setSearchQuery('');
-        setUseMapboxSearch(false);
-        setLocationError('');
-      }
-      
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
         setIsProfileDropdownOpen(false);
       }
@@ -219,10 +473,6 @@ function HeaderContent() {
     window.addEventListener('storage', checkAuthStatus);
     const handleAuthChange = () => checkAuthStatus();
     window.addEventListener('authChange', handleAuthChange);
-    const savedLocation = localStorage.getItem('selectedLocation');
-    if (savedLocation) {
-      setSelectedLocation(savedLocation);
-    }
 
     return () => {
       window.removeEventListener('storage', checkAuthStatus);
@@ -293,102 +543,6 @@ function HeaderContent() {
     fetchCategories();
   }, []);
 
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by this browser.');
-      return;
-    }
-
-    setIsGettingLocation(true);
-    setLocationError('');
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        
-        try {
-          const location = await getLocationNameFromCoords(latitude, longitude);
-          handleLocationSelect(location);
-        } catch (error) {
-          console.error('Error getting location name:', error);
-          const fallbackLocation = {
-            text: 'Current Location',
-            place_name: `Your location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
-            center: [longitude, latitude]
-          };
-          handleLocationSelect(fallbackLocation);
-          setLocationError('Location detected! You can search for exact address if needed.');
-        } finally {
-          setIsGettingLocation(false);
-        }
-      },
-      (error) => {
-        setIsGettingLocation(false);
-        handleGeolocationError(error);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 10000,
-        maximumAge: 300000
-      }
-    );
-  };
-
-  const getLocationNameFromCoords = async (latitude, longitude) => {
-    try {
-      const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-      if (mapboxToken) {
-        const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxToken}&limit=1`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.features && data.features.length > 0) {
-            return data.features[0];
-          }
-        }
-      }
-      
-      const osmResponse = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
-      );
-      
-      if (osmResponse.ok) {
-        const data = await osmResponse.json();
-        if (data.display_name) {
-          return {
-            text: data.display_name.split(',')[0],
-            place_name: data.display_name,
-            center: [longitude, latitude]
-          };
-        }
-      }
-      
-      throw new Error('Could not get location name');
-      
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleGeolocationError = (error) => {
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        setLocationError('Location access denied. Please enable location permissions in your browser settings and refresh the page.');
-        break;
-      case error.POSITION_UNAVAILABLE:
-        setLocationError('Your location is unavailable. Please check your device location services.');
-        break;
-      case error.TIMEOUT:
-        setLocationError('Location request timed out. Please try again.');
-        break;
-      default:
-        setLocationError('Could not get your location. Please try again or search manually.');
-        break;
-    }
-  };
-
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
@@ -444,45 +598,8 @@ function HeaderContent() {
     router.push(`/category/${encodeURIComponent(categoryName.toLowerCase())}`);
   };
 
-  const handleLocationSelect = (location) => {
-    let locationName;
-    if (location.place_name) {
-      locationName = location.text || location.place_name;
-    } else {
-      locationName = `${location.name}, ${location.area}`;
-    }
-    
-    setSelectedLocation(locationName);
-    localStorage.setItem('selectedLocation', locationName);
-    localStorage.setItem('selectedLocationDetails', JSON.stringify(location));
-    setIsLocationDropdownOpen(false);
-    setSearchQuery('');
-    setUseMapboxSearch(false);
-    setLocationError('');
-  };
-
-  const handleLocationClick = () => {
-    setIsLocationDropdownOpen(!isLocationDropdownOpen);
-    if (!isLocationDropdownOpen) {
-      setSearchQuery('');
-      setUseMapboxSearch(false);
-      setLocationError('');
-    }
-  };
-
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
-  };
-
-  const handleSearchFocus = () => {
-    setUseMapboxSearch(true);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    if (e.target.value.length > 0) {
-      setUseMapboxSearch(true);
-    }
   };
 
   const formatWalletBalance = (balance) => {
@@ -495,321 +612,31 @@ function HeaderContent() {
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             
+            {/* Left Section - Logo and Location Selector */}
             <div className="flex items-center space-x-6">
-              
-              <div className="flex items-center">
+              {/* Logo - Hidden on mobile, shown on desktop */}
+              <div className="hidden lg:flex items-center">
                 <Image
                   src={Logo}
                   alt="Fast2"
-                  width={220}
-                  height={100}
-                  className="h-22 w-auto object-contain"
+                  width={120}
+                  height={50}
+                  className="h-auto object-contain"
                 />
               </div>
 
-              <div className="md:hidden relative" ref={mobileLocationDropdownRef}>
-                <div 
-                  className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
-                  onClick={handleLocationClick}
-                >
-                  <MapPinIcon className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-xs text-gray-500 whitespace-nowrap">Delivering to</span>
-                    <div className="flex items-center">
-                      <span className="text-sm font-medium text-gray-800 max-w-[140px] truncate">
-                        {selectedLocation}
-                      </span>
-                      <ChevronDownIcon className={`w-4 h-4 text-gray-500 ml-1 flex-shrink-0 transition-transform duration-200 ${
-                        isLocationDropdownOpen ? 'rotate-180' : ''
-                      }`} />
-                    </div>
-                  </div>
-                </div>
-
-                {isLocationDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50">
-                      <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
-                      <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      <button
-                        onClick={getCurrentLocation}
-                        disabled={isGettingLocation}
-                        className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
-                          isGettingLocation
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
-                        }`}
-                      >
-                        <DevicePhoneMobileIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                          {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
-                        </span>
-                      </button>
-                      
-                      {locationError && (
-                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                          <p className="text-xs text-red-600">{locationError}</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      {useMapboxSearch ? (
-                        <MapboxGeocoder 
-                          onSelectLocation={handleLocationSelect}
-                          placeholder="Search for area, street name..."
-                        />
-                      ) : (
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-                          </div>
-                          <input
-                            type="text"
-                            placeholder="Search for area, street name..."
-                            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            onFocus={handleSearchFocus}
-                            autoFocus
-                          />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {!useMapboxSearch && (
-                      <div className="max-h-72 overflow-y-auto">
-                        {filteredLocations.length > 0 ? (
-                          <div className="py-2">
-                            {filteredLocations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : searchQuery.length > 0 ? (
-                          <div className="p-6 text-center">
-                            <div className="text-gray-400 mb-2">
-                              <MapPinIcon className="w-8 h-8 mx-auto" />
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              No locations found
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              Try a different search term
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="py-2">
-                            {locations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="p-4 border-t border-gray-100 bg-gray-50">
-                      <div className="text-xs text-gray-500 text-center">
-                        Can't find your location? We're expanding soon!
-                      </div>
-                    </div>
-                  </div>
-                )}
+              {/* Location Selector - Desktop version */}
+              <div className="hidden lg:block">
+                <LocationSelector isMobile={false} />
               </div>
 
-              <div className="hidden md:block relative" ref={locationDropdownRef}>
-                <div 
-                  className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50 min-w-0"
-                  onClick={handleLocationClick}
-                >
-                  <MapPinIcon className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-xs text-gray-500 whitespace-nowrap">Delivering to</span>
-                    <div className="flex items-center">
-                      <span className="text-sm font-medium text-gray-800 max-w-[140px] truncate">
-                        {selectedLocation}
-                      </span>
-                      <ChevronDownIcon className={`w-4 h-4 text-gray-500 ml-1 flex-shrink-0 transition-transform duration-200 ${
-                        isLocationDropdownOpen ? 'rotate-180' : ''
-                      }`} />
-                    </div>
-                  </div>
-                </div>
-
-                {isLocationDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50">
-                      <h3 className="text-lg font-semibold text-gray-900">Choose your location</h3>
-                      <p className="text-sm text-gray-600 mt-1">Select area for accurate delivery time</p>
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      <button
-                        onClick={getCurrentLocation}
-                        disabled={isGettingLocation}
-                        className={`w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg border transition-colors ${
-                          isGettingLocation
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200'
-                        }`}
-                      >
-                        <DevicePhoneMobileIcon className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                          {isGettingLocation ? 'Getting your location...' : 'Use my current location'}
-                        </span>
-                      </button>
-                      
-                      {locationError && (
-                        <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                          <p className="text-xs text-red-600">{locationError}</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-100">
-                      {useMapboxSearch ? (
-                        <MapboxGeocoder 
-                          onSelectLocation={handleLocationSelect}
-                          placeholder="Search for area, street name..."
-                        />
-                      ) : (
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
-                          </div>
-                          <input
-                            type="text"
-                            placeholder="Search for area, street name..."
-                            className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            onFocus={handleSearchFocus}
-                            autoFocus
-                          />
-                        </div>
-                      )}
-                    </div>
-                    
-                    {!useMapboxSearch && (
-                      <div className="max-h-72 overflow-y-auto">
-                        {filteredLocations.length > 0 ? (
-                          <div className="py-2">
-                            {filteredLocations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : searchQuery.length > 0 ? (
-                          <div className="p-6 text-center">
-                            <div className="text-gray-400 mb-2">
-                              <MapPinIcon className="w-8 h-8 mx-auto" />
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              No locations found
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                              Try a different search term
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="py-2">
-                            {locations.map((location) => (
-                              <div 
-                                key={location.id}
-                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-50 last:border-0"
-                                onClick={() => handleLocationSelect(location)}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="font-medium text-gray-900 text-sm">
-                                      {location.name}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {location.area}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full">
-                                    <ClockIcon className="w-3 h-3 mr-1" />
-                                    {location.deliveryTime}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="p-4 border-t border-gray-100 bg-gray-50">
-                      <div className="text-xs text-gray-500 text-center">
-                        Can't find your location? We're expanding soon!
-                      </div>
-                    </div>
-                  </div>
-                )}
+              {/* Mobile Logo Replacement - Location Selector */}
+              <div className="lg:hidden">
+                <LocationSelector isMobile={true} />
               </div>
-
             </div>
 
-            {/* 3. Wrapped the component using the hook in Suspense */}
+            {/* Center Section - Search Bar */}
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -824,6 +651,7 @@ function HeaderContent() {
               </div>
             </div>
 
+            {/* Right Section - User Actions */}
             <div className="flex items-center space-x-4">
               {isLoggedIn ? (
                 <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
@@ -872,7 +700,6 @@ function HeaderContent() {
                           <InboxIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>My Orders</span>
                         </div>
-
 
                         <div 
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
@@ -939,7 +766,7 @@ function HeaderContent() {
         </div>
       </div>
       
-      {/* 3. Wrapped the mobile search component in Suspense */}
+      {/* Mobile Search Bar */}
       <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -954,6 +781,7 @@ function HeaderContent() {
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
