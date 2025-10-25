@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/app/components/footer/page";
+import ProductCard from "@/app/components/productCard/page";
 
 const CustomImage = ({ src, alt, fallback, ...props }) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -32,7 +33,7 @@ const CustomImage = ({ src, alt, fallback, ...props }) => {
   );
 };
 
-export default function CategoryProductsPage() {
+const CategoryProductsComponent = () => {
   const params = useParams();
   const router = useRouter();
   const categoryId = params.id;
@@ -41,18 +42,39 @@ export default function CategoryProductsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortBy, setSortBy] = useState("name");
-  const [viewMode, setViewMode] = useState("grid");
+  const [cartQuantities, setCartQuantities] = useState({});
+  const [addingToCart, setAddingToCart] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const fallbackImage = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 
+  // Authentication check
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('token');
+      setIsLoggedIn(!!token);
+    };
+
+    checkAuth();
+    window.addEventListener('authChange', checkAuth);
+    window.addEventListener('storage', checkAuth);
+    window.addEventListener('userLoggedIn', checkAuth);
+
+    return () => {
+      window.removeEventListener('authChange', checkAuth);
+      window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('userLoggedIn', checkAuth);
+    };
+  }, []);
+
+  // Fetch category and products data
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // Fetch category and products
         const categoryResponse = await fetch(
           `https://api.fast2.in/api/category/${categoryId}`
         );
@@ -86,16 +108,194 @@ export default function CategoryProductsPage() {
     if (categoryId) fetchCategoryData();
   }, [categoryId]);
 
-  // Fix category image URL - ensure it's a valid image
+  // Fetch cart quantities
+  useEffect(() => {
+    const fetchCartQuantities = async () => {
+      if (!isLoggedIn) {
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+        
+        const response = await fetch('https://api.fast2.in/api/cart/', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const cartItems = data.items || data.cart?.items || data || [];
+          const quantities = {};
+          
+          cartItems.forEach(item => {
+            const productId = item.product?._id || item.productId || item._id;
+            quantities[productId] = item.quantity || 0;
+          });
+          
+          setCartQuantities(quantities);
+        } else if (response.status === 401) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+        }
+      } catch (err) {
+        console.error('Error fetching cart quantities:', err);
+      }
+    };
+
+    fetchCartQuantities();
+  }, [isLoggedIn]);
+
+  // Cart functions
+  const addToCart = async (productId, quantity = 1) => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      setTimeout(() => setShowLoginPrompt(false), 3000);
+      return;
+    }
+
+    setAddingToCart(prev => ({ ...prev, [productId]: true }));
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch('https://api.fast2.in/api/cart/add', {  
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId,
+          quantity
+        })
+      });
+      
+      const responseData = await response.json();
+
+      if (response.ok) {
+        setCartQuantities(prev => ({
+          ...prev,
+          [productId]: (prev[productId] || 0) + quantity
+        }));
+        window.dispatchEvent(new Event('cartUpdated'));
+      } else {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          setShowLoginPrompt(true);
+          setTimeout(() => setShowLoginPrompt(false), 3000);
+        }
+        throw new Error(responseData.error || responseData.message || 'Failed to add to cart');
+      }
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+      alert(err.message || 'Failed to add item to cart. Please try again.');
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [productId]: false }));
+    }
+  };
+
+  const updateCartQuantity = async (productId, newQuantity) => {
+    if (!isLoggedIn) return;
+
+    if (newQuantity <= 0) {
+      await removeFromCart(productId);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      const items = cartItems.items || cartItems.cart?.items || cartItems || [];
+      const cartItem = items.find(item => 
+        (item.product?._id || item.productId) === productId
+      );
+
+      if (cartItem) {
+        const response = await fetch(`https://api.fast2.in/api/cart/update/${cartItem._id}`, {  
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ quantity: newQuantity })
+        });
+
+        if (response.ok) {
+          setCartQuantities(prev => ({
+            ...prev,
+            [productId]: newQuantity
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('Error updating cart:', err);
+    }
+  };
+
+  const removeFromCart = async (productId) => {
+    if (!isLoggedIn) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      const items = cartItems.items || cartItems.cart?.items || cartItems || [];
+      const cartItem = items.find(item => 
+        (item.product?._id || item.productId) === productId
+      );
+
+      if (cartItem) {
+        const response = await fetch(`https://api.fast2.in/api/cart/remove/${cartItem._id}`, {  
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          setCartQuantities(prev => {
+            const updated = { ...prev };
+            delete updated[productId];
+            return updated;
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error removing from cart:', err);
+    }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  const handleProductClick = (product) => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('selectedProduct', JSON.stringify(product));
+    }
+    router.push(`/product/${product._id}`);
+  };
+
+  // Fix category image URL
   const getCategoryImageUrl = (category) => {
     if (!category?.image) return fallbackImage;
     
-    // If it's a category page URL, return fallback
     if (category.image.includes('/category/')) {
       return fallbackImage;
     }
     
-    // If it's a relative path, make it absolute
     if (category.image.startsWith('/')) {
       return `https://www.fast2.in${category.image}`;
     }
@@ -103,39 +303,44 @@ export default function CategoryProductsPage() {
     return category.image;
   };
 
-  // Fix product image URL
-  const getProductImageUrl = (product) => {
-    const imageUrl = product.images?.[0]?.url;
-    
-    if (!imageUrl) return fallbackImage;
-    
-    // If it's a relative path, make it absolute
-    if (imageUrl.startsWith('/')) {
-      return `https://www.fast2.in${imageUrl}`;
-    }
-    
-    return imageUrl;
-  };
+  if (isLoading) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.price - b.price;
-      case "price-high":
-        return b.price - a.price;
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "discount":
-        return (b.discountPercentage || 0) - (a.discountPercentage || 0);
-      default:
-        return 0;
-    }
-  });
+  if (error) {
+    return (
+      <div className="bg-white flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Category</h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => router.push("/category")}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
+          >
+            Return to Categories
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-white">
+        {showLoginPrompt && (
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg z-50">
+            <p className="text-sm font-medium">Please login to add items to cart</p>
+          </div>
+        )}
+        
+        <div className="max-w-8xl mx-auto px-4 py-6">
           {/* Breadcrumb */}
           <nav className="flex mb-8" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-3 text-sm bg-white px-4 py-2 rounded-full shadow-sm">
@@ -182,161 +387,69 @@ export default function CategoryProductsPage() {
                 </svg>
               </li>
               <li className="text-gray-700 font-semibold truncate max-w-xs">
-                {isLoading ? "Loading..." : category?.name || "Category"}
+                {category?.name || "Category"}
               </li>
             </ol>
           </nav>
 
           {/* Category Header */}
-          {isLoading ? (
-            <div className="animate-pulse">
-              <div className="h-12 bg-gray-300 rounded-lg w-64 mb-6"></div>
-              <div className="h-64 bg-gray-300 rounded-xl w-full"></div>
-            </div>
-          ) : (
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              {category?.image && (
-                <div className="relative h-64 md:h-80">
-                  <CustomImage
-                    src={getCategoryImageUrl(category)}
-                    alt={category.name}
-                    fallback={fallbackImage}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 text-white">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-2">
-                      {category?.name || "Category Products"}
-                    </h1>
-                    {category?.description && (
-                      <p className="text-lg opacity-90 max-w-2xl">
-                        {category.description}
-                      </p>
-                    )}
-                  </div>
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+            {category?.image && (
+              <div className="relative h-64 md:h-80">
+                <CustomImage
+                  src={getCategoryImageUrl(category)}
+                  alt={category.name}
+                  fallback={fallbackImage}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div className="absolute bottom-6 left-6 text-white">
+                  <h1 className="text-4xl md:text-5xl font-bold mb-2">
+                    {category?.name || "Category Products"}
+                  </h1>
+                  {category?.description && (
+                    <p className="text-lg opacity-90 max-w-2xl">
+                      {category.description}
+                    </p>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
 
-          {/* Error */}
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-8 shadow-sm">
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-6 w-6 text-red-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          {/* Products Grid */}
+          {products.length > 0 ? (
+            <div className="bg-white rounded-xl overflow-hidden">
+              <div className="px-6 py-4 border-b">
+                <h2 className="text-xl font-bold text-gray-900">
+                  {category?.name}
+                  <span className="ml-3 text-sm font-normal text-gray-500">
+                    ({products.length} items)
+                  </span>
+                </h2>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                  {products.map(product => (
+                    <ProductCard 
+                      key={product._id} 
+                      product={product} 
+                      formatPrice={formatPrice} 
+                      onProductClick={handleProductClick}
+                      categoryName={category?.name || ""}
+                      cartQuantity={cartQuantities[product._id] || 0}
+                      onAddToCart={addToCart}
+                      onUpdateQuantity={updateCartQuantity}
+                      isAddingToCart={addingToCart[product._id] || false}
+                      isLoggedIn={isLoggedIn}
                     />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-lg font-semibold text-red-800">
-                    Error loading category
-                  </h3>
-                  <p className="text-red-700 mt-1">{error}</p>
-                  <button
-                    onClick={() => router.push("/category")}
-                    className="mt-3 inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
-                  >
-                    Return to all categories
-                  </button>
+                  ))}
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Products Grid/List */}
-          {!isLoading && !error && sortedProducts.length > 0 && (
-            <div
-              className={`grid gap-6 ${
-                viewMode === "grid"
-                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "grid-cols-1"
-              }`}
-            >
-              {sortedProducts.map((product) => (
-                <div
-                  key={product._id || product.id}
-                  className={`group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 ${
-                    viewMode === "list" ? "flex" : ""
-                  }`}
-                >
-                  <div
-                    className={`relative overflow-hidden ${
-                      viewMode === "list" ? "w-48 flex-shrink-0" : "h-48"
-                    }`}
-                  >
-                    <CustomImage
-                      src={getProductImageUrl(product)}
-                      alt={product.images?.[0]?.altText || product.name}
-                      fallback={fallbackImage}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {product.discountPercentage > 0 && (
-                      <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-                        -{product.discountPercentage}%
-                      </div>
-                    )}
-                    {product.quantity === 0 && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <span className="text-white font-semibold bg-red-600 px-3 py-1 rounded-full text-sm">
-                          Out of Stock
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-6 flex-1">
-                    <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                      {product.name}
-                    </h3>
-
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-4">
-                      {product.description}
-                    </p>
-
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <span className="text-2xl font-bold text-blue-600">
-                        {product.formattedPrice || `₹${product.price}`}
-                      </span>
-                      {product.oldPrice > product.price && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {product.formattedOldPrice || `₹${product.oldPrice}`}
-                        </span>
-                      )}
-                    </div>
-
-                    <button
-                      className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${
-                        product.quantity === 0
-                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg active:scale-95"
-                      }`}
-                      disabled={product.quantity === 0}
-                    >
-                      {product.quantity === 0 ? "Out of Stock" : "Add to Cart"}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && !error && products.length === 0 && (
+          ) : (
             <div className="text-center py-16">
               <div className="bg-white rounded-2xl p-12 shadow-lg max-w-md mx-auto">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -375,4 +488,24 @@ export default function CategoryProductsPage() {
       <Footer />
     </>
   );
-}
+};
+
+// Suspense wrapper
+const CategoryProductsPage = () => {
+  const fallback = (
+    <div className="bg-white min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading products...</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <Suspense fallback={fallback}>
+      <CategoryProductsComponent />
+    </Suspense>
+  );
+};
+
+export default CategoryProductsPage;

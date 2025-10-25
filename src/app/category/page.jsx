@@ -36,7 +36,6 @@ export default function CategoryPage() {
     setSelectedCategory(categoryId);
   };
 
-  // Fallback image in case of loading errors
   const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
 
   return (

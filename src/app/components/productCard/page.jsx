@@ -56,6 +56,12 @@ const ProductCard = ({
     return product.images[0].url;
   };
 
+  // Strip HTML tags for plain text preview (optional)
+  const getPlainTextDescription = (html) => {
+    if (!html) return "";
+    return html.replace(/<[^>]*>/g, '').substring(0, 100);
+  };
+
   const deliveryTime = `${Math.floor(Math.random() * 11) + 5} mins`;
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
 
@@ -109,9 +115,13 @@ const ProductCard = ({
             </p>
           )}
           
-          <p className="text-xs text-gray-500 mb-2 line-clamp-1">
-            {product?.description || ""}
-          </p>
+          {/* TinyMCE Content Display */}
+          <div 
+            className="text-xs text-gray-500 mb-2 line-clamp-2 prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ 
+              __html: product?.description ? getPlainTextDescription(product.description) + '...' : "" 
+            }}
+          />
         </div>
         
         {/* Price Section */}
