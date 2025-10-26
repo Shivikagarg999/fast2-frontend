@@ -13,7 +13,8 @@ const ProductCard = ({
   onAddToCart = () => {}, 
   onUpdateQuantity = () => {}, 
   isAddingToCart = false, 
-  isLoggedIn = false
+  isLoggedIn = false,
+  discountInfo = null
 }) => {
   const handleAdd = async (e) => {
     e.stopPropagation();
@@ -48,15 +49,13 @@ const ProductCard = ({
       return "https://via.placeholder.com/200x200?text=No+Image";
     }
     
-    // Try to find primary image first
     const primaryImage = product.images.find(img => img.isPrimary);
     if (primaryImage) return primaryImage.url;
     
-    // Otherwise return the first image
     return product.images[0].url;
   };
 
-  // Strip HTML tags for plain text preview (optional)
+  // Strip HTML tags for plain text preview
   const getPlainTextDescription = (html) => {
     if (!html) return "";
     return html.replace(/<[^>]*>/g, '').substring(0, 100);
@@ -65,26 +64,60 @@ const ProductCard = ({
   const deliveryTime = `${Math.floor(Math.random() * 11) + 5} mins`;
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
 
-  const discountPercent = product?.oldPrice
-    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
-    : null;
+  // Calculate discount information
+  const calculateDiscountInfo = () => {
+    // Only consider discount if it comes from discountInfo (applied discount)
+    if (discountInfo && discountInfo.discountPercentage > 0) {
+      const discountedPrice = product.price - (product.price * discountInfo.discountPercentage / 100);
+      return {
+        hasDiscount: true,
+        discountPercent: discountInfo.discountPercentage,
+        originalPrice: product.price,
+        discountedPrice: discountedPrice,
+        type: 'category',
+        discountName: discountInfo.name,
+        savings: product.price - discountedPrice
+      };
+    }
+    
+    return {
+      hasDiscount: false,
+      discountPercent: 0,
+      originalPrice: product.price,
+      discountedPrice: product.price,
+      type: null,
+      savings: 0
+    };
+  };
+
+  const discount = calculateDiscountInfo();
+  const displayPrice = discount.hasDiscount ? discount.discountedPrice : product.price;
 
   return (
     <div 
-      className="bg-white rounded-lg overflow-hidden transition-shadow duration-200 hover:shadow-md flex flex-col h-full cursor-pointer"
+      className="bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md flex flex-col h-full cursor-pointer border border-gray-100 hover:border-gray-200 relative"
       onClick={handleCardClick}
     >
-      {/* Product Image */}
-      <div className="relative h-32 bg-white flex items-center justify-center p-3">
-        {discountPercent && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-medium z-10">
-            {discountPercent}% OFF
+      {/* Discount Badge - ONLY show if there's an APPLIED discount */}
+      {discount.hasDiscount && (
+        <div className="absolute top-2 left-2 z-10">
+          <div className="px-2 py-1 rounded-full text-xs font-bold text-white shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
+            {discount.discountPercent}% OFF
           </div>
-        )}
+          {discount.discountName && (
+            <div className="mt-1 px-2 py-1 bg-blue-500 text-white text-xs rounded-full">
+              {discount.discountName}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Product Image */}
+      <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
         <img 
           src={getProductImage()} 
           alt={product?.name || "Product"}
-          className="object-contain h-full w-full"
+          className="object-contain h-full w-full transition-transform duration-300 hover:scale-105"
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/200x200?text=No+Image";
           }}
@@ -115,7 +148,7 @@ const ProductCard = ({
             </p>
           )}
           
-          {/* TinyMCE Content Display */}
+          {/* Description */}
           <div 
             className="text-xs text-gray-500 mb-2 line-clamp-2 prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{ 
@@ -124,18 +157,30 @@ const ProductCard = ({
           />
         </div>
         
-        {/* Price Section */}
+        {/* Price Section - Show DISCOUNTED price as main price */}
         <div className="mb-3">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mb-1">
+            {/* DISCOUNTED PRICE as main price */}
             <span className="text-sm font-bold text-gray-900">
-              ₹{product?.price ?? 0}
+              ₹{Math.round(displayPrice)}
             </span>
-            {product?.oldPrice && (
+            
+            {/* Show ORIGINAL price crossed out if there's discount */}
+            {discount.hasDiscount && (
               <span className="text-xs text-gray-400 line-through">
-                ₹{product.oldPrice}
+                ₹{Math.round(discount.originalPrice)}
               </span>
             )}
           </div>
+          
+          {/* Show savings if there's discount */}
+          {discount.hasDiscount && (
+            <div className="flex items-center space-x-1">
+              <span className="text-xs text-green-600 font-semibold">
+                Save ₹{Math.round(discount.savings)}
+              </span>
+            </div>
+          )}
         </div>
         
         {/* Add to Cart Section */}

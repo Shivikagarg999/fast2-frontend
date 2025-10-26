@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeftIcon, StarIcon, ClockIcon, ShieldCheckIcon, TruckIcon, ArrowPathIcon, ChevronDownIcon, ChevronUpIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, StarIcon, ClockIcon, ShieldCheckIcon, TruckIcon, ArrowPathIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
 
@@ -18,24 +18,21 @@ const ProductDetailPage = () => {
   const [cartMessage, setCartMessage] = useState('');
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
+  const [discountInfo, setDiscountInfo] = useState(null);
 
   useEffect(() => {
     checkAuthStatus();
     getProductData();
+    fetchDiscountInfo();
   }, []);
 
   useEffect(() => {
     if (product) {
-      console.log('Product data:', product);
-      console.log('Product variants:', product.variants);
-      
       if (product.variants && product.variants.length > 0 && product.variants[0].options.length > 0) {
         const firstVariant = product.variants[0].options[0];
         setSelectedVariant(firstVariant);
         setCurrentPrice(Number(firstVariant.price) || Number(product.price));
-        console.log('Setting first variant:', firstVariant);
       } else {
-        // No variants, use base product price
         setCurrentPrice(Number(product.price));
       }
     }
@@ -82,6 +79,29 @@ const ProductDetailPage = () => {
       }
     }
     setLoading(false);
+  };
+
+  const fetchDiscountInfo = async () => {
+    try {
+      const response = await fetch('https://api.fast2.in/api/admin/discount/active');
+      const data = await response.json();
+      
+      if (data.discounts && data.discounts.length > 0) {
+        const storedProduct = sessionStorage.getItem('selectedProduct');
+        if (storedProduct) {
+          const productData = JSON.parse(storedProduct);
+          const categoryDiscount = data.discounts.find(discount => 
+            discount.category && discount.category._id === productData.category?._id
+          );
+          
+          if (categoryDiscount) {
+            setDiscountInfo(categoryDiscount);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching discount info:', error);
+    }
   };
 
   const getProductImage = () => {
@@ -184,14 +204,34 @@ const ProductDetailPage = () => {
     }
   };
 
+  // Calculate discount information
   const calculateDiscount = () => {
-    if (product?.oldPrice && product.oldPrice > currentPrice) {
-      return Math.round(((product.oldPrice - currentPrice) / product.oldPrice) * 100);
+    // ONLY consider discount if it comes from discountInfo (applied discount)
+    if (discountInfo && discountInfo.discountPercentage > 0) {
+      const discountedPrice = currentPrice - (currentPrice * discountInfo.discountPercentage / 100);
+      return {
+        hasDiscount: true,
+        discountPercent: discountInfo.discountPercentage,
+        originalPrice: currentPrice,
+        discountedPrice: discountedPrice,
+        type: 'category',
+        discountName: discountInfo.name,
+        savings: currentPrice - discountedPrice
+      };
     }
-    return 0;
+    
+    return {
+      hasDiscount: false,
+      discountPercent: 0,
+      originalPrice: currentPrice,
+      discountedPrice: currentPrice,
+      type: null,
+      savings: 0
+    };
   };
 
   const discount = calculateDiscount();
+  const displayPrice = discount.hasDiscount ? discount.discountedPrice : currentPrice;
 
   if (loading) {
     return (
@@ -221,7 +261,7 @@ const ProductDetailPage = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       
       {showLoginPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
@@ -257,9 +297,18 @@ const ProductDetailPage = () => {
                     e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
                   }}
                 />
-                {discount > 0 && (
-                  <div className="absolute top-4 left-4 bg-red-500 text-white text-sm px-3 py-1 rounded-full font-semibold">
-                    {discount}% OFF
+                
+                {/* Discount Badges - ONLY show if there's an APPLIED discount */}
+                {discount.hasDiscount && (
+                  <div className="absolute top-4 left-4 space-y-2">
+                    <div className="px-4 py-2 rounded-full text-white font-bold shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
+                      {discount.discountPercent}% OFF
+                    </div>
+                    {discount.discountName && (
+                      <div className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full font-semibold shadow-lg">
+                        {discount.discountName}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -300,22 +349,29 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              {/* Price Section */}
+              {/* Price Section - Show DISCOUNTED price as main price */}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-4">
-                  <span className="text-3xl font-bold text-gray-900">₹{currentPrice}</span>
-                  {product.oldPrice && product.oldPrice > currentPrice && (
-                    <span className="text-lg text-gray-500 line-through">{formatPrice(product.oldPrice)}</span>
+                  {/* DISCOUNTED PRICE as main price */}
+                  <span className="text-3xl font-bold text-gray-900">₹{Math.round(displayPrice)}</span>
+                  
+                  {/* Show ORIGINAL price crossed out if there's discount */}
+                  {discount.hasDiscount && (
+                    <span className="text-lg text-gray-500 line-through">
+                      {formatPrice(discount.originalPrice)}
+                    </span>
                   )}
                 </div>
-                {discount > 0 && (
-                  <span className="text-blue-600 font-semibold text-sm block mt-1">
-                    You save {formatPrice(product.oldPrice - currentPrice)} ({discount}%)
+                
+                {/* Show savings if there's discount */}
+                {discount.hasDiscount && (
+                  <span className="text-green-600 font-semibold text-sm block mt-1">
+                    You save {formatPrice(discount.savings)} ({discount.discountPercent}%)
                   </span>
                 )}
               </div>
 
-              {/* Variants Section (Blinkit Style) */}
+              {/* Variants Section */}
               {product.variants && product.variants.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-base font-semibold text-gray-800 mb-3">Select {product.variants[0].name}</h3>
@@ -325,7 +381,6 @@ const ProductDetailPage = () => {
                         key={optIndex}
                         onClick={() => {
                           setSelectedVariant(option);
-                          // Use the variant price directly (each variant has its own complete price)
                           setCurrentPrice(Number(option.price));
                         }}
                         className={`flex flex-col items-center justify-center w-24 px-3 py-3 rounded-xl border-2 text-sm font-medium transition-all ${

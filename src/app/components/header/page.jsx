@@ -95,6 +95,7 @@ const MobileSearchInputFallback = () => (
 );
 
 // Location Selector Component with Fixed Width
+// Location Selector Component with Fixed Width
 function LocationSelector({ isMobile = false }) {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -172,6 +173,42 @@ function LocationSelector({ isMobile = false }) {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
+  // Extract location name from Mapbox feature
+  const extractLocationName = (feature) => {
+    if (!feature) return 'Unknown Location';
+    
+    // Try to get a readable location name from Mapbox response
+    const { place_name, text, context } = feature;
+    
+    // If place_name exists, use it (this is the full address)
+    if (place_name) {
+      return place_name;
+    }
+    
+    // Otherwise, try to build a name from available properties
+    if (text) {
+      // Get locality/city from context
+      const locality = context?.find(ctx => ctx.id.includes('place'))?.text;
+      const region = context?.find(ctx => ctx.id.includes('region'))?.text;
+      
+      if (locality && region) {
+        return `${text}, ${locality}, ${region}`;
+      } else if (locality) {
+        return `${text}, ${locality}`;
+      } else {
+        return text;
+      }
+    }
+    
+    // Fallback to coordinates if nothing else works
+    if (feature.geometry?.coordinates) {
+      const [lng, lat] = feature.geometry.coordinates;
+      return `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    }
+    
+    return 'Unknown Location';
+  };
+
   // Get current location using browser geolocation
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -241,21 +278,31 @@ function LocationSelector({ isMobile = false }) {
       const data = await response.json();
       
       if (data.features && data.features.length > 0) {
-        return data.features[0].place_name;
+        return extractLocationName(data.features[0]);
       } else {
         throw new Error('No location found');
       }
     } catch (error) {
       console.error('Reverse geocoding error:', error);
-      return `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+      // Return a formatted location name instead of raw coordinates
+      return `Location near ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     }
   };
 
   // Handle location selection from search results
   const handleLocationSelect = (location) => {
-    const locationName = location.place_name;
+    const locationName = extractLocationName(location);
     setSelectedLocation(locationName);
     localStorage.setItem('userLocation', locationName);
+    setShowLocationDropdown(false);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  // Handle manual location selection from common locations
+  const handleManualLocationSelect = (location) => {
+    setSelectedLocation(location);
+    localStorage.setItem('userLocation', location);
     setShowLocationDropdown(false);
     setSearchQuery('');
     setSearchResults([]);
@@ -270,15 +317,6 @@ function LocationSelector({ isMobile = false }) {
     'Saket, Delhi',
     'Hauz Khas, Delhi'
   ];
-
-  // Handle manual location selection from common locations
-  const handleManualLocationSelect = (location) => {
-    setSelectedLocation(location);
-    localStorage.setItem('userLocation', location);
-    setShowLocationDropdown(false);
-    setSearchQuery('');
-    setSearchResults([]);
-  };
 
   const displayLocation = selectedLocation || 'Select your location';
 
@@ -371,7 +409,7 @@ function LocationSelector({ isMobile = false }) {
                     >
                       <MapPinIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
                       <span className="text-sm text-gray-700 truncate">
-                        {location.place_name}
+                        {extractLocationName(location)}
                       </span>
                     </div>
                   ))}
