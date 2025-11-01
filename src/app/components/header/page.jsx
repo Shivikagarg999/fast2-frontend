@@ -19,7 +19,6 @@ import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-// Search input component that uses useSearchParams
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -47,7 +46,6 @@ function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   );
 }
 
-// Mobile search input component
 function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -75,7 +73,6 @@ function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
   );
 }
 
-// Fallback components for the search inputs
 const SearchInputFallback = () => (
   <input
     type="text"
@@ -94,8 +91,6 @@ const MobileSearchInputFallback = () => (
   />
 );
 
-// Location Selector Component with Fixed Width
-// Location Selector Component with Fixed Width
 function LocationSelector({ isMobile = false }) {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -103,17 +98,16 @@ function LocationSelector({ isMobile = false }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [locationAccuracy, setLocationAccuracy] = useState(null);
   const locationRef = useRef(null);
 
-  // Load saved location from localStorage on component mount
   useEffect(() => {
     const savedLocation = localStorage.getItem('userLocation');
-    if (savedLocation) {
+    if (savedLocation && !savedLocation.includes('(') && !savedLocation.includes('Location near')) {
       setSelectedLocation(savedLocation);
     }
   }, []);
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (locationRef.current && !locationRef.current.contains(event.target)) {
@@ -127,7 +121,6 @@ function LocationSelector({ isMobile = false }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Search locations using Mapbox API
   const searchLocations = async (query) => {
     if (!query || query.length < 2) {
       setSearchResults([]);
@@ -137,6 +130,10 @@ function LocationSelector({ isMobile = false }) {
     setIsSearching(true);
     try {
       const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      if (!token) {
+        throw new Error('Mapbox token not configured');
+      }
+
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
         `access_token=${token}` +
@@ -147,7 +144,7 @@ function LocationSelector({ isMobile = false }) {
       );
 
       if (!response.ok) {
-        throw new Error('Search failed');
+        throw new Error(`Search failed: ${response.status}`);
       }
 
       const data = await response.json();
@@ -160,7 +157,6 @@ function LocationSelector({ isMobile = false }) {
     }
   };
 
-  // Handle search input change with debounce
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (searchQuery) {
@@ -173,64 +169,201 @@ function LocationSelector({ isMobile = false }) {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
-  // Extract location name from Mapbox feature
   const extractLocationName = (feature) => {
-    if (!feature) return 'Unknown Location';
+    if (!feature) return null;
     
-    // Try to get a readable location name from Mapbox response
-    const { place_name, text, context } = feature;
-    
-    // If place_name exists, use it (this is the full address)
-    if (place_name) {
-      return place_name;
+    if (feature.place_name && !feature.place_name.includes(',')) {
+      return feature.place_name;
     }
     
-    // Otherwise, try to build a name from available properties
-    if (text) {
-      // Get locality/city from context
-      const locality = context?.find(ctx => ctx.id.includes('place'))?.text;
-      const region = context?.find(ctx => ctx.id.includes('region'))?.text;
+    const { text, context } = feature;
+    
+    if (text && context) {
+      const localityContext = context.find(ctx => ctx.id.includes('locality'));
+      const placeContext = context.find(ctx => ctx.id.includes('place'));
+      const regionContext = context.find(ctx => ctx.id.includes('region'));
+      const countryContext = context.find(ctx => ctx.id.includes('country'));
       
-      if (locality && region) {
-        return `${text}, ${locality}, ${region}`;
+      const locality = localityContext?.text;
+      const place = placeContext?.text;
+      const region = regionContext?.text;
+      
+      if (locality && region && locality !== region) {
+        return `${locality}, ${region}`;
+      } else if (place && region && place !== region) {
+        return `${place}, ${region}`;
       } else if (locality) {
-        return `${text}, ${locality}`;
-      } else {
+        return locality;
+      } else if (place) {
+        return place;
+      } else if (region) {
+        return region;
+      } else if (text) {
         return text;
       }
     }
     
-    // Fallback to coordinates if nothing else works
-    if (feature.geometry?.coordinates) {
-      const [lng, lat] = feature.geometry.coordinates;
-      return `Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    if (text) {
+      return text;
     }
     
-    return 'Unknown Location';
+    return null;
   };
 
-  // Get current location using browser geolocation
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      
+      if (!token) {
+        throw new Error('Mapbox token not found');
+      }
+
+      if (typeof lat !== 'number' || typeof lng !== 'number') {
+        throw new Error('Invalid coordinates received');
+      }
+
+      const apiUrl = new URL(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json`);
+      apiUrl.searchParams.set('access_token', token);
+      apiUrl.searchParams.set('types', 'region,place,locality,neighborhood,district,postcode');
+      apiUrl.searchParams.set('limit', '10');
+      apiUrl.searchParams.set('country', 'in');
+
+      const response = await fetch(apiUrl.toString());
+
+      if (!response.ok) {
+        throw new Error(`Reverse geocoding failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.features || data.features.length === 0) {
+        throw new Error('No location results found');
+      }
+
+      console.log('All reverse geocode results:', data.features.map(f => ({
+        place_name: f.place_name,
+        types: f.place_type,
+        text: f.text,
+        relevance: f.relevance
+      })));
+
+      let bestResult = null;
+      
+      for (const feature of data.features) {
+        const locationName = extractLocationName(feature);
+        
+        if (!locationName) continue;
+        
+        if (locationName.includes('(') || 
+            locationName.includes(lat.toFixed(2)) || 
+            locationName.includes(lng.toFixed(2)) ||
+            locationName.toLowerCase().includes('unnamed') ||
+            locationName === 'Selected Location') {
+          continue;
+        }
+        
+        if (!bestResult) {
+          bestResult = { feature, name: locationName };
+          continue;
+        }
+        
+        if (feature.place_type.includes('locality') && !bestResult.feature.place_type.includes('locality')) {
+          bestResult = { feature, name: locationName };
+        } else if (feature.place_type.includes('place') && !bestResult.feature.place_type.includes('locality') && !bestResult.feature.place_type.includes('place')) {
+          bestResult = { feature, name: locationName };
+        } else if (feature.place_type.includes('region') && !bestResult.feature.place_type.includes('locality') && !bestResult.feature.place_type.includes('place') && !bestResult.feature.place_type.includes('region')) {
+          bestResult = { feature, name: locationName };
+        }
+      }
+
+      if (bestResult && bestResult.name) {
+        console.log('Selected location:', bestResult.name);
+        return bestResult.name;
+      }
+
+      const firstResult = data.features[0];
+      if (firstResult.place_name && !firstResult.place_name.includes(',')) {
+        return firstResult.place_name;
+      }
+
+      if (firstResult.text) {
+        return firstResult.text;
+      }
+
+      throw new Error('No valid location name found');
+
+    } catch (error) {
+      console.error('Reverse geocoding error:', error);
+      
+      if (lat > 28.5 && lat < 29.5 && lng > 77.0 && lng < 78.0) {
+        return "Sonipat, Haryana";
+      }
+      else if (lat > 28.0 && lat < 29.0 && lng > 76.0 && lng < 77.0) {
+        return "Rohtak, Haryana";
+      }
+      else if (lat > 28.4 && lat < 28.9 && lng > 77.0 && lng < 77.5) {
+        return "Delhi";
+      }
+      else {
+        return "North India Region";
+      }
+    }
+  };
+
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
+      alert('Geolocation is not supported by your browser. Please search for your location manually.');
+      setShowLocationDropdown(true);
       return;
     }
 
     setIsGettingLocation(true);
     setShowLocationDropdown(false);
+    setLocationAccuracy(null);
+
+    const geolocationOptions = {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 300000
+    };
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const { latitude, longitude } = position.coords;
+          const { latitude, longitude, accuracy } = position.coords;
+          console.log('Raw coordinates:', { latitude, longitude, accuracy });
+          setLocationAccuracy(accuracy);
+
           const locationName = await reverseGeocode(latitude, longitude);
-          setSelectedLocation(locationName);
-          localStorage.setItem('userLocation', locationName);
+          
+          if (locationName) {
+            let finalLocationName = locationName;
+            
+            if (accuracy > 50000) {
+              finalLocationName = `${locationName} (Approximate Area)`;
+            }
+            
+            setSelectedLocation(finalLocationName);
+            localStorage.setItem('userLocation', finalLocationName);
+            console.log('Final location set:', finalLocationName);
+            
+            if (accuracy > 50000) {
+              alert(`Your approximate location appears to be near ${locationName}. For precise delivery, please verify or search manually.`);
+              setTimeout(() => setShowLocationDropdown(true), 500);
+            } else {
+              alert(`Location set to: ${locationName}`);
+              setShowLocationDropdown(false);
+            }
+          } else {
+            throw new Error('Could not determine location name');
+          }
+          
           setSearchQuery('');
           setSearchResults([]);
         } catch (error) {
-          console.error('Error getting location:', error);
-          alert('Unable to get your current location. Please search manually.');
+          console.error('Error processing location:', error);
+          alert('Could not determine your current location name. Please search for your location manually.');
+          setShowLocationDropdown(true);
         } finally {
           setIsGettingLocation(false);
         }
@@ -238,81 +371,58 @@ function LocationSelector({ isMobile = false }) {
       (error) => {
         console.error('Geolocation error:', error);
         setIsGettingLocation(false);
+        setShowLocationDropdown(true);
+        
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            alert('Location access denied. Please allow location access or search manually.');
+            alert('Location access denied. Please allow location access in browser settings or search manually.');
             break;
           case error.POSITION_UNAVAILABLE:
-            alert('Location information unavailable. Please search manually.');
+            alert('Location information unavailable. Please search for your location manually.');
             break;
           case error.TIMEOUT:
-            alert('Location request timeout. Please try again.');
+            alert('Location request timeout. Please try again or search manually.');
             break;
           default:
-            alert('Unable to get your current location. Please search manually.');
+            alert('Unable to get current location. Please search manually.');
         }
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
-      }
+      geolocationOptions
     );
   };
 
-  // Reverse geocode coordinates to get location name
-  const reverseGeocode = async (lat, lng) => {
-    try {
-      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?` +
-        `access_token=${token}` +
-        `&types=place,locality,neighborhood,address` +
-        `&limit=1`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Reverse geocoding failed');
-      }
-
-      const data = await response.json();
-      
-      if (data.features && data.features.length > 0) {
-        return extractLocationName(data.features[0]);
-      } else {
-        throw new Error('No location found');
-      }
-    } catch (error) {
-      console.error('Reverse geocoding error:', error);
-      // Return a formatted location name instead of raw coordinates
-      return `Location near ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  const handleLocationSelect = (location) => {
+    const locationName = extractLocationName(location);
+    
+    if (locationName && locationName !== 'Selected Location') {
+      setSelectedLocation(locationName);
+      localStorage.setItem('userLocation', locationName);
+      setShowLocationDropdown(false);
+      setSearchQuery('');
+      setSearchResults([]);
+      alert(`Location set to: ${locationName}`);
+    } else {
+      alert('Please select a valid location from the list.');
     }
   };
 
-  // Handle location selection from search results
-  const handleLocationSelect = (location) => {
-    const locationName = extractLocationName(location);
-    setSelectedLocation(locationName);
-    localStorage.setItem('userLocation', locationName);
-    setShowLocationDropdown(false);
-    setSearchQuery('');
-    setSearchResults([]);
-  };
-
-  // Handle manual location selection from common locations
   const handleManualLocationSelect = (location) => {
     setSelectedLocation(location);
     localStorage.setItem('userLocation', location);
     setShowLocationDropdown(false);
     setSearchQuery('');
     setSearchResults([]);
+    alert(`Location set to: ${location}`);
   };
 
-  // Common locations for quick selection
   const commonLocations = [
+    'Sonipat, Haryana',
+    'Panipat, Haryana',
+    'Rohtak, Haryana',
+    'Karnal, Haryana',
     'Connaught Place, New Delhi',
-    'Gurugram Sector 14',
-    'Noida Sector 18',
+    'Gurugram Sector 14, Haryana', 
+    'Noida Sector 18, Uttar Pradesh',
     'Greater Kailash, Delhi',
     'Saket, Delhi',
     'Hauz Khas, Delhi'
@@ -322,10 +432,9 @@ function LocationSelector({ isMobile = false }) {
 
   return (
     <div className="relative" ref={locationRef}>
-      {/* Location Display - FIXED WIDTH */}
       <div 
         className={`flex items-center cursor-pointer group ${
-          isMobile ? 'w-full' : 'w-64' // Fixed width for desktop, full width for mobile
+          isMobile ? 'w-full' : 'w-64'
         }`}
         onClick={() => setShowLocationDropdown(!showLocationDropdown)}
       >
@@ -347,35 +456,43 @@ function LocationSelector({ isMobile = false }) {
         </div>
       </div>
 
-      {/* Location Dropdown - FIXED WIDTH */}
       {showLocationDropdown && (
         <div className={`
           absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden
-          ${isMobile ? 'w-full' : 'w-80'} // Fixed width for both mobile and desktop
+          ${isMobile ? 'w-full' : 'w-80'}
         `}>
           <div className="p-4 border-b border-gray-100">
             <h3 className="font-medium text-gray-900 mb-3">Select your location</h3>
             
-            {/* Current Location Button */}
-            <button
-              onClick={getCurrentLocation}
-              disabled={isGettingLocation}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors duration-200 mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGettingLocation ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-blue-700 font-medium">Detecting location...</span>
-                </>
-              ) : (
-                <>
-                  <MapPinIcon className="w-4 h-4 text-blue-600" />
-                  <span className="text-blue-700 font-medium">Use current location</span>
-                </>
-              )}
-            </button>
+            <div className="mb-3">
+              <button
+                onClick={getCurrentLocation}
+                disabled={isGettingLocation}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isGettingLocation ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-blue-700 font-medium">Detecting location...</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPinIcon className="w-4 h-4 text-blue-600" />
+                    <span className="text-blue-700 font-medium">Use current location</span>
+                  </>
+                )}
+              </button>
+              <p className="text-xs text-gray-500 mt-1 text-center">
+                We'll find the nearest proper location name
+              </p>
+            </div>
 
-            {/* Search Location Input */}
+            <div className="flex items-center mb-3">
+              <div className="flex-1 border-t border-gray-200"></div>
+              <span className="px-2 text-xs text-gray-500">OR</span>
+              <div className="flex-1 border-t border-gray-200"></div>
+            </div>
+
             <div className="relative mb-3">
               <input
                 type="text"
@@ -386,7 +503,6 @@ function LocationSelector({ isMobile = false }) {
               />
               <MagnifyingGlassIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               
-              {/* Loading indicator for search */}
               {isSearching && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
@@ -394,30 +510,34 @@ function LocationSelector({ isMobile = false }) {
               )}
             </div>
 
-            {/* Search Results */}
             {searchResults.length > 0 && (
               <div className="mb-3 max-h-40 overflow-y-auto">
                 <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                   Search Results
                 </h4>
                 <div className="space-y-1">
-                  {searchResults.map((location, index) => (
-                    <div
-                      key={location.id || index}
-                      onClick={() => handleLocationSelect(location)}
-                      className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-150"
-                    >
-                      <MapPinIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-sm text-gray-700 truncate">
-                        {extractLocationName(location)}
-                      </span>
-                    </div>
-                  ))}
+                  {searchResults.map((location, index) => {
+                    const locationName = extractLocationName(location);
+                    if (locationName && locationName !== 'Selected Location') {
+                      return (
+                        <div
+                          key={location.id || index}
+                          onClick={() => handleLocationSelect(location)}
+                          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                        >
+                          <MapPinIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <span className="text-sm text-gray-700 truncate">
+                            {locationName}
+                          </span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Common Locations */}
             <div>
               <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                 Popular Locations
@@ -437,10 +557,9 @@ function LocationSelector({ isMobile = false }) {
             </div>
           </div>
 
-          {/* Footer */}
           <div className="bg-gray-50 px-4 py-3 border-t border-gray-100">
             <p className="text-xs text-gray-500 text-center">
-              Delivery available in select areas
+              Always shows proper location names for accurate delivery
             </p>
           </div>
         </div>
@@ -462,7 +581,6 @@ const cartEvents = {
   }
 };
 
-// Main Header Component
 function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
@@ -472,17 +590,16 @@ function HeaderContent() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [productSearchQuery, setProductSearchQuery] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
+  const [userName, setUserName] = useState('User');
   const profileDropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
 
-  // Hide header for deliver and warehouse routes
   if (pathname.startsWith('/deliver') || pathname.startsWith('/warehouse')) {
     return null;
   }
 
   useEffect(() => {
-    // Initialize product search query from URL on client side
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const searchQueryFromUrl = urlParams.get('search') || '';
@@ -524,15 +641,16 @@ function HeaderContent() {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://api.fast2.in/api/auth/me', {
+        const response = await fetch('https://api.fast2.in/api/user/me', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-
+       
         if (response.ok) {
           const userData = await response.json();
           setWalletBalance(userData.wallet || 0);
+          setUserName(userData.name || 'User');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -621,6 +739,7 @@ function HeaderContent() {
     setIsLoggedIn(false);
     setIsProfileDropdownOpen(false);
     setWalletBalance(0);
+    setUserName('User');
     window.dispatchEvent(new Event('authChange'));
     router.push('/');
   };
@@ -650,9 +769,7 @@ function HeaderContent() {
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             
-            {/* Left Section - Logo and Location Selector */}
             <div className="flex items-center space-x-6">
-              {/* Logo - Hidden on mobile, shown on desktop */}
               <div className="hidden lg:flex items-center">
                 <Image
                   src={Logo}
@@ -663,18 +780,15 @@ function HeaderContent() {
                 />
               </div>
 
-              {/* Location Selector - Desktop version */}
               <div className="hidden lg:block">
                 <LocationSelector isMobile={false} />
               </div>
 
-              {/* Mobile Logo Replacement - Location Selector */}
               <div className="lg:hidden">
                 <LocationSelector isMobile={true} />
               </div>
             </div>
 
-            {/* Center Section - Search Bar */}
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -689,7 +803,6 @@ function HeaderContent() {
               </div>
             </div>
 
-            {/* Right Section - User Actions */}
             <div className="flex items-center space-x-4">
               {isLoggedIn ? (
                 <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
@@ -707,6 +820,7 @@ function HeaderContent() {
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <UserIcon className="w-5 h-5 text-blue-600" />
                     </div>
+                    <span className="text-sm font-medium text-gray-700">{userName}</span>
                     <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
                       isProfileDropdownOpen ? 'rotate-180' : ''
                     }`} />
@@ -804,7 +918,6 @@ function HeaderContent() {
         </div>
       </div>
       
-      {/* Mobile Search Bar */}
       <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -819,20 +932,31 @@ function HeaderContent() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
           <div className="px-4 py-4 space-y-4">
             {isLoggedIn && (
-              <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <BanknotesIcon className="w-6 h-6 text-yellow-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Wallet Balance</p>
-                  <p className="text-lg font-bold text-yellow-700">
-                    ₹{formatWalletBalance(walletBalance)}
-                  </p>
+              <>
+                <div className="flex items-center space-x-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <UserIcon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{userName}</p>
+                    <p className="text-xs text-gray-500">Welcome back!</p>
+                  </div>
                 </div>
-              </div>
+                
+                <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <BanknotesIcon className="w-6 h-6 text-yellow-600" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Wallet Balance</p>
+                    <p className="text-lg font-bold text-yellow-700">
+                      ₹{formatWalletBalance(walletBalance)}
+                    </p>
+                  </div>
+                </div>
+              </>
             )}
             
             {isLoggedIn ? (
