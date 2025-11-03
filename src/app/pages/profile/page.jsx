@@ -75,7 +75,7 @@ const ProfilePage = () => {
         return;
       }
 
-      const response = await fetch('https://api.fast2.in/api/user/profile/', {
+      const response = await fetch('http://localhost:5000/api/user/profile/', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -128,7 +128,7 @@ const ProfilePage = () => {
       setSuccess('');
       
       const token = getToken();
-      const response = await fetch('https://api.fast2.in/api/user/profile', {
+      const response = await fetch('http://localhost:5000/api/user/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -177,7 +177,7 @@ const ProfilePage = () => {
       const formData = new FormData();
       formData.append('avatar', avatarFile);
 
-      const response = await fetch('https://api.fast2.in/api/user/profile/avatar', {
+      const response = await fetch('http://localhost:5000/api/user/profile/avatar', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -219,7 +219,7 @@ const ProfilePage = () => {
 
     try {
       const token = getToken();
-      const response = await fetch('https://api.fast2.in/api/user/profile/', {
+      const response = await fetch('http://localhost:5000/api/user/profile/', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -488,40 +488,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Account Options */}
-        <div className="bg-white rounded-xl shadow-sm p-2 mb-6">
-          <h3 className="font-medium text-gray-700 px-4 py-3">Account Settings</h3>
-          <div className="divide-y divide-gray-100">
-            <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <ShieldCheckIcon className="w-4 h-4 text-blue-600" />
-                </div>
-                <span>Privacy & Security</span>
-              </div>
-              <ChevronRightIcon className="w-5 h-5 text-gray-400" />
-            </button>
-            <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-                  <QuestionMarkCircleIcon className="w-4 h-4 text-purple-600" />
-                </div>
-                <span>Help & Support</span>
-              </div>
-              <ChevronRightIcon className="w-5 h-5 text-gray-400" />
-            </button>
-            <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center">
-                <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-3">
-                  <DocumentTextIcon className="w-4 h-4 text-amber-600" />
-                </div>
-                <span>Terms & Conditions</span>
-              </div>
-              <ChevronRightIcon className="w-5 h-5 text-gray-400" />
-            </button>
-          </div>
-        </div>
-
         {/* Save Button (when editing) */}
         {editing && (
           <div className="sticky bottom-4 bg-white rounded-xl shadow-lg p-4 border border-gray-200">
@@ -535,18 +501,6 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* Delete Account Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-red-100">
-          <h2 className="text-lg font-semibold text-red-700 mb-2">Danger Zone</h2>
-          <p className="text-gray-600 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
-          <button
-            onClick={deleteAccount}
-            className="flex items-center text-red-700 font-medium hover:text-red-800 p-2 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <TrashIcon className="w-5 h-5 mr-2" />
-            Delete Account
-          </button>
-        </div>
       </div>
       <Footer/>
     </div>

@@ -23,12 +23,16 @@ import {
   CreditCardIcon,
   MagnifyingGlassIcon,
   FunnelIcon,
-  UserIcon
+  UserIcon,
+  KeyIcon,
+  CurrencyRupeeIcon,
+  WalletIcon
 } from '@heroicons/react/24/outline';
 import { 
   CheckCircleIcon as CheckCircleSolidIcon,
   StarIcon as StarSolidIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  WalletIcon as WalletSolidIcon
 } from '@heroicons/react/24/solid';
 
 const MyOrdersPage = () => {
@@ -52,7 +56,7 @@ const MyOrdersPage = () => {
 
       try {
         setLoading(true);
-        const response = await fetch('https://api.fast2.in/api/order/my-orders', {
+        const response = await fetch('http://localhost:5000/api/order/my-orders', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -67,9 +71,14 @@ const MyOrdersPage = () => {
         
         const transformedOrders = data.map(order => ({
           _id: order._id,
-          orderNumber: `ORD${order._id.slice(-6).toUpperCase()}`,
+          orderId: order.orderId,
+          orderNumber: order.orderId || `ORD${order._id.slice(-6).toUpperCase()}`,
           status: order.status,
           total: order.total,
+          finalAmount: order.finalAmount,
+          walletDeduction: order.walletDeduction || 0,
+          cashOnDelivery: order.cashOnDelivery || order.finalAmount,
+          secretCode: order.secretCode,
           subtotal: order.total - (order.items?.[0]?.product?.delivery?.deliveryCharges || 0),
           deliveryFee: order.items?.[0]?.product?.delivery?.deliveryCharges || 0,
           items: order.items?.map(item => ({
@@ -113,6 +122,7 @@ const MyOrdersPage = () => {
     const matchesTab = activeTab === 'all' || order.status.toLowerCase() === activeTab.toLowerCase();
     const matchesSearch = searchTerm === '' || 
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.orderId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.items.some(item => 
         item.product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -180,29 +190,19 @@ const MyOrdersPage = () => {
           color: 'text-blue-600',
           bgColor: 'bg-blue-50',
           borderColor: 'border-blue-200',
-          label: 'Delivered',
+          label: 'Confirmed',
           description: 'Order is being processed',
           progress: 50
         };
-      case 'processing':
-        return {
-          icon: ClockIcon,
-          color: 'text-orange-600',
-          bgColor: 'bg-orange-50',
-          borderColor: 'border-orange-200',
-          label: 'Processing',
-          description: 'Getting your items ready',
-          progress: 75
-        };
-      case 'shipped':
+      case 'picked-up':
         return {
           icon: TruckIcon,
           color: 'text-purple-600',
           bgColor: 'bg-purple-50',
           borderColor: 'border-purple-200',
-          label: 'Shipped',
-          description: 'On the way to you',
-          progress: 90
+          label: 'Picked Up',
+          description: 'Driver has picked up your order',
+          progress: 75
         };
       case 'delivered':
         return {
@@ -237,10 +237,24 @@ const MyOrdersPage = () => {
     }
   };
 
+  const getPaymentMethodDisplay = (order) => {
+    if (order.walletDeduction > 0 && order.cashOnDelivery > 0) {
+      return 'Wallet + COD';
+    } else if (order.walletDeduction > 0) {
+      return 'Wallet';
+    } else {
+      return order.paymentMethod === 'cod' ? 'COD' : 'Online';
+    }
+  };
+
+  const getPayableAmount = (order) => {
+    return order.cashOnDelivery > 0 ? order.cashOnDelivery : 0;
+  };
+
   const handleReorder = async (order) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://api.fast2.in/api/cart/reorder', {
+      const response = await fetch('http://localhost:5000/api/cart/reorder', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -267,19 +281,20 @@ const MyOrdersPage = () => {
 
   const OrderDetailsModal = ({ order, onClose }) => {
     const statusInfo = getStatusInfo(order.status);
+    const payableAmount = getPayableAmount(order);
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
         <div 
-          className="absolute inset-0 bg-opacity-50 transition-opacity"
+          className="absolute mt-10 inset-0 bg-black bg-opacity-10 transition-opacity"
           onClick={onClose}
         />
         
-        <div className="relative bg-white mt-30 rounded-lg w-full max-w-md max-h-[75vh] overflow-hidden flex flex-col mx-auto z-10">
+        <div className="relative bg-white rounded-lg w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col mx-auto z-10">
           <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
             <div>
               <h2 className="text-lg font-bold text-gray-900">Order Details</h2>
-              <p className="text-xs text-gray-500 mt-1">{order.orderNumber}</p>
+              <p className="text-xs text-gray-500 mt-1">{order.orderId}</p>
             </div>
             <button 
               onClick={onClose}
@@ -290,6 +305,62 @@ const MyOrdersPage = () => {
           </div>
 
           <div className="overflow-y-auto flex-1">
+            {/* Secret Code & Payment Info */}
+            {(order.secretCode || order.walletDeduction > 0) && (
+              <div className="p-4 border-b border-gray-100 space-y-3">
+                {/* Secret Code */}
+                {order.secretCode && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <KeyIcon className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-800">Secret Code</span>
+                      </div>
+                      <code className="text-lg font-bold text-blue-800 bg-blue-100 px-2 py-1 rounded">
+                        {order.secretCode}
+                      </code>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-2">
+                      Share this code with the delivery executive to verify your order
+                    </p>
+                  </div>
+                )}
+
+                {/* Wallet Deduction */}
+                {order.walletDeduction > 0 && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <WalletIcon className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-800">Wallet Used</span>
+                      </div>
+                      <span className="text-lg font-bold text-green-800">
+                        -₹{order.walletDeduction}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Payable Amount */}
+                {payableAmount > 0 && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <CurrencyRupeeIcon className="w-4 h-4 text-orange-600" />
+                        <span className="text-sm font-medium text-orange-800">Payable Amount</span>
+                      </div>
+                      <span className="text-lg font-bold text-orange-800">
+                        ₹{payableAmount}
+                      </span>
+                    </div>
+                    <p className="text-xs text-orange-600 mt-1">
+                      Pay this amount to the delivery executive
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="p-4 border-b border-gray-100">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-2">
@@ -303,7 +374,7 @@ const MyOrdersPage = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold text-gray-900">₹{order.total}</p>
-                  <p className="text-xs text-gray-500">Total</p>
+                  <p className="text-xs text-gray-500">Order Total</p>
                 </div>
               </div>
 
@@ -348,10 +419,22 @@ const MyOrdersPage = () => {
                 <div className="bg-gray-50 rounded p-3 text-xs border border-gray-200 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Method</span>
-                    <span className="font-medium text-gray-900 capitalize">
-                      {order.paymentMethod === 'cod' ? 'COD' : order.paymentMethod}
+                    <span className="font-medium text-gray-900">
+                      {getPaymentMethodDisplay(order)}
                     </span>
                   </div>
+                  {order.walletDeduction > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Wallet Used</span>
+                      <span className="font-medium text-green-600">₹{order.walletDeduction}</span>
+                    </div>
+                  )}
+                  {payableAmount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Payable via COD</span>
+                      <span className="font-medium text-orange-600">₹{payableAmount}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-gray-600">Status</span>
                     <span className={`font-medium ${
@@ -419,9 +502,19 @@ const MyOrdersPage = () => {
                     <span className="text-gray-600">Delivery</span>
                     <span className="text-gray-900">₹{order.deliveryFee}</span>
                   </div>
+                  {order.walletDeduction > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Wallet Deduction</span>
+                      <span>-₹{order.walletDeduction}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between pt-2 border-t border-gray-200 font-semibold">
-                    <span className="text-gray-900">Total</span>
-                    <span className="text-blue-600">₹{order.total}</span>
+                    <span className="text-gray-900">
+                      {payableAmount > 0 ? 'Payable Amount' : 'Total'}
+                    </span>
+                    <span className={payableAmount > 0 ? 'text-orange-600' : 'text-blue-600'}>
+                      ₹{payableAmount > 0 ? payableAmount : order.finalAmount}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -533,9 +626,8 @@ const MyOrdersPage = () => {
             {[
               { id: 'all', label: 'All Orders', count: orders.length },
               { id: 'pending', label: 'Pending', count: orders.filter(o => o.status === 'pending').length },
-              { id: 'confirmed', label: 'Delivered', count: orders.filter(o => o.status === 'confirmed').length },
-              { id: 'processing', label: 'Processing', count: orders.filter(o => o.status === 'processing').length },
-              { id: 'shipped', label: 'Shipped', count: orders.filter(o => o.status === 'shipped').length },
+              { id: 'confirmed', label: 'Confirmed', count: orders.filter(o => o.status === 'confirmed').length },
+              { id: 'picked-up', label: 'Picked Up', count: orders.filter(o => o.status === 'picked-up').length },
               { id: 'delivered', label: 'Delivered', count: orders.filter(o => o.status === 'delivered').length },
               { id: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status === 'cancelled').length }
             ].map((tab) => (
@@ -591,9 +683,12 @@ const MyOrdersPage = () => {
           <div className="grid gap-4">
             {sortedOrders.map((order) => {
               const statusInfo = getStatusInfo(order.status);
+              const payableAmount = getPayableAmount(order);
+              const paymentMethod = getPaymentMethodDisplay(order);
 
               return (
                 <div key={order._id} className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-200">
+                  {/* Order Header with Secret Code & Payment Info */}
                   <div className="p-4 border-b border-gray-100">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex items-start space-x-3">
@@ -604,18 +699,50 @@ const MyOrdersPage = () => {
                           <div className="flex items-center space-x-2">
                             <h3 className="font-semibold text-gray-900">{statusInfo.label}</h3>
                             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                              {order.orderNumber}
+                              {order.orderId}
                             </span>
                           </div>
                           <p className="text-sm text-gray-500 flex items-center mt-1">
                             <CalendarIcon className="w-4 h-4 mr-1" />
                             {formatRelativeTime(order.createdAt)}
                           </p>
+                          
+                          {/* Secret Code Badge */}
+                          {order.secretCode && (
+                            <div className="flex items-center space-x-1 mt-2">
+                              <KeyIcon className="w-3 h-3 text-blue-600" />
+                              <span className="text-xs text-blue-600 font-medium">
+                                Secret Code: <code className="bg-blue-100 px-1 rounded">{order.secretCode}</code>
+                              </span>
+                            </div>
+                          )}
+                          
+                          {/* Payment Summary */}
+                          <div className="flex items-center space-x-2 mt-1">
+                            <span className="text-xs text-gray-500">
+                              {paymentMethod}
+                            </span>
+                            {order.walletDeduction > 0 && (
+                              <span className="text-xs text-green-600">
+                                • ₹{order.walletDeduction} from wallet
+                              </span>
+                            )}
+                            {payableAmount > 0 && (
+                              <span className="text-xs text-orange-600">
+                                • ₹{payableAmount} via COD
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-xl font-bold text-gray-900">₹{order.total}</p>
                         <p className="text-sm text-gray-500">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+                        {payableAmount > 0 && payableAmount !== order.total && (
+                          <p className="text-sm text-orange-600 font-medium">
+                            Pay: ₹{payableAmount}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -653,8 +780,8 @@ const MyOrdersPage = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center text-sm text-gray-600">
                         <ReceiptPercentIcon className="w-4 h-4 mr-2" />
-                        <span className="capitalize">
-                          {order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'} • 
+                        <span>
+                          {paymentMethod} • 
                           <span className={`ml-1 ${
                             order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'
                           }`}>

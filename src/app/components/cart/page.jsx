@@ -13,7 +13,10 @@ const Cart = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
-  // Check authentication status
+  const updateHeaderCartCount = () => {
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
+  };
+
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('token');
@@ -27,7 +30,6 @@ const Cart = () => {
 
     checkAuth();
     
-    // Listen for auth changes
     const handleAuthChange = () => checkAuth();
     window.addEventListener('authChange', handleAuthChange);
     window.addEventListener('storage', handleAuthChange);
@@ -38,7 +40,6 @@ const Cart = () => {
     };
   }, []);
 
-  // Subscribe to cart events from Header
   useEffect(() => {
     const handleOpenCart = () => {
       setIsOpen(true);
@@ -54,7 +55,6 @@ const Cart = () => {
     };
   }, [isLoggedIn]);
 
-  // API helper function
   const makeAuthenticatedRequest = async (url, options = {}) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -80,7 +80,6 @@ const Cart = () => {
     return response.json();
   };
 
-  // Fetch cart items from API
   const fetchCartItems = async () => {
     if (!isLoggedIn) return;
     
@@ -88,95 +87,92 @@ const Cart = () => {
     setError(null);
     
     try {
-      const data = await makeAuthenticatedRequest('https://api.fast2.in/api/cart/');
+      const data = await makeAuthenticatedRequest('http://localhost:5000/api/cart/');
       setCartItems(data.items || []);
+      updateHeaderCartCount();
     } catch (err) {
       console.error('Error fetching cart:', err);
       setError(err.message);
-      // If auth error, might need to logout
       if (err.message.includes('token') || err.message.includes('auth')) {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
         window.dispatchEvent(new Event('authChange'));
+        updateHeaderCartCount();
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Add item to cart
   const addToCart = async (productId, quantity = 1) => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest('https://api.fast2.in/api/cart/add', {
+      await makeAuthenticatedRequest('http://localhost:5000/api/cart/add', {
         method: 'POST',
         body: JSON.stringify({
           productId,
           quantity
         })
       });
-      await fetchCartItems(); // Refresh cart
+      await fetchCartItems();
     } catch (err) {
       console.error('Error adding to cart:', err);
       setError(err.message);
     }
   };
 
-  // Update item quantity
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1 || !isLoggedIn) return;
     
     try {
-      await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/update/${itemId}`, {
+      await makeAuthenticatedRequest(`http://localhost:5000/api/cart/update/${itemId}`, {
         method: 'PUT',
         body: JSON.stringify({
           quantity: newQuantity
         })
       });
       
-      // Update local state optimistically
       setCartItems(prevItems =>
         prevItems.map(item =>
           item._id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
+      
+      updateHeaderCartCount();
     } catch (err) {
       console.error('Error updating quantity:', err);
       setError(err.message);
-      // Refresh cart to get accurate data
       await fetchCartItems();
     }
   };
 
-  // Remove item from cart
   const removeItem = async (itemId) => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/remove/${itemId}`, {
+      await makeAuthenticatedRequest(`http://localhost:5000/api/cart/remove/${itemId}`, {
         method: 'DELETE'
       });
       
-      // Remove from local state optimistically
       setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
+      updateHeaderCartCount();
     } catch (err) {
       console.error('Error removing item:', err);
       setError(err.message);
-      // Refresh cart to get accurate data
       await fetchCartItems();
     }
   };
 
-  // Clear entire cart
   const clearCart = async () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest('https://api.fast2.in/api/cart/clear', {
+      await makeAuthenticatedRequest('http://localhost:5000/api/cart/clear', {
         method: 'DELETE'
       });
       setCartItems([]);
+      updateHeaderCartCount();
     } catch (err) {
       console.error('Error clearing cart:', err);
       setError(err.message);
@@ -185,7 +181,6 @@ const Cart = () => {
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      // Handle different possible API response structures
       const price = item.product?.price || item.price || 0;
       const quantity = item.quantity || 0;
       return total + (price * quantity);
@@ -199,14 +194,12 @@ const Cart = () => {
 
   const itemCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
 
-  // Truncate description to specified length
   const truncateDescription = (text, maxLength = 40) => {
     if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
-  // Show login prompt if not logged in
   if (!isLoggedIn && isOpen) {
     return (
       <>
@@ -258,13 +251,11 @@ const Cart = () => {
 
   return (
     <>
-      {/* Cart Sidebar - responsive width */}
       <div
         className={`fixed top-0 right-0 h-full w-full max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-xl border-l border-gray-100 z-60 transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Cart Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-5 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold">Your Cart</h2>
@@ -288,7 +279,6 @@ const Cart = () => {
           </div>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="bg-red-50 border-l-4 border-red-400 p-4 mx-4 mt-4">
             <p className="text-red-700 text-sm">{error}</p>
@@ -301,14 +291,12 @@ const Cart = () => {
           </div>
         )}
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         )}
 
-        {/* Cart Items */}
         <div className="h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] overflow-y-auto p-4">
           {!loading && cartItems.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
@@ -321,13 +309,11 @@ const Cart = () => {
           ) : (
             <div className="space-y-4">
               {cartItems.map((item) => {
-                // Handle different possible API response structures
                 const product = item.product || item;
                 const itemId = item._id || item.id;
                 const productName = product.name || product.title || 'Unknown Product';
                 const productDescription = truncateDescription(product.description || '');
                 const productPrice = product.price || 0;
-                // Handle image from different response structures
                 let productImage = '';
                 if (product.images && product.images.length > 0) {
                   productImage = product.images[0].url || '';
@@ -340,7 +326,6 @@ const Cart = () => {
 
                 return (
                   <div key={itemId} className="flex items-center p-3 sm:p-4 bg-white rounded-lg border border-gray-100 shadow-sm">
-                    {/* Product Image */}
                     <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden mr-3 sm:mr-4">
                       {productImage ? (
                         <img 
@@ -358,7 +343,6 @@ const Cart = () => {
                       </div>
                     </div>
                     
-                    {/* Product Info */}
                     <div className="flex-1 min-w-0 mr-2">
                       <h3 className="font-medium text-gray-800 text-sm sm:text-base truncate">{productName}</h3>
                       {productDescription && (
@@ -367,7 +351,6 @@ const Cart = () => {
                       <p className="text-blue-600 font-bold mt-1 text-sm sm:text-base">₹{productPrice}</p>
                     </div>
                     
-                    {/* Quantity Controls */}
                     <div className="flex flex-col items-end justify-between h-16">
                       <button
                         onClick={() => removeItem(itemId)}
@@ -404,7 +387,6 @@ const Cart = () => {
           )}
         </div>
 
-        {/* Cart Footer */}
         <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 sm:p-5">
           <div className="space-y-3 mb-4">
             <div className="flex justify-between items-center">
@@ -448,38 +430,37 @@ const Cart = () => {
       )}
     </>
   );
+};
 
-  // API functions to be used by other components
-  Cart.addToCart = async (productId, quantity = 1) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Please login to add items to cart');
+Cart.addToCart = async (productId, quantity = 1) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('Please login to add items to cart');
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/api/cart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        productId,
+        quantity
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to add to cart');
     }
 
-    try {
-      const response = await fetch('https://api.fast2.in/api/cart/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          productId,
-          quantity
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add to cart');
-      }
-
-      return response.json();
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-      throw err;
-    }
-  };
+    return response.json();
+  } catch (err) {
+    console.error('Error adding to cart:', err);
+    throw err;
+  }
 };
 
 export default Cart;

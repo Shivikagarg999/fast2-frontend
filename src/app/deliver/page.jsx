@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Logo from '@/assets/images/logo.png';
+import Footer from '../components/footer/page';
 
 export default function DeliveryPartnerPage() {
   const [showRegistration, setShowRegistration] = useState(false);
@@ -65,7 +66,7 @@ export default function DeliveryPartnerPage() {
       formDataToSend.append('aadharBack', formData.aadharBack);
       formDataToSend.append('panCard', formData.panCard);
 
-      const response = await fetch('https://api.fast2.in/api/driver/register', {
+      const response = await fetch('http://localhost:5000/api/driver/register', {
         method: 'POST',
         body: formDataToSend,
       });
@@ -605,34 +606,7 @@ export default function DeliveryPartnerPage() {
         </div>
       </section>
 
-      {/* Simple Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-6 md:mb-0">
-              <div className="rounded-xl flex items-center justify-center">
-                <Image 
-                  src={Logo} 
-                  alt="Fast2" 
-                  width={100} 
-                  height={100}
-                />
-              </div>
-            </div>
-            
-            <div className="flex space-x-8 text-gray-400">
-              <a href="#" className="hover:text-white transition">Terms</a>
-              <a href="#" className="hover:text-white transition">Privacy</a>
-              <a href="#" className="hover:text-white transition">Help</a>
-              <a href="#" className="hover:text-white transition">Contact</a>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 Fast2. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+     <Footer/>
     </div>
   );
 }

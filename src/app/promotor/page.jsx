@@ -5,14 +5,15 @@ import Image from 'next/image';
 import Logo from '@/assets/images/logo.png';
 import Footer from '../components/footer/page';
 
-export default function WarehousePartnerPage() {
+export default function PromoterPartnerPage() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
     city: '',
     state: '',
-    highestEducation: ''
+    experience: '',
+    businessType: ''
   });
   
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ export default function WarehousePartnerPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/warehouse/job-application', {
+      const response = await fetch('http://localhost:5000/api/promoter/partner-application', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +47,8 @@ export default function WarehousePartnerPage() {
           phoneNumber: '',
           city: '',
           state: '',
-          highestEducation: ''
+          experience: '',
+          businessType: ''
         });
       } else {
         alert(data.message || 'Application failed. Please try again.');
@@ -61,34 +63,13 @@ export default function WarehousePartnerPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-3">
-              <div className="rounded-xl flex items-center justify-center">
-                <Image 
-                  src={Logo} 
-                  alt="Fast2" 
-                  width={100} 
-                  height={100}
-                />
-              </div>
-            </div>
-           
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                Fast2 Warehouse
-              </span>
-          </div>
-        </div>
-      </nav>
 
       {/* Enhanced Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 py-24 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-emerald-700 py-24 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-400/20 rounded-full translate-x-1/3 translate-y-1/3"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full translate-x-1/3 translate-y-1/3"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
@@ -103,15 +84,15 @@ export default function WarehousePartnerPage() {
                     height={50}
                   />
                 </div>
-                <span className="text-white font-semibold text-sm">Join India's Fast-Growing Warehouse Team</span>
+                <span className="text-white font-semibold text-sm">Join India's Fast-Growing Partner Network</span>
               </div>
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Come Bring <span className="bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">Orders to Life</span>
+              Become a <span className="bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">Growth Partner</span>
             </h1>
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join our team and be part of India's fastest-growing logistics network.
+              Join our promoter network and earn lucrative commissions while helping businesses grow.
             </p>
             
             {!showRegistration ? (
@@ -128,7 +109,7 @@ export default function WarehousePartnerPage() {
                   </span>
                 </button>
                 <p className="text-blue-200 text-sm font-medium">
-                  Complete your application in just 2 minutes • Immediate openings available
+                  Complete your application in just 2 minutes • High commission structure
                 </p>
               </div>
             ) : (
@@ -144,8 +125,8 @@ export default function WarehousePartnerPage() {
                       />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Warehouse Job Application</h2>
-                      <p className="text-gray-600">Start your career with Fast2 Warehouse</p>
+                      <h2 className="text-2xl font-bold text-gray-900">Promoter Partner Application</h2>
+                      <p className="text-gray-600">Start your partnership with Fast2</p>
                     </div>
                   </div>
                 </div>
@@ -219,23 +200,41 @@ export default function WarehousePartnerPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-3">Highest Education *</label>
-                      <select
-                        name="highestEducation"
-                        value={formData.highestEducation}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all text-gray-800"
-                        required
-                      >
-                        <option value="">Select highest education</option>
-                        <option value="10th">10th Pass</option>
-                        <option value="12th">12th Pass</option>
-                        <option value="diploma">Diploma</option>
-                        <option value="graduate">Graduate</option>
-                        <option value="post-graduate">Post Graduate</option>
-                        <option value="other">Other</option>
-                      </select>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-3">Sales Experience *</label>
+                        <select
+                          name="experience"
+                          value={formData.experience}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all text-gray-800"
+                          required
+                        >
+                          <option value="">Select experience</option>
+                          <option value="none">No Experience</option>
+                          <option value="0-1">0-1 Years</option>
+                          <option value="1-3">1-3 Years</option>
+                          <option value="3-5">3-5 Years</option>
+                          <option value="5+">5+ Years</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-3">Business Type *</label>
+                        <select
+                          name="businessType"
+                          value={formData.businessType}
+                          onChange={handleChange}
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 transition-all text-gray-800"
+                          required
+                        >
+                          <option value="">Select business type</option>
+                          <option value="individual">Individual</option>
+                          <option value="agency">Agency</option>
+                          <option value="corporate">Corporate Partner</option>
+                          <option value="distributor">Distributor</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
 
@@ -253,7 +252,7 @@ export default function WarehousePartnerPage() {
                         Submitting Application...
                       </span>
                     ) : (
-                      'Submit Application & Start Earning'
+                      'Submit Application & Start Partnering'
                     )}
                   </button>
 
@@ -266,47 +265,99 @@ export default function WarehousePartnerPage() {
           </div>
         </div>
       </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Become a Fast2 Partner?</h2>
+            <p className="text-gray-600 text-lg">Unlock exceptional benefits and growth opportunities</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: "💰",
+                title: "High Commissions",
+                description: "Earn industry-leading commissions with transparent payout structure and regular bonuses"
+              },
+              {
+                icon: "🚀",
+                title: "Growth Support",
+                description: "Get dedicated marketing support, training materials, and sales tools to help you succeed"
+              },
+              {
+                icon: "🌐",
+                title: "Pan-India Network",
+                description: "Access our nationwide client base and expand your business across multiple regions"
+              },
+              {
+                icon: "⚡",
+                title: "Quick Onboarding",
+                description: "Start earning within days with our streamlined onboarding and training process"
+              },
+              {
+                icon: "🛡️",
+                title: "Exclusive Territories",
+                description: "Get exclusive rights to specific territories with protected business opportunities"
+              },
+              {
+                icon: "📈",
+                title: "Performance Rewards",
+                description: "Additional incentives, international trips, and recognition for top performers"
+              }
+            ].map((benefit, index) => (
+              <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+                <div className="text-4xl mb-4">{benefit.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="py-20 bg-white border-t border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-gray-600 text-lg">Get answers to common questions about working at Fast2 Warehouse</p>
+            <p className="text-gray-600 text-lg">Get answers to common questions about our Partner Program</p>
           </div>
 
           <div className="space-y-6">
             {[
               {
-                question: "What are the job responsibilities in the warehouse?",
-                answer: "Your main responsibilities will include order picking, packing, inventory management, loading/unloading goods, and maintaining warehouse cleanliness and organization."
+                question: "What does a Fast2 Promoter Partner do?",
+                answer: "As a promoter partner, you'll help businesses onboard onto our platform, promote our services, generate leads, and build long-term client relationships while earning attractive commissions."
               },
               {
-                question: "What are the working hours and shifts available?",
-                answer: "We offer flexible shifts: Morning (8 AM - 4 PM), Evening (4 PM - 12 AM), and Night (12 AM - 8 AM). You can choose the shift that works best for you."
+                question: "What commission structure do you offer?",
+                answer: "We offer a competitive commission structure with percentage-based earnings on all successful referrals, plus performance bonuses, override commissions, and special incentives for achieving targets."
               },
               {
-                question: "Is there any experience required?",
-                answer: "No prior warehouse experience is required. We provide complete training to all new team members. Basic education and willingness to learn are all you need."
+                question: "Is there any investment required?",
+                answer: "No upfront investment is required. We provide all necessary training, marketing materials, and support. You just need a smartphone and internet connection to get started."
               },
               {
                 question: "How and when will I get paid?",
-                answer: "We process payments every week directly to your bank account. Salaries are paid every Friday for the previous week's work."
+                answer: "Commissions are processed monthly directly to your bank account. We provide detailed performance reports and transparent tracking of all your earnings."
               },
               {
-                question: "What is the selection process?",
-                answer: "The process is simple: 1) Submit your application, 2) Quick phone interview, 3) Document verification, 4) Job offer and onboarding. The entire process takes 2-3 days."
+                question: "What support will I receive?",
+                answer: "You'll receive comprehensive training, marketing collateral, CRM access, dedicated account manager support, and regular updates on new products and promotions."
+              },
+              {
+                question: "Can I work part-time as a promoter partner?",
+                answer: "Yes! Many of our partners start part-time and gradually scale up. We offer flexible working hours that you can manage alongside your current commitments."
               },
               {
                 question: "Are there opportunities for career growth?",
-                answer: "Yes! We regularly promote from within. You can grow from Warehouse Associate to Team Lead, Supervisor, and even Warehouse Manager based on performance."
+                answer: "Absolutely! Successful partners can grow to become Area Managers, Regional Heads, or even start their own distribution agencies with our support."
               },
               {
-                question: "What facilities are provided at the warehouse?",
-                answer: "We provide safe working conditions, drinking water, rest areas, safety equipment, and clean washroom facilities. Some locations also provide meal facilities."
-              },
-              {
-                question: "Is transportation provided?",
-                answer: "While we don't provide transportation, our warehouses are located near public transport routes. We also offer shift allowance to help cover travel costs."
+                question: "What are the eligibility criteria?",
+                answer: "We look for individuals with good communication skills, basic smartphone knowledge, and a passion for sales. Prior experience is beneficial but not mandatory."
               }
             ].map((faq, index) => (
               <div key={index} className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow">
@@ -317,8 +368,8 @@ export default function WarehousePartnerPage() {
           </div>
         </div>
       </section>
-     
-     <Footer/>
+
+    <Footer/>
     </div>
   );
 }

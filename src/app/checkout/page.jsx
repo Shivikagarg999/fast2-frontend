@@ -10,16 +10,18 @@ import {
   PencilIcon,
   HomeIcon,
   BuildingOfficeIcon,
-  XMarkIcon
+  XMarkIcon,
+  WalletIcon
 } from '@heroicons/react/24/outline';
 import { 
   CheckCircleIcon as CheckCircleSolidIcon,
   HomeIcon as HomeSolidIcon,
-  BuildingOfficeIcon as BuildingOfficeSolidIcon
+  BuildingOfficeIcon as BuildingOfficeSolidIcon,
+  WalletIcon as WalletSolidIcon
 } from '@heroicons/react/24/solid';
 
 const CheckoutPage = () => {
-  const [step, setStep] = useState(1); // 1: Shipping, 2: Confirmation
+  const [step, setStep] = useState(1);
   const [cart, setCart] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,8 @@ const CheckoutPage = () => {
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [useWallet, setUseWallet] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
   const router = useRouter();
 
   // Form state
@@ -45,7 +49,7 @@ const CheckoutPage = () => {
     addressType: 'home'
   });
 
-  // Fetch cart items and saved addresses
+  // Fetch cart items, saved addresses, and wallet balance
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
@@ -58,7 +62,7 @@ const CheckoutPage = () => {
         setLoading(true);
         
         // Fetch cart
-        const cartResponse = await fetch('https://api.fast2.in/api/cart/', {
+        const cartResponse = await fetch('http://localhost:5000/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -75,7 +79,7 @@ const CheckoutPage = () => {
         }
 
         // Fetch saved addresses
-        const addressesResponse = await fetch('https://api.fast2.in/api/user/addresses/get', {
+        const addressesResponse = await fetch('http://localhost:5000/api/user/addresses/get', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -89,6 +93,18 @@ const CheckoutPage = () => {
               setSelectedAddress(defaultAddress);
               populateFormFromAddress(defaultAddress);
             }
+          }
+        }
+
+        // Fetch wallet balance
+        const walletResponse = await fetch('http://localhost:5000/api/user/wallet', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (walletResponse.ok) {
+          const walletData = await walletResponse.json();
+          if (walletData.success) {
+            setWalletBalance(walletData.balance || 0);
           }
         }
       } catch (err) {
@@ -160,13 +176,37 @@ const CheckoutPage = () => {
     }, 0);
   };
 
+  const calculateWalletDeduction = () => {
+    const total = calculateTotal() + 25; // Including delivery fee
+    return Math.min(walletBalance, total);
+  };
+
+  const calculateFinalAmount = () => {
+    const total = calculateTotal() + 25;
+    if (useWallet) {
+      return total - calculateWalletDeduction();
+    }
+    return total;
+  };
+
   const handleShippingChange = (e) => {
     const { name, value } = e.target;
     setShippingInfo(prev => ({ ...prev, [name]: value }));
   };
 
   const validateShipping = () => {
-  
+    const requiredFields = ['firstName', 'lastName', 'phone', 'addressLine', 'city', 'state', 'pinCode'];
+    for (const field of requiredFields) {
+      if (!shippingInfo[field]?.trim()) {
+        setError(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        return false;
+      }
+    }
+
+    if (shippingInfo.pinCode.length !== 6) {
+      setError('Please enter a valid 6-digit PIN code');
+      return false;
+    }
 
     setError(null);
     return true;
@@ -179,7 +219,15 @@ const CheckoutPage = () => {
     const token = localStorage.getItem('token');
 
     try {
+      // Prepare order items from cart
+      const items = cartItems.map(item => ({
+        product: item.product?._id || item.product,
+        quantity: item.quantity || 1,
+        price: item.price || item.product?.price || 0
+      }));
+
       const orderData = {
+        items,
         shippingAddress: {
           addressLine: shippingInfo.addressLine,
           city: shippingInfo.city,
@@ -188,10 +236,13 @@ const CheckoutPage = () => {
           country: shippingInfo.country,
           phone: shippingInfo.phone
         },
-        paymentMethod: 'cod'
+        paymentMethod: 'cod',
+        useWallet: useWallet
       };
 
-      const response = await fetch('https://api.fast2.in/api/order/', {
+      console.log('Sending order data:', orderData);
+
+      const response = await fetch('http://localhost:5000/api/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -206,13 +257,15 @@ const CheckoutPage = () => {
         throw new Error(responseData.message || responseData.error || 'Failed to place order');
       }
 
-      const orderId = responseData.orderId || responseData._id || responseData.id;
+      console.log('Order response:', responseData);
+
+      const orderId = responseData.order?.orderId || responseData.orderId;
       setOrderId(orderId || 'N/A');
       setStep(2);
 
       // Clear cart after successful order
       try {
-        await fetch('https://api.fast2.in/api/cart/clear', {
+        await fetch('http://localhost:5000/api/cart/clear', {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -237,7 +290,7 @@ const CheckoutPage = () => {
   const getAddressTypeColor = (type) => {
     switch (type) {
       case 'home': return 'text-blue-600 bg-blue-50 border-blue-200';
-      case 'work': return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'work': return 'text-green-600 bg-green-50 border-green-200';
       default: return 'text-purple-600 bg-purple-50 border-purple-200';
     }
   };
@@ -543,19 +596,66 @@ const CheckoutPage = () => {
                     </div>
                   )}
 
-                  {/* Payment Method */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
-                    <h3 className="font-semibold text-blue-800 mb-3">Payment Method</h3>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="w-6 h-6 rounded-full border-2 border-blue-600 flex items-center justify-center mr-3">
-                          <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                  {/* Payment Method Section */}
+                  <div className="space-y-4 mb-6">
+                    {/* Wallet Option */}
+                    {walletBalance > 0 && (
+                      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => setUseWallet(!useWallet)}
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
+                                useWallet 
+                                  ? 'border-green-600 bg-green-600' 
+                                  : 'border-gray-300 hover:border-green-400'
+                              }`}
+                            >
+                              {useWallet && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
+                            </button>
+                            <div className="flex items-center">
+                              {useWallet ? <WalletSolidIcon className="w-5 h-5 text-green-600 mr-2" /> : <WalletIcon className="w-5 h-5 text-green-600 mr-2" />}
+                              <span className="font-semibold text-green-800">Use Wallet Balance</span>
+                            </div>
+                          </div>
+                          <span className="font-semibold text-green-700">₹{walletBalance}</span>
                         </div>
-                        <span className="text-blue-800 font-semibold">Cash on Delivery</span>
+                        
+                        {useWallet && (
+                          <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
+                            <p className="text-sm text-green-700">
+                              ₹{calculateWalletDeduction()} will be deducted from your wallet balance.
+                              {calculateWalletDeduction() < (calculateTotal() + 25) && (
+                                <span className="block mt-1">
+                                  Remaining ₹{calculateFinalAmount()} to be paid via Cash on Delivery.
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      <span className="text-blue-700 font-medium">Pay with cash</span>
+                    )}
+
+                    {/* COD Option */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-6 h-6 rounded-full border-2 border-blue-600 flex items-center justify-center mr-3">
+                            <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                          </div>
+                          <span className="text-blue-800 font-semibold">Cash on Delivery</span>
+                        </div>
+                        <span className="text-blue-700 font-medium">
+                          {useWallet && walletBalance > 0 ? `₹${calculateFinalAmount()} to pay` : 'Pay with cash'}
+                        </span>
+                      </div>
+                      <p className="text-sm text-blue-600 mt-3">
+                        {useWallet && walletBalance > 0 
+                          ? `Pay remaining ₹${calculateFinalAmount()} with cash when your order is delivered.`
+                          : 'Pay with cash when your order is delivered. Exact change is appreciated.'
+                        }
+                      </p>
                     </div>
-                    <p className="text-sm text-blue-600 mt-3">Pay with cash when your order is delivered. Exact change is appreciated.</p>
                   </div>
 
                   {/* Place Order Button */}
@@ -570,7 +670,7 @@ const CheckoutPage = () => {
                         Placing Order...
                       </div>
                     ) : (
-                      `Place Order • ₹${calculateTotal() + 25}`
+                      `Place Order • ₹${calculateFinalAmount()}`
                     )}
                   </button>
                 </div>
@@ -584,8 +684,15 @@ const CheckoutPage = () => {
                     Thank you for your purchase. Your order will be delivered to your address soon.
                   </p>
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 max-w-md mx-auto mb-8">
-                    <h3 className="font-semibold text-blue-800 mb-2">Payment: Cash on Delivery</h3>
-                    <p className="text-blue-700">Please keep cash ready for when your order arrives</p>
+                    <h3 className="font-semibold text-blue-800 mb-2">
+                      {useWallet ? 'Partial Wallet Payment + COD' : 'Cash on Delivery'}
+                    </h3>
+                    <p className="text-blue-700">
+                      {useWallet 
+                        ? `₹${calculateWalletDeduction()} deducted from wallet, ₹${calculateFinalAmount()} to pay via COD`
+                        : 'Please keep cash ready for when your order arrives'
+                      }
+                    </p>
                     {orderId && orderId !== 'N/A' && (
                       <p className="text-sm text-blue-600 mt-3">Order ID: #{orderId}</p>
                     )}
@@ -632,10 +739,25 @@ const CheckoutPage = () => {
                     <span className="text-gray-600">Delivery Fee</span>
                     <span className="font-medium text-gray-900">₹25</span>
                   </div>
+                  
+                  {/* Wallet Deduction Display */}
+                  {useWallet && walletBalance > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Wallet Deduction</span>
+                      <span className="font-medium">-₹{calculateWalletDeduction()}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between pt-3 border-t border-gray-200">
                     <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-lg font-bold text-blue-600">₹{calculateTotal() + 25}</span>
+                    <span className="text-lg font-bold text-blue-600">₹{calculateFinalAmount()}</span>
                   </div>
+
+                  {useWallet && walletBalance > 0 && (
+                    <div className="text-xs text-gray-500 text-center mt-2">
+                      ₹{calculateWalletDeduction()} from wallet + ₹{calculateFinalAmount()} via COD
+                    </div>
+                  )}
                 </div>
 
                 {/* Selected Address Preview */}

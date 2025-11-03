@@ -12,7 +12,7 @@ export default function Footer() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "https://api.fast2.in/api/category/getall"
+          "http://localhost:5000/api/category/getall"
         );
         const data = await response.json();
         setCategories(data);
@@ -175,6 +175,16 @@ export default function Footer() {
                   className="hover:text-gray-900 transition-colors"
                 >
                   Seller
+                </a>
+              </li>
+                 <li>
+                <a
+                  href="/partner"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gray-900 transition-colors"
+                >
+                  Partner
                 </a>
               </li>
             </ul>
