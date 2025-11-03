@@ -56,7 +56,7 @@ const MyOrdersPage = () => {
 
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/order/my-orders', {
+        const response = await fetch('https://api.fast2.in/api/order/my-orders', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -254,7 +254,7 @@ const MyOrdersPage = () => {
   const handleReorder = async (order) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/cart/reorder', {
+      const response = await fetch('https://api.fast2.in/api/cart/reorder', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

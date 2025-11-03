@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react'; 
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline';
 
 const ProductListingComponent = () => {
   const router = useRouter();
@@ -16,6 +16,9 @@ const ProductListingComponent = () => {
   const [addingToCart, setAddingToCart] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [userPincode, setUserPincode] = useState('');
+  const [userLocation, setUserLocation] = useState('');
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
 
   const searchQuery = searchParams.get('search') || '';
 
@@ -25,15 +28,43 @@ const ProductListingComponent = () => {
       setIsLoggedIn(!!token);
     };
 
+    const loadUserLocation = () => {
+      const savedPincode = localStorage.getItem('userPincode');
+      const savedLocation = localStorage.getItem('userLocation');
+      
+      if (savedPincode) {
+        setUserPincode(savedPincode);
+      }
+      if (savedLocation) {
+        setUserLocation(savedLocation);
+      }
+      
+      if (!savedPincode) {
+        setShowLocationPrompt(true);
+      }
+    };
+
     checkAuth();
+    loadUserLocation();
+
+    const handleLocationUpdate = (event) => {
+      const locationData = event.detail;
+      setUserPincode(locationData.pincode);
+      setUserLocation(locationData.locationName);
+      setShowLocationPrompt(false);
+      fetchProducts(locationData.pincode);
+    };
+
     window.addEventListener('authChange', checkAuth);
     window.addEventListener('storage', checkAuth);
     window.addEventListener('userLoggedIn', checkAuth);
+    window.addEventListener('locationUpdated', handleLocationUpdate);
 
     return () => {
       window.removeEventListener('authChange', checkAuth);
       window.removeEventListener('storage', checkAuth);
       window.removeEventListener('userLoggedIn', checkAuth);
+      window.removeEventListener('locationUpdated', handleLocationUpdate);
     };
   }, []);
 
@@ -58,40 +89,64 @@ const ProductListingComponent = () => {
     return null;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        const productsResponse = await fetch('http://localhost:5000/api/product/');
-        if (!productsResponse.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const productsData = await productsResponse.json();
-        
-        const categoriesMap = {};
-        productsData.forEach(product => {
-          if (product.category) {
-            const categoryId = getCategoryId(product.category);
-            const categoryName = getCategoryName(product.category);
-            
-            if (categoryId) {
-              categoriesMap[categoryId] = categoryName;
-            }
-          }
-        });
-        
-        setProducts(productsData);
-        setCategories(categoriesMap);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const fetchProducts = async (pincode = '') => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      let url = 'https://api.fast2.in/api/product/';
+      const params = new URLSearchParams();
+      
+      if (pincode) {
+        params.append('pincode', pincode);
       }
-    };
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const productsResponse = await fetch(url);
+      if (!productsResponse.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const responseData = await productsResponse.json();
+      
+      // Handle different API response formats
+      const productsData = responseData.products || responseData.data || responseData;
+      
+      if (!Array.isArray(productsData)) {
+        throw new Error('Invalid products data format');
+      }
+      
+      const categoriesMap = {};
+      productsData.forEach(product => {
+        if (product.category) {
+          const categoryId = getCategoryId(product.category);
+          const categoryName = getCategoryName(product.category);
+          
+          if (categoryId) {
+            categoriesMap[categoryId] = categoryName;
+          }
+        }
+      });
+      
+      setProducts(productsData);
+      setCategories(categoriesMap);
+    } catch (err) {
+      setError(err.message);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (userPincode) {
+      fetchProducts(userPincode);
+    } else {
+      fetchProducts();
+    }
+  }, [userPincode]);
 
   useEffect(() => {
     const fetchCartQuantities = async () => {
@@ -102,7 +157,7 @@ const ProductListingComponent = () => {
       try {
         const token = localStorage.getItem('token');
         
-        const response = await fetch('http://localhost:5000/api/cart/', {
+        const response = await fetch('https://api.fast2.in/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -143,7 +198,7 @@ const ProductListingComponent = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:5000/api/cart/add', {  
+      const response = await fetch('https://api.fast2.in/api/cart/add', {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +245,7 @@ const ProductListingComponent = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('http://localhost:5000/api/cart/', {  
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -200,7 +255,7 @@ const ProductListingComponent = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`http://localhost:5000/api/cart/update/${cartItem._id}`, {  
+        const response = await fetch(`https://api.fast2.in/api/cart/update/${cartItem._id}`, {  
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -226,7 +281,7 @@ const ProductListingComponent = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('/api/cart/', {  
+      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -236,7 +291,7 @@ const ProductListingComponent = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`/api/cart/remove/${cartItem._id}`, {  
+        const response = await fetch(`https://api.fast2.in/api/cart/remove/${cartItem._id}`, {  
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -305,6 +360,13 @@ const ProductListingComponent = () => {
     router.push(`/product/${product._id}`);
   };
 
+  const handleSetLocation = () => {
+    const locationSelector = document.querySelector('[data-location-selector]');
+    if (locationSelector) {
+      locationSelector.click();
+    }
+  };
+
   if (loading) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
@@ -323,7 +385,7 @@ const ProductListingComponent = () => {
           <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Products</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
-            onClick={() => window.location.reload()}
+            onClick={() => fetchProducts(userPincode)}
             className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
           >
             Try Again
@@ -340,7 +402,65 @@ const ProductListingComponent = () => {
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
+      
+      {showLocationPrompt && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-3 rounded-lg z-50">
+          <div className="flex items-center space-x-2">
+            <MapPinIcon className="w-4 h-4" />
+            <p className="text-sm font-medium">Set your location to see available products</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-8xl mx-auto px-4 py-6">
+        {userPincode && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <MapPinIcon className="w-5 h-5 text-blue-600" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">
+                    Showing products available in your area
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    {userLocation} • Pincode: {userPincode}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleSetLocation}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                Change Location
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!userPincode && (
+          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <MapPinIcon className="w-5 h-5 text-orange-600" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">
+                    Set your location to see products available in your area
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Products are filtered based on delivery pincode
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleSetLocation}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+              >
+                Set Location
+              </button>
+            </div>
+          </div>
+        )}
+
         {selectedCategory === 'All' ? (
           <div className="space-y-8">
             {Object.keys(productsByCategory).length > 0 ? (
@@ -368,6 +488,7 @@ const ProductListingComponent = () => {
                           onUpdateQuantity={updateCartQuantity}
                           isAddingToCart={addingToCart[product._id] || false}
                           isLoggedIn={isLoggedIn}
+                          userPincode={userPincode}
                         />
                       ))}
                     </div>
@@ -375,15 +496,34 @@ const ProductListingComponent = () => {
                 </div>
               ))
             ) : (
-                <div className="text-center py-16">
-                    <div className="text-gray-300 text-6xl mb-4">
-                      <MagnifyingGlassIcon className="h-16 w-16 mx-auto" />
-                    </div>
+              <div className="text-center py-16">
+                <div className="text-gray-300 text-6xl mb-4">
+                  <MagnifyingGlassIcon className="h-16 w-16 mx-auto" />
+                </div>
+                {userPincode ? (
+                  <>
+                    <h3 className="text-xl font-medium text-gray-600 mb-2">
+                      No products found for "{searchQuery}" in your area
+                    </h3>
+                    <p className="text-gray-500 mb-4">
+                      Try changing your location or search for different products.
+                    </p>
+                    <button
+                      onClick={handleSetLocation}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+                    >
+                      Change Location
+                    </button>
+                  </>
+                ) : (
+                  <>
                     <h3 className="text-xl font-medium text-gray-600 mb-2">
                       No products found for "{searchQuery}"
                     </h3>
                     <p className="text-gray-500">Try a different search term.</p>
-                </div>
+                  </>
+                )}
+              </div>
             )}
           </div>
         ) : (
@@ -410,6 +550,7 @@ const ProductListingComponent = () => {
                     onUpdateQuantity={updateCartQuantity}
                     isAddingToCart={addingToCart[product._id] || false}
                     isLoggedIn={isLoggedIn}
+                    userPincode={userPincode}
                   />
                 ))}
               </div>
@@ -422,10 +563,43 @@ const ProductListingComponent = () => {
             <div className="text-gray-300 text-6xl mb-4">
               <MagnifyingGlassIcon className="h-16 w-16 mx-auto" />
             </div>
+            {userPincode ? (
+              <>
+                <h3 className="text-xl font-medium text-gray-600 mb-2">
+                  No products found for "{searchQuery}" in {selectedCategory} category
+                </h3>
+                <p className="text-gray-500">
+                  Try a different search term or check other categories.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-medium text-gray-600 mb-2">
+                  No products found for "{searchQuery}" in this category
+                </h3>
+                <p className="text-gray-500">Try a different search term or check other categories.</p>
+              </>
+            )}
+          </div>
+        )}
+
+        {products.length === 0 && !loading && !searchQuery && userPincode && (
+          <div className="text-center py-16">
+            <div className="text-gray-300 text-6xl mb-4">
+              <MapPinIcon className="h-16 w-16 mx-auto" />
+            </div>
             <h3 className="text-xl font-medium text-gray-600 mb-2">
-              No products found for "{searchQuery}" in this category
+              No products available in your area
             </h3>
-            <p className="text-gray-500">Try a different search term or check other categories.</p>
+            <p className="text-gray-500 mb-4">
+              We don't have any products that can be delivered to pincode {userPincode} yet.
+            </p>
+            <button
+              onClick={handleSetLocation}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+            >
+              Try Different Location
+            </button>
           </div>
         )}
       </div>
@@ -433,11 +607,7 @@ const ProductListingComponent = () => {
   );
 };
 
-
-// ADDED: A new wrapper component to handle the Suspense boundary.
 const ProductListing = () => {
-  // This is the loading UI that was already in your component.
-  // We use it as a fallback for Suspense.
   const fallback = (
     <div className="bg-white min-h-screen flex items-center justify-center">
       <div className="text-center">
