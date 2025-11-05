@@ -179,7 +179,7 @@ export default function Footer() {
               </li>
                  <li>
                 <a
-                  href="/partner"
+                  href="/promotor"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-gray-900 transition-colors"
