@@ -101,6 +101,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   const [locationAccuracy, setLocationAccuracy] = useState(null);
   const [pincode, setPincode] = useState('');
   const [streetAddress, setStreetAddress] = useState('');
+  const [locationError, setLocationError] = useState('');
   const locationRef = useRef(null);
 
   useEffect(() => {
@@ -116,6 +117,9 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     }
     if (savedStreetAddress) {
       setStreetAddress(savedStreetAddress);
+    } else {
+      // Auto-fetch location on first load if no saved location
+      autoDetectLocation();
     }
   }, []);
 
@@ -161,7 +165,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       const data = await response.json();
       setSearchResults(data.features || []);
     } catch (error) {
-      console.error('Location search error:', error);
+      // console.error('Location search error:', error);
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -229,6 +233,128 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     return postcodeContext?.text || '';
   };
 
+  const reverseGeocode = async (latitude, longitude) => {
+    try {
+      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      if (!token) {
+        throw new Error('Mapbox token not configured');
+      }
+
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?` +
+        `access_token=${token}` +
+        `&country=in` +
+        `&types=address,postcode,locality,place`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Reverse geocoding failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.features && data.features.length > 0 ? data.features[0] : null;
+    } catch (error) {
+      // console.error('Reverse geocoding error:', error);
+      throw error;
+    }
+  };
+
+  const autoDetectLocation = async () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsGettingLocation(true);
+    setLocationError('');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude, accuracy } = position.coords;
+          setLocationAccuracy(accuracy);
+
+          // Reverse geocode to get address details
+          const locationData = await reverseGeocode(latitude, longitude);
+          
+          if (locationData) {
+            const locationName = extractLocationName(locationData);
+            const locationPincode = extractPincode(locationData);
+            
+            // Extract street address from place_name
+            let address = locationData.place_name || '';
+            // Remove country name from address
+            address = address.replace(/, India$/, '');
+            
+            if (locationName) {
+              setSelectedLocation(locationName);
+              setStreetAddress(address);
+            }
+            
+            if (locationPincode) {
+              setPincode(locationPincode);
+              
+              // Auto-save if we have both address and pincode
+              if (address && locationPincode) {
+                const savedLocationData = {
+                  streetAddress: address,
+                  pincode: locationPincode,
+                  locationName: locationName || address,
+                  latitude,
+                  longitude,
+                  accuracy
+                };
+
+                localStorage.setItem('userStreetAddress', address);
+                localStorage.setItem('userPincode', locationPincode);
+                localStorage.setItem('userLocation', savedLocationData.locationName);
+                localStorage.setItem('userLocationData', JSON.stringify(savedLocationData));
+
+                if (onLocationSelect) {
+                  onLocationSelect(savedLocationData);
+                }
+
+                // Dispatch event for other components
+                window.dispatchEvent(new CustomEvent('locationUpdated', { 
+                  detail: savedLocationData 
+                }));
+              }
+            }
+          }
+        } catch (error) {
+          // console.error('Error processing location:', error);
+          setLocationError('Failed to get address details. Please enter manually.');
+        } finally {
+          setIsGettingLocation(false);
+        }
+      },
+      (error) => {
+        setIsGettingLocation(false);
+        let errorMessage = 'Unable to get your location';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please enable location permissions.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out.';
+            break;
+        }
+        
+        setLocationError(errorMessage);
+        // console.error('Geolocation error:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+
   const handleSaveLocation = () => {
     if (!pincode || !streetAddress) {
       alert('Please enter both street address and pincode');
@@ -292,7 +418,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     setPincode(location.pincode);
   };
 
-  const displayLocation = selectedLocation || 'Select your location';
+  const displayLocation = isGettingLocation ? 'Detecting location...' : (selectedLocation || 'Select your location');
 
   return (
     <div className="relative" ref={locationRef}>
@@ -300,20 +426,25 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
         className={`flex items-center cursor-pointer group ${
           isMobile ? 'w-full' : 'w-64'
         }`}
-        onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+        onClick={() => !isGettingLocation && setShowLocationDropdown(!showLocationDropdown)}
       >
         <div className={`
           flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg 
           transition-colors duration-200 border border-gray-200 w-full
           ${isMobile ? 'justify-center' : ''}
+          ${isGettingLocation ? 'opacity-75' : ''}
         `}>
-          <MapPinIcon className="w-4 h-4 text-red-500 flex-shrink-0" />
+          {isGettingLocation ? (
+            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+          ) : (
+            <MapPinIcon className="w-4 h-4 text-red-500 flex-shrink-0" />
+          )}
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-xs text-gray-500 whitespace-nowrap">Delivery to</span>
             <span className="text-sm font-medium text-gray-900 truncate max-w-[180px]">
               {displayLocation}
             </span>
-            {pincode && (
+            {pincode && !isGettingLocation && (
               <span className="text-xs text-gray-500">Pincode: {pincode}</span>
             )}
           </div>
@@ -363,17 +494,52 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
               </div>
             </div>
 
-            <button
-              onClick={handleSaveLocation}
-              disabled={!pincode || !streetAddress || pincode.length !== 6}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              Save Location
-            </button>
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={handleSaveLocation}
+                disabled={!pincode || !streetAddress || pincode.length !== 6}
+                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Save Location
+              </button>
+              
+              <button
+                onClick={autoDetectLocation}
+                disabled={isGettingLocation}
+                className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                title="Auto-detect my location"
+              >
+                {isGettingLocation ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span className="hidden sm:inline">Detecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <MapPinIcon className="w-4 h-4" />
+                    <span className="hidden sm:inline">Auto-detect</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {locationError && (
+              <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-xs text-red-600">{locationError}</p>
+              </div>
+            )}
+
+            {locationAccuracy && (
+              <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs text-blue-600">
+                  Location detected with {Math.round(locationAccuracy)}m accuracy
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center my-4">
               <div className="flex-1 border-t border-gray-200"></div>
-              <span className="px-2 text-xs text-gray-500">OR</span>
+              <span className="px-2 text-xs text-gray-500">OR SEARCH</span>
               <div className="flex-1 border-t border-gray-200"></div>
             </div>
 
@@ -556,7 +722,7 @@ function HeaderContent() {
           setUserName(userData.name || 'User');
         }
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        // console.error('Error fetching user data:', error);
       }
     };
 
@@ -589,7 +755,7 @@ function HeaderContent() {
           setCartItemCount(0);
         }
       } catch (error) {
-        console.error('Error fetching cart count:', error);
+        // console.error('Error fetching cart count:', error);
         setCartItemCount(0);
       }
     };
@@ -622,7 +788,7 @@ function HeaderContent() {
             setCartItemCount(totalItems);
           }
         } catch (error) {
-          console.error('Error fetching updated cart count:', error);
+          // console.error('Error fetching updated cart count:', error);
         }
       };
 
