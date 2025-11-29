@@ -26,7 +26,8 @@ import {
   UserIcon,
   KeyIcon,
   CurrencyRupeeIcon,
-  WalletIcon
+  WalletIcon,
+  DocumentArrowDownIcon
 } from '@heroicons/react/24/outline';
 import { 
   CheckCircleIcon as CheckCircleSolidIcon,
@@ -69,43 +70,70 @@ const MyOrdersPage = () => {
 
         const data = await response.json();
         
-        const transformedOrders = data.map(order => ({
+        // Debug: Log the API response to see the actual structure
+        console.log('API Response:', data);
+
+        // Handle different response structures
+        let ordersData = [];
+        
+        if (data.orders && Array.isArray(data.orders)) {
+          // Structure: { success: true, orders: [...] }
+          ordersData = data.orders;
+        } else if (Array.isArray(data)) {
+          // Structure: [...orders] (direct array)
+          ordersData = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          // Structure: { data: [...] }
+          ordersData = data.data;
+        } else {
+          console.warn('Unexpected API response structure:', data);
+          ordersData = [];
+        }
+
+        const transformedOrders = ordersData.map(order => ({
           _id: order._id,
           orderId: order.orderId,
-          orderNumber: order.orderId || `ORD${order._id.slice(-6).toUpperCase()}`,
-          status: order.status,
-          total: order.total,
-          finalAmount: order.finalAmount,
+          orderNumber: order.orderId || `ORD${order._id?.slice(-6)?.toUpperCase() || '000000'}`,
+          status: order.status || 'pending',
+          total: order.total || 0,
+          finalAmount: order.finalAmount || order.total || 0,
           walletDeduction: order.walletDeduction || 0,
-          cashOnDelivery: order.cashOnDelivery || order.finalAmount,
+          cashOnDelivery: order.cashOnDelivery || order.finalAmount || order.total || 0,
           secretCode: order.secretCode,
-          subtotal: order.total - (order.items?.[0]?.product?.delivery?.deliveryCharges || 0),
-          deliveryFee: order.items?.[0]?.product?.delivery?.deliveryCharges || 0,
+          subtotal: (order.total || 0) - 25, // Assuming ₹25 delivery fee
+          deliveryFee: 25,
           items: order.items?.map(item => ({
             _id: item._id,
             product: {
-              name: item.product?.name,
-              price: item.price,
-              originalPrice: item.product?.oldPrice,
+              name: item.product?.name || 'Product',
+              price: item.price || 0,
+              originalPrice: item.product?.oldPrice || 0,
               images: item.product?.images || [],
-              brand: item.product?.brand,
+              brand: item.product?.brand || '',
               weight: item.product?.weight ? `${item.product.weight}${item.product.weightUnit}` : '',
               category: item.product?.category,
               weightUnit: item.product?.weightUnit,
               unit: item.product?.unit,
               unitValue: item.product?.unitValue
             },
-            quantity: item.quantity,
-            total: item.price * item.quantity
+            quantity: item.quantity || 1,
+            total: (item.price || 0) * (item.quantity || 1)
           })) || [],
-          shippingAddress: order.shippingAddress,
-          paymentMethod: order.paymentMethod,
-          paymentStatus: order.paymentStatus,
-          createdAt: order.createdAt,
-          updatedAt: order.updatedAt
+          shippingAddress: order.shippingAddress || {
+            addressLine: '',
+            city: '',
+            state: '',
+            pinCode: '',
+            phone: ''
+          },
+          paymentMethod: order.paymentMethod || 'cod',
+          paymentStatus: order.paymentStatus || 'pending',
+          createdAt: order.createdAt || new Date(),
+          updatedAt: order.updatedAt || new Date()
         }));
 
-        setOrders(transformedOrders.reverse()); 
+        console.log('Transformed orders:', transformedOrders);
+        setOrders(transformedOrders.reverse());
 
       } catch (err) {
         console.error('Error fetching orders:', err);
@@ -117,6 +145,40 @@ const MyOrdersPage = () => {
 
     fetchOrders();
   }, [router]);
+
+  const handleDownloadInvoice = async (orderId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`https://api.fast2.in/api/order/${orderId}/invoice`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download invoice');
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${orderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      
+    } catch (error) {
+      console.error('Invoice download error:', error);
+      alert('Failed to download invoice. Please try again.');
+    }
+  };
 
   const filteredOrders = orders.filter(order => {
     const matchesTab = activeTab === 'all' || order.status.toLowerCase() === activeTab.toLowerCase();
@@ -145,31 +207,24 @@ const MyOrdersPage = () => {
   });
 
   const formatRelativeTime = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now - date;
-    const diffInMins = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInMs = now - date;
+      const diffInMins = Math.floor(diffInMs / (1000 * 60));
+      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+      const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    if (diffInMins < 1) return 'Just now';
-    if (diffInMins < 60) return `${diffInMins} min ago`;
-    if (diffInHours < 24) return `${diffInHours} hr ago`;
-    if (diffInDays === 1) return 'Yesterday';
-    if (diffInDays < 7) return `${diffInDays} days ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
-    return `${Math.floor(diffInDays / 30)} months ago`;
-  };
-
-  const formatFullDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+      if (diffInMins < 1) return 'Just now';
+      if (diffInMins < 60) return `${diffInMins} min ago`;
+      if (diffInHours < 24) return `${diffInHours} hr ago`;
+      if (diffInDays === 1) return 'Yesterday';
+      if (diffInDays < 7) return `${diffInDays} days ago`;
+      if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+      return `${Math.floor(diffInDays / 30)} months ago`;
+    } catch (error) {
+      return 'Unknown date';
+    }
   };
 
   const getStatusInfo = (status) => {
@@ -394,19 +449,19 @@ const MyOrdersPage = () => {
                 </div>
                 {order.shippingAddress ? (
                   <div className="bg-gray-50 rounded p-3 text-xs border border-gray-200">
-                    <p className="font-medium text-gray-900">{order.shippingAddress.fullName}</p>
+                    <p className="font-medium text-gray-900">{order.shippingAddress.fullName || 'Customer'}</p>
                     <p className="text-gray-600 mt-1">{order.shippingAddress.addressLine}</p>
                     <p className="text-gray-600">
                       {order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pinCode}
                     </p>
                     <p className="text-gray-600 mt-2 flex items-center">
                       <PhoneIcon className="w-3 h-3 mr-1" />
-                      {order.shippingAddress.phone}
+                      {order.shippingAddress.phone || 'No phone provided'}
                     </p>
                   </div>
                 ) : (
                   <div className="bg-gray-50 rounded p-3 text-xs text-gray-500 border border-gray-200">
-                    No shipping address
+                    No shipping address available
                   </div>
                 )}
               </div>
@@ -527,6 +582,16 @@ const MyOrdersPage = () => {
                   <ShoppingCartIcon className="w-4 h-4 mr-1.5" />
                   Reorder
                 </button>
+                
+                {/* Invoice Download Button */}
+                <button
+                  onClick={() => handleDownloadInvoice(order._id)}
+                  className="flex-1 border border-green-600 text-green-600 py-2.5 rounded-lg font-medium hover:bg-green-50 transition-colors flex items-center justify-center text-sm"
+                >
+                  <DocumentArrowDownIcon className="w-4 h-4 mr-1.5" />
+                  Invoice
+                </button>
+                
                 {order.status === 'delivered' && (
                   <button className="flex-1 border border-blue-600 text-blue-600 py-2.5 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center justify-center text-sm">
                     <StarIcon className="w-4 h-4 mr-1.5" />
@@ -790,6 +855,15 @@ const MyOrdersPage = () => {
                         </span>
                       </div>
                       <div className="flex space-x-2">
+                        {/* Invoice Download Button */}
+                        <button
+                          onClick={() => handleDownloadInvoice(order._id)}
+                          className="text-green-600 hover:text-green-700 text-sm font-medium px-3 py-2 border border-green-200 rounded-lg hover:bg-green-50 transition-colors flex items-center"
+                        >
+                          <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                          Invoice
+                        </button>
+                        
                         <button
                           onClick={() => handleReorder(order)}
                           className="text-blue-600 hover:text-blue-700 text-sm font-medium px-3 py-2 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors flex items-center"
@@ -797,12 +871,13 @@ const MyOrdersPage = () => {
                           <ArrowPathIcon className="w-4 h-4 mr-1" />
                           Reorder
                         </button>
+                        
                         <button
                           onClick={() => handleViewDetails(order)}
                           className="bg-blue-600 text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center shadow-sm"
                         >
                           <EyeIcon className="w-4 h-4 mr-1" />
-                          View Details
+                          Details
                         </button>
                       </div>
                     </div>

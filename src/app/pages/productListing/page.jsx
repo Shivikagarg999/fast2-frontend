@@ -11,7 +11,7 @@ const ProductListingComponent = () => {
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory] = useState('All');
   const [cartQuantities, setCartQuantities] = useState({});
   const [addingToCart, setAddingToCart] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);

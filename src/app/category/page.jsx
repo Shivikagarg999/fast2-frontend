@@ -127,18 +127,6 @@ export default function CategoryPage() {
           </div>
         )}
 
-        {/* Promotional Banner */}
-        <div className="mt-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-bold mb-2">Get 50% off on your first order!</h3>
-              <p className="text-blue-100">Use code: WELCOME50</p>
-            </div>
-            <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-              Shop Now
-            </button>
-          </div>
-        </div>
       </div>
 
       <style jsx>{`
