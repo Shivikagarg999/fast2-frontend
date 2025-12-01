@@ -1,7 +1,16 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeftIcon, StarIcon, ClockIcon, ShieldCheckIcon, TruckIcon, ArrowPathIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { 
+  ArrowLeftIcon,
+  ClockIcon, 
+  ShieldCheckIcon, 
+  TruckIcon,
+  ArrowPathIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
 
@@ -19,6 +28,10 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [discountInfo, setDiscountInfo] = useState(null);
+  
+  // Image gallery states
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     checkAuthStatus();
@@ -104,15 +117,41 @@ const ProductDetailPage = () => {
     }
   };
 
-  const getProductImage = () => {
+  // Get all product images
+  const getProductImages = () => {
     if (!product?.images || product.images.length === 0) {
-      return "https://via.placeholder.com/400x400?text=No+Image";
+      return ["https://via.placeholder.com/400x400?text=No+Image"];
     }
-    
-    const primaryImage = product.images.find(img => img.isPrimary);
-    if (primaryImage) return primaryImage.url;
-    
-    return product.images[0].url;
+    return product.images.map(img => img.url);
+  };
+
+  // Get current displayed image
+  const getCurrentImage = () => {
+    const images = getProductImages();
+    return images[selectedImageIndex] || images[0];
+  };
+
+  // Navigate to next image
+  const nextImage = () => {
+    const images = getProductImages();
+    setSelectedImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  // Navigate to previous image
+  const prevImage = () => {
+    const images = getProductImages();
+    setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  // Open image in modal
+  const openImageModal = (index) => {
+    setSelectedImageIndex(index);
+    setShowImageModal(true);
+  };
+
+  // Close image modal
+  const closeImageModal = () => {
+    setShowImageModal(false);
   };
 
   const formatPrice = (price) => {
@@ -206,7 +245,6 @@ const ProductDetailPage = () => {
 
   // Calculate discount information
   const calculateDiscount = () => {
-    // ONLY consider discount if it comes from discountInfo (applied discount)
     if (discountInfo && discountInfo.discountPercentage > 0) {
       const discountedPrice = currentPrice - (currentPrice * discountInfo.discountPercentage / 100);
       return {
@@ -232,6 +270,8 @@ const ProductDetailPage = () => {
 
   const discount = calculateDiscount();
   const displayPrice = discount.hasDiscount ? discount.discountedPrice : currentPrice;
+  const images = getProductImages();
+  const hasMultipleImages = images.length > 1;
 
   if (loading) {
     return (
@@ -274,6 +314,51 @@ const ProductDetailPage = () => {
         </div>
       )}
 
+      {/* Image Modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl max-h-full w-full">
+            <button
+              onClick={closeImageModal}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+            
+            {hasMultipleImages && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
+                >
+                  <ChevronLeftIcon className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full p-2"
+                >
+                  <ChevronRightIcon className="w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            <div className="flex items-center justify-center h-full">
+              <img
+                src={getCurrentImage()}
+                alt={`${product.name} - Image ${selectedImageIndex + 1}`}
+                className="max-w-full max-h-full object-contain rounded-lg"
+                onClick={closeImageModal}
+              />
+            </div>
+
+            {/* Image counter */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm">
+              {selectedImageIndex + 1} / {images.length}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Back Button */}
         <button
@@ -286,29 +371,94 @@ const ProductDetailPage = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="md:flex">
-            {/* Product Image */}
-            <div className="md:w-2/5 bg-gray-50 flex items-center justify-center p-8">
-              <div className="relative w-full max-w-md">
-                <img 
-                  src={getProductImage()} 
-                  alt={product.name}
-                  className="w-full h-80 object-contain rounded-lg"
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
-                  }}
-                />
-                
-                {/* Discount Badges - ONLY show if there's an APPLIED discount */}
-                {discount.hasDiscount && (
-                  <div className="absolute top-4 left-4 space-y-2">
-                    <div className="px-4 py-2 rounded-full text-white font-bold shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
-                      {discount.discountPercent}% OFF
-                    </div>
-                    {discount.discountName && (
-                      <div className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full font-semibold shadow-lg">
-                        {discount.discountName}
-                      </div>
+            {/* Product Image Gallery */}
+            <div className="md:w-2/5 bg-gray-50 p-8">
+              <div className="max-w-md mx-auto">
+                {/* Main Image */}
+                <div className="relative mb-4">
+                  <div 
+                    className="w-full h-80 bg-white rounded-lg overflow-hidden cursor-zoom-in flex items-center justify-center"
+                    onClick={() => openImageModal(selectedImageIndex)}
+                  >
+                    <img 
+                      src={getCurrentImage()} 
+                      alt={product.name}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/400x400?text=No+Image";
+                      }}
+                    />
+                    
+                    {/* Navigation arrows for main image */}
+                    {hasMultipleImages && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            prevImage();
+                          }}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all"
+                        >
+                          <ChevronLeftIcon className="w-5 h-5 text-gray-700" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            nextImage();
+                          }}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg transition-all"
+                        >
+                          <ChevronRightIcon className="w-5 h-5 text-gray-700" />
+                        </button>
+                      </>
                     )}
+                  </div>
+                  
+                  {/* Discount Badges */}
+                  {discount.hasDiscount && (
+                    <div className="absolute top-4 left-4 space-y-2">
+                      <div className="px-4 py-2 rounded-full text-white font-bold shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
+                        {discount.discountPercent}% OFF
+                      </div>
+                      {discount.discountName && (
+                        <div className="px-3 py-1 bg-blue-500 text-white text-sm rounded-full font-semibold shadow-lg">
+                          {discount.discountName}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Image Thumbnails */}
+                {hasMultipleImages && (
+                  <div className="flex space-x-2 overflow-x-auto py-2">
+                    {images.map((image, index) => (
+                      <div
+                        key={index}
+                        className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
+                          selectedImageIndex === index 
+                            ? 'border-blue-500 ring-2 ring-blue-200' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setSelectedImageIndex(index)}
+                      >
+                        <img
+                          src={image}
+                          alt={`${product.name} thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/64x64?text=No+Image";
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Image Counter */}
+                {hasMultipleImages && (
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    Image {selectedImageIndex + 1} of {images.length}
                   </div>
                 )}
               </div>
@@ -349,13 +499,11 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
-              {/* Price Section - Show DISCOUNTED price as main price */}
+              {/* Price Section */}
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center space-x-4">
-                  {/* DISCOUNTED PRICE as main price */}
                   <span className="text-3xl font-bold text-gray-900">₹{Math.round(displayPrice)}</span>
                   
-                  {/* Show ORIGINAL price crossed out if there's discount */}
                   {discount.hasDiscount && (
                     <span className="text-lg text-gray-500 line-through">
                       {formatPrice(discount.originalPrice)}
@@ -363,7 +511,6 @@ const ProductDetailPage = () => {
                   )}
                 </div>
                 
-                {/* Show savings if there's discount */}
                 {discount.hasDiscount && (
                   <span className="text-green-600 font-semibold text-sm block mt-1">
                     You save {formatPrice(discount.savings)} ({discount.discountPercent}%)
@@ -443,7 +590,7 @@ const ProductDetailPage = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={addingToCart}
-                  className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-white text-blue-600 py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
                 </button>

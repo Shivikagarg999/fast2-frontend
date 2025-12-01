@@ -413,30 +413,7 @@ const ProductListingComponent = () => {
       )}
 
       <div className="max-w-8xl mx-auto px-4 py-6">
-        {userPincode && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <MapPinIcon className="w-5 h-5 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    Showing products available in your area
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    {userLocation} • Pincode: {userPincode}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={handleSetLocation}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-              >
-                Change Location
-              </button>
-            </div>
-          </div>
-        )}
-
+    
         {!userPincode && (
           <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
             <div className="flex items-center justify-between">

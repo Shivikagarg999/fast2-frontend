@@ -131,10 +131,6 @@ const ProductCard = ({
             <div className="flex items-center space-x-2">
               <span className="text-xs text-gray-500">{deliveryTime}</span>
             </div>
-            <div className="flex items-center bg-blue-100 px-1.5 py-0.5 rounded">
-              <StarSolidIcon className="w-3 h-3 text-blue-600 mr-0.5" />
-              <span className="text-xs font-medium text-blue-700">{rating}</span>
-            </div>
           </div>
           
           <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
