@@ -3,10 +3,10 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Footer from '@/app/components/footer/page';
 import Link from 'next/link';
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_URL = "https://api.fast2.in";
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(false); // Changed to false to show Register first
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
