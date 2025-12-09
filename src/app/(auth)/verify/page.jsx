@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Footer from '@/app/components/footer/page';
-const BASE_URL = "https://api.fast2.in";
+const BASE_URL = "http://localhost:5000";
 
 export default function VerifyPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);

@@ -35,7 +35,7 @@ const ReferralPage = () => {
       }
 
       setLoading(true);
-      const response = await fetch('https://api.fast2.in/api/referral/referral-stats', {
+      const response = await fetch('http://localhost:5000/api/referral/referral-stats', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ const ReferralPage = () => {
       setSuccess('');
 
       const token = localStorage.getItem('token');
-      const response = await fetch('https://api.fast2.in/api/referral/apply-referral', {
+      const response = await fetch('http://localhost:5000/api/referral/apply-referral', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
