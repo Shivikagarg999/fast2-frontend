@@ -12,7 +12,7 @@ export default function Footer() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "https://api.fast2.in/api/category/getall"
+          "http://localhost:5000/api/category/getall"
         );
         const data = await response.json();
         setCategories(data);
@@ -143,7 +143,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-gray-900 transition-colors">
+                <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
                   Terms of Service
                 </a>
               </li>
