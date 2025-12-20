@@ -62,7 +62,7 @@ const CheckoutPage = () => {
         setLoading(true);
         
         // Fetch cart
-        const cartResponse = await fetch('http://localhost:5000/api/cart/', {
+        const cartResponse = await fetch('https://api.fast2.in/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -79,7 +79,7 @@ const CheckoutPage = () => {
         }
 
         // Fetch saved addresses
-        const addressesResponse = await fetch('http://localhost:5000/api/user/addresses/get', {
+        const addressesResponse = await fetch('https://api.fast2.in/api/user/addresses/get', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -97,7 +97,7 @@ const CheckoutPage = () => {
         }
 
         // Fetch wallet balance
-        const walletResponse = await fetch('http://localhost:5000/api/user/wallet', {
+        const walletResponse = await fetch('https://api.fast2.in/api/user/wallet', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -242,7 +242,7 @@ const CheckoutPage = () => {
 
       console.log('Sending order data:', orderData);
 
-      const response = await fetch('http://localhost:5000/api/order/create', {
+      const response = await fetch('https://api.fast2.in/api/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -265,7 +265,7 @@ const CheckoutPage = () => {
 
       // Clear cart after successful order
       try {
-        await fetch('http://localhost:5000/api/cart/clear', {
+        await fetch('https://api.fast2.in/api/cart/clear', {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
