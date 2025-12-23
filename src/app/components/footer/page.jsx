@@ -139,7 +139,7 @@ export default function Footer() {
               </li>
               <li>
                 <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
-                  Terms of Service
+                  Fast2 Policies
                 </a>
               </li>
               <li>
@@ -275,14 +275,8 @@ export default function Footer() {
             © {new Date().getFullYear()} Fast2. All rights reserved.
           </p>
           <div className="flex space-x-6 text-sm text-gray-600">
-            <a href="#" className="hover:text-gray-900 transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-gray-900 transition-colors">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-gray-900 transition-colors">
-              Pricing
+            <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
+              Fast2 Policies
             </a>
           </div>
         </div>
