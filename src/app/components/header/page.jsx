@@ -658,7 +658,9 @@ function HeaderContent() {
   const profileDropdownRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
-
+  const handleLogoClick = () => {
+    router.push('/');
+  };
   if (pathname.startsWith('/deliver') || pathname.startsWith('/warehouse')) {
     return null;
   }
@@ -917,7 +919,10 @@ function HeaderContent() {
           <div className="flex items-center justify-between">
             
             <div className="flex items-center space-x-6">
-              <div className="hidden lg:flex items-center">
+               <div 
+                className="hidden lg:flex items-center cursor-pointer"
+                onClick={handleLogoClick}
+              >
                 <Image
                   src={Logo}
                   alt="Fast2"
