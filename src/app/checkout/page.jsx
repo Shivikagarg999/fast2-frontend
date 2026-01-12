@@ -85,7 +85,7 @@ const CheckoutPage = () => {
       try {
         setLoading(true);
         
-        const cartResponse = await fetch('http://localhost:5000/api/cart/', {
+        const cartResponse = await fetch('https://api.fast2.in/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -101,7 +101,7 @@ const CheckoutPage = () => {
           setCartItems([]);
         }
 
-        const addressesResponse = await fetch('http://localhost:5000/api/user/addresses/get', {
+        const addressesResponse = await fetch('https://api.fast2.in/api/user/addresses/get', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -117,7 +117,7 @@ const CheckoutPage = () => {
           }
         }
 
-        const walletResponse = await fetch('http://localhost:5000/api/user/wallet', {
+        const walletResponse = await fetch('https://api.fast2.in/api/user/wallet', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -253,7 +253,7 @@ const CheckoutPage = () => {
         handler: async function (response) {
           try {
             const token = localStorage.getItem('token');
-            const verifyResponse = await fetch('http://localhost:5000/api/order/verify-payment', {
+            const verifyResponse = await fetch('https://api.fast2.in/api/order/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -331,7 +331,7 @@ const CheckoutPage = () => {
 
       console.log('Sending order data:', orderData);
 
-      const response = await fetch('http://localhost:5000/api/order/create', {
+      const response = await fetch('https://api.fast2.in/api/order/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -377,7 +377,7 @@ const CheckoutPage = () => {
 
   const clearCart = async (token) => {
     try {
-      await fetch('http://localhost:5000/api/cart/clear', {
+      await fetch('https://api.fast2.in/api/cart/clear', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -880,7 +880,7 @@ const CheckoutPage = () => {
                       Continue Shopping
                     </button>
                     <button
-                      onClick={() => router.push('/my-orders')}
+                      onClick={() => router.push('/orders')}
                       className="bg-white text-blue-600 border border-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
                     >
                       View Orders
