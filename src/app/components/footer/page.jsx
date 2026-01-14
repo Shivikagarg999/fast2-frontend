@@ -128,12 +128,12 @@ export default function Footer() {
             <h4 className="font-semibold mb-4 text-gray-900">Quick Links</h4>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <a href="#" className="hover:text-gray-900 transition-colors">
+                <a href="/about" className="hover:text-gray-900 transition-colors">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-gray-900 transition-colors">
+                <a href="/contact" className="hover:text-gray-900 transition-colors">
                   Contact
                 </a>
               </li>

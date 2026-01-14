@@ -7,29 +7,37 @@ import {
   ShieldCheckIcon,
   ArrowPathIcon,
   DevicePhoneMobileIcon,
-  SparklesIcon
+  SparklesIcon,
+  UserCircleIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+  GlobeAltIcon,
+  LightBulbIcon,
+  HeartIcon,
+  RocketLaunchIcon,
+  BoltIcon
 } from '@heroicons/react/24/outline';
 import Footer from '@/app/components/footer/page';
 
 const features = [
   {
-    name: '10-Minute Delivery',
-    description: 'Get your groceries delivered to your doorstep in just 10 minutes with our hyper-local delivery network.',
+    name: 'Fast Delivery',
+    description: 'Get your products delivered quickly with our efficient delivery network.',
     icon: ClockIcon,
   },
   {
-    name: 'Fresh & Quality Products',
-    description: 'We source directly from trusted suppliers and local vendors to ensure the highest quality products.',
+    name: 'Quality Products',
+    description: 'We deliver quality products sourced from trusted suppliers with transparency.',
     icon: ShieldCheckIcon,
   },
   {
     name: 'Wide Selection',
-    description: 'Choose from thousands of products across categories including groceries, snacks, beverages, and more.',
+    description: 'Choose from a diverse range of products across multiple categories.',
     icon: TruckIcon,
   },
   {
-    name: 'Easy Returns',
-    description: 'Not satisfied with a product? We offer hassle-free returns and refunds within 24 hours.',
+    name: 'Hassle-Free Service',
+    description: 'Enjoy a seamless shopping experience with easy returns and prompt support.',
     icon: ArrowPathIcon,
   },
 ];
@@ -37,23 +45,43 @@ const features = [
 const values = [
   {
     name: 'Customer First',
-    description: 'Our customers are at the heart of everything we do. We listen, adapt, and prioritize your needs above all else.',
-    icon: SparklesIcon,
+    description: 'Our customers are at the heart of everything we do. We listen, adapt, and prioritize your needs.',
+    icon: HeartIcon,
   },
   {
     name: 'Speed & Efficiency',
-    description: 'We value your time and strive to deliver faster than anyone else while maintaining the highest quality standards.',
-    icon: ClockIcon,
+    description: 'We value your time and deliver rapid service with the highest efficiency standards.',
+    icon: BoltIcon,
   },
   {
-    name: 'Quality Assurance',
-    description: 'We never compromise on the quality of our products and services. Every item is carefully selected and checked.',
+    name: 'Trust & Quality',
+    description: 'We never compromise on quality. Every product and service reflects our commitment to excellence.',
     icon: ShieldCheckIcon,
+  },
+  {
+    name: 'Innovation',
+    description: 'Continuously improving our platform to provide a better shopping experience.',
+    icon: LightBulbIcon,
+  },
+];
+
+const leadership = [
+  {
+    name: 'Smt. Meena Singh',
+    role: 'Owner',
+    description: 'Visionary leader guiding Fast2.in\'s growth with commitment to quality and customer satisfaction.',
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Mr. Lalit Kumar',
+    role: 'Platform Runner',
+    description: 'Ensuring smooth operations and prompt customer support for a seamless shopping experience.',
+    icon: UserCircleIcon,
   },
 ];
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState('mission');
+  const [activeTab, setActiveTab] = useState('about');
 
   return (
     <>
@@ -65,12 +93,19 @@ export default function About() {
               <div className="pt-10 px-4 sm:px-6 lg:px-8 lg:pt-16 lg:pr-0">
                 <div className="lg:self-center">
                   <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-                    About <span className="block text-yellow-400">Fast2</span>
+                    About <span className="block text-yellow-400">Fast2.in</span>
                   </h1>
                   <p className="mt-5 text-xl text-blue-100 max-w-xl">
-                    Revolutionizing grocery delivery with speed, convenience, and reliability. 
-                    We're on a mission to make your life easier, one delivery at a time.
+                    A quick e-commerce platform that makes online shopping fast, simple, and hassle-free.
                   </p>
+                  <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                    <a
+                      href="/"
+                      className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
+                    >
+                      Start Shopping
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -78,8 +113,8 @@ export default function About() {
           <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
             <div className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full relative">
               <Image
-                src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                alt="Fast delivery"
+                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                alt="Fast2.in e-commerce platform"
                 fill
                 className="object-cover"
                 priority
@@ -88,156 +123,432 @@ export default function About() {
           </div>
         </div>
 
-        {/* Intro Section */}
+        {/* Main Content Section */}
         <div className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Welcome to Fast2</h2>
-              <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                A New Era of Grocery Delivery
-              </p>
-              <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-                We're excited to launch Fast2, bringing you the fastest grocery delivery service in your neighborhood. 
-                Our mission is simple: to save you time and make grocery shopping effortless.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Features Section */}
-        <div className="py-12 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Why Choose Us</h2>
-              <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                A better way to shop for groceries
-              </p>
-              <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-                We combine technology with a passion for customer service to deliver an exceptional shopping experience.
-              </p>
-            </div>
-
-            <div className="mt-10">
-              <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-                {features.map((feature) => (
-                  <div key={feature.name} className="relative">
-                    <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                      <feature.icon className="h-6 w-6" aria-hidden="true" />
-                    </div>
-                    <div className="ml-16">
-                      <h3 className="text-lg font-medium text-gray-900">{feature.name}</h3>
-                      <p className="mt-2 text-gray-500">{feature.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mission & Vision Tabs */}
-        <div className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Our Purpose</h2>
-              <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                Driving innovation in grocery delivery
-              </p>
-            </div>
-
-            <div className="mt-12 max-w-3xl mx-auto">
-              <div className="flex border-b border-gray-200">
+            {/* Tab Navigation */}
+            <div className="flex justify-center mb-12">
+              <div className="flex space-x-1 rounded-xl bg-blue-900/10 p-1">
+                <button
+                  onClick={() => setActiveTab('about')}
+                  className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
+                    activeTab === 'about'
+                      ? 'bg-blue-600 text-white shadow'
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  About Us
+                </button>
                 <button
                   onClick={() => setActiveTab('mission')}
-                  className={`py-4 px-6 text-sm font-medium border-b-2 ${
+                  className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
                     activeTab === 'mission'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-blue-600 text-white shadow'
+                      : 'text-gray-600 hover:text-blue-600'
                   }`}
                 >
                   Our Mission
                 </button>
                 <button
-                  onClick={() => setActiveTab('vision')}
-                  className={`py-4 px-6 text-sm font-medium border-b-2 ${
-                    activeTab === 'vision'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  onClick={() => setActiveTab('team')}
+                  className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
+                    activeTab === 'team'
+                      ? 'bg-blue-600 text-white shadow'
+                      : 'text-gray-600 hover:text-blue-600'
                   }`}
                 >
-                  Our Vision
-                </button>
-                <button
-                  onClick={() => setActiveTab('values')}
-                  className={`py-4 px-6 text-sm font-medium border-b-2 ${
-                    activeTab === 'values'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  Our Values
+                  Leadership Team
                 </button>
               </div>
+            </div>
 
-              <div className="mt-8">
-                {activeTab === 'mission' && (
-                  <div className="prose prose-lg text-gray-500">
-                    <p>
-                      Our mission is to revolutionize the way India shops for daily essentials by providing 
-                      instant access to a wide range of high-quality products at competitive prices. We strive 
-                      to save our customers time and effort while ensuring freshness and convenience.
-                    </p>
-                    <p className="mt-4">
-                      Through our technology-driven platform and dedicated delivery network, we aim to make 
-                      grocery shopping a seamless experience for every household.
-                    </p>
-                  </div>
-                )}
-                {activeTab === 'vision' && (
-                  <div className="prose prose-lg text-gray-500">
-                    <p>
-                      We envision a future where no one has to worry about grocery shopping or waiting in long 
-                      queues. Our vision is to become India's most trusted and preferred quick commerce platform, 
-                      serving millions of customers with speed, reliability, and excellence.
-                    </p>
-                    <p className="mt-4">
-                      We aim to expand our services to every corner of the country, creating employment 
-                      opportunities and contributing to the digital transformation of retail in India.
-                    </p>
-                  </div>
-                )}
-                {activeTab === 'values' && (
-                  <div className="grid gap-8 md:grid-cols-3 mt-6">
-                    {values.map((value) => (
-                      <div key={value.name} className="text-center">
-                        <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white mx-auto">
-                          <value.icon className="h-6 w-6" aria-hidden="true" />
+            {/* Tab Content */}
+            <div className="mt-12">
+              {/* About Us Tab */}
+              {activeTab === 'about' && (
+                <div className="space-y-12">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                      Welcome to Fast2.in
+                    </h2>
+                    <div className="mt-6 prose prose-lg text-gray-600 mx-auto max-w-4xl">
+                      <p className="text-xl leading-relaxed">
+                        Fast2.in is a quick e-commerce platform that makes online shopping fast, simple, and hassle-free. 
+                        We deliver quality products, rapid service, and a seamless shopping experience right to your doorstep.
+                      </p>
+                      
+                      <div className="mt-10 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
+                        <h3 className="text-2xl font-semibold text-blue-900 mb-6">What Makes Us Different</h3>
+                        <div className="grid md:grid-cols-2 gap-8">
+                          <div className="flex items-start space-x-4">
+                            <div className="flex-shrink-0">
+                              <RocketLaunchIcon className="h-8 w-8 text-blue-600" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-semibold text-gray-900">Quick Commerce</h4>
+                              <p className="mt-2 text-gray-600">
+                                We specialize in fast delivery without compromising on product quality or customer service.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-4">
+                            <div className="flex-shrink-0">
+                              <ShieldCheckIcon className="h-8 w-8 text-green-600" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-semibold text-gray-900">Trust & Reliability</h4>
+                              <p className="mt-2 text-gray-600">
+                                Built on a foundation of trust, we ensure every transaction is secure and satisfactory.
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <h3 className="mt-4 text-lg font-medium text-gray-900">{value.name}</h3>
-                        <p className="mt-2 text-gray-500 text-sm">{value.description}</p>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                )}
-              </div>
+
+                  {/* Features Section */}
+                  <div className="mt-16">
+                    <h2 className="text-3xl font-bold text-center text-gray-900 sm:text-4xl mb-12">
+                      Our Key Features
+                    </h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                      {features.map((feature) => (
+                        <div key={feature.name} className="relative bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                          <div className="absolute -top-4 left-6 flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
+                            <feature.icon className="h-6 w-6" aria-hidden="true" />
+                          </div>
+                          <div className="pt-8">
+                            <h3 className="text-lg font-semibold text-gray-900">{feature.name}</h3>
+                            <p className="mt-3 text-gray-600">{feature.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Mission Tab */}
+              {activeTab === 'mission' && (
+                <div className="space-y-12">
+                  <div className="text-center">
+                    <div className="flex justify-center mb-6">
+                      <LightBulbIcon className="h-16 w-16 text-yellow-500" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                      Our Mission & Vision
+                    </h2>
+                  </div>
+
+                  <div className="max-w-4xl mx-auto">
+                    {/* Mission Card */}
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 mb-12 border border-blue-200">
+                      <div className="flex items-center mb-6">
+                        <div className="flex-shrink-0 h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                          <RocketLaunchIcon className="h-7 w-7 text-white" />
+                        </div>
+                        <div className="ml-4">
+                          <h3 className="text-2xl font-bold text-blue-900">Our Mission</h3>
+                          <p className="text-blue-700">Driving Purpose & Commitment</p>
+                        </div>
+                      </div>
+                      <div className="prose prose-lg text-gray-700">
+                        <p className="text-lg leading-relaxed">
+                          To provide every customer with a quick, reliable, and enjoyable shopping experience, 
+                          offering quality products with transparency and speed. Fast2.in is more than an online 
+                          store—we are a fast, trustworthy marketplace built for today's busy shopper.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Vision Card */}
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 border border-purple-200">
+                      <div className="flex items-center mb-6">
+                        <div className="flex-shrink-0 h-12 w-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                          <SparklesIcon className="h-7 w-7 text-white" />
+                        </div>
+                        <div className="ml-4">
+                          <h3 className="text-2xl font-bold text-purple-900">Our Vision</h3>
+                          <p className="text-purple-700">Future Aspirations</p>
+                        </div>
+                      </div>
+                      <div className="prose prose-lg text-gray-700">
+                        <p className="text-lg leading-relaxed">
+                          To become the most trusted quick-commerce platform in India, known for exceptional 
+                          speed, unparalleled quality, and outstanding customer service. We envision creating 
+                          a shopping ecosystem that saves time while enriching lives.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Values Section */}
+                    <div className="mt-16">
+                      <h3 className="text-2xl font-bold text-center text-gray-900 mb-10">
+                        Our Core Values
+                      </h3>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {values.map((value) => (
+                          <div key={value.name} className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100">
+                            <div className="flex justify-center mb-4">
+                              <div className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
+                                <value.icon className="h-7 w-7 text-white" />
+                              </div>
+                            </div>
+                            <h4 className="text-lg font-semibold text-center text-gray-900 mb-3">
+                              {value.name}
+                            </h4>
+                            <p className="text-sm text-gray-600 text-center">
+                              {value.description}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Leadership Team Tab */}
+              {activeTab === 'team' && (
+                <div className="space-y-12">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                      Our Leadership Team
+                    </h2>
+                    <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+                      Meet the dedicated individuals who drive Fast2.in's success with passion and commitment.
+                    </p>
+                  </div>
+
+                  <div className="max-w-4xl mx-auto">
+                    {/* Introduction */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-12">
+                      <p className="text-lg text-gray-700 leading-relaxed">
+                        The platform is run by Mr. Lalit Kumar, ensuring smooth operations and prompt customer support, 
+                        and owned by Smt. Meena Singh, whose vision and commitment to quality guide Fast2.in's growth. 
+                        Together, they lead a team dedicated to trust, innovation, and customer satisfaction.
+                      </p>
+                    </div>
+
+                    {/* Leadership Cards */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {leadership.map((person, index) => (
+                        <div key={person.name} className={`rounded-2xl overflow-hidden shadow-xl ${index === 0 ? 'bg-gradient-to-br from-yellow-50 to-orange-50' : 'bg-gradient-to-br from-blue-50 to-cyan-50'}`}>
+                          <div className="p-8">
+                            <div className="flex items-center mb-6">
+                              <div className={`h-16 w-16 rounded-full flex items-center justify-center ${index === 0 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`}>
+                                <person.icon className="h-8 w-8 text-white" />
+                              </div>
+                              <div className="ml-6">
+                                <h3 className="text-2xl font-bold text-gray-900">{person.name}</h3>
+                                <p className={`text-lg font-semibold ${index === 0 ? 'text-orange-600' : 'text-blue-600'}`}>
+                                  {person.role}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed">
+                              {person.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Team Description */}
+                    <div className="mt-12 bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                        Our Dedicated Team
+                      </h3>
+                      <div className="grid md:grid-cols-3 gap-6">
+                        <div className="text-center">
+                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
+                            <TruckIcon className="h-6 w-6" />
+                          </div>
+                          <h4 className="font-semibold text-gray-900">Delivery Experts</h4>
+                          <p className="text-sm text-gray-600 mt-2">Ensuring prompt and safe delivery</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 mb-4">
+                            <ShieldCheckIcon className="h-6 w-6" />
+                          </div>
+                          <h4 className="font-semibold text-gray-900">Quality Team</h4>
+                          <p className="text-sm text-gray-600 mt-2">Maintaining product excellence</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 text-purple-600 mb-4">
+                            <DevicePhoneMobileIcon className="h-6 w-6" />
+                          </div>
+                          <h4 className="font-semibold text-gray-900">Support Staff</h4>
+                          <p className="text-sm text-gray-600 mt-2">Providing 24/7 customer assistance</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Contact Info Tab */}
+              {activeTab === 'contact' && (
+                <div id="contact" className="space-y-12">
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+                      Contact & Information
+                    </h2>
+                    <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+                      Get in touch with us. We're here to help with any questions or concerns.
+                    </p>
+                  </div>
+
+                  <div className="max-w-4xl mx-auto">
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+                      <div className="md:flex">
+                        {/* Contact Details */}
+                        <div className="md:w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 p-8 text-white">
+                          <h3 className="text-2xl font-bold mb-8">Contact Details</h3>
+                          
+                          <div className="space-y-6">
+                            <div className="flex items-start">
+                              <MapPinIcon className="h-6 w-6 text-blue-200 mt-1 flex-shrink-0" />
+                              <div className="ml-4">
+                                <h4 className="font-semibold text-blue-100">Address</h4>
+                                <p className="mt-1 text-blue-50">
+                                  39/C, Indra Nagar, Thatipur, Gwalior,<br />
+                                  Madhya Pradesh, India – 474011
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start">
+                              <EnvelopeIcon className="h-6 w-6 text-blue-200 mt-1 flex-shrink-0" />
+                              <div className="ml-4">
+                                <h4 className="font-semibold text-blue-100">Email</h4>
+                                <a href="mailto:support@fast2.in" className="mt-1 text-blue-50 hover:text-yellow-300 transition-colors">
+                                  support@fast2.in
+                                </a>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start">
+                              <GlobeAltIcon className="h-6 w-6 text-blue-200 mt-1 flex-shrink-0" />
+                              <div className="ml-4">
+                                <h4 className="font-semibold text-blue-100">Website</h4>
+                                <a href="https://www.fast2.in" target="_blank" rel="noopener noreferrer" className="mt-1 text-blue-50 hover:text-yellow-300 transition-colors">
+                                  www.fast2.in
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-12 pt-8 border-t border-blue-500/30">
+                            <h4 className="text-lg font-semibold text-blue-100 mb-4">Business Hours</h4>
+                            <div className="space-y-2 text-blue-50">
+                              <p>Monday - Sunday: 7:00 AM - 11:00 PM</p>
+                              <p>Customer Support: 24/7 Available</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Quick Contact Form */}
+                        <div className="md:w-1/2 p-8">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h3>
+                          <form className="space-y-6">
+                            <div>
+                              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                Name
+                              </label>
+                              <input
+                                type="text"
+                                id="name"
+                                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="Your name"
+                              />
+                            </div>
+                            <div>
+                              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                Email
+                              </label>
+                              <input
+                                type="email"
+                                id="email"
+                                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="your@email.com"
+                              />
+                            </div>
+                            <div>
+                              <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                                Message
+                              </label>
+                              <textarea
+                                id="message"
+                                rows={4}
+                                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="How can we help you?"
+                              />
+                            </div>
+                            <button
+                              type="submit"
+                              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300"
+                            >
+                              Send Message
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="mt-8 grid md:grid-cols-3 gap-6">
+                      <div className="bg-gray-50 rounded-xl p-6 text-center">
+                        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
+                          <ClockIcon className="h-6 w-6" />
+                        </div>
+                        <h4 className="font-semibold text-gray-900">Fast Response</h4>
+                        <p className="text-sm text-gray-600 mt-2">We respond to queries within 2 hours</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-6 text-center">
+                        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 text-purple-600 mb-4">
+                          <ShieldCheckIcon className="h-6 w-6" />
+                        </div>
+                        <h4 className="font-semibold text-gray-900">Secure Communication</h4>
+                        <p className="text-sm text-gray-600 mt-2">Your information is safe with us</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-6 text-center">
+                        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 mb-4">
+                          <ArrowPathIcon className="h-6 w-6" />
+                        </div>
+                        <h4 className="font-semibold text-gray-900">Quick Resolution</h4>
+                        <p className="text-sm text-gray-600 mt-2">Issues resolved within 24 hours</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-        
+
         {/* CTA Section */}
-        <div className="bg-blue-700">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800">
           <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
-            <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-              <span className="block">Ready to experience instant delivery?</span>
-              <span className="block text-yellow-400">Start shopping now.</span>
-            </h2>
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                <span className="block">Experience the Fast2.in Difference</span>
+                <span className="block text-yellow-400">Fast, Reliable, Quality Shopping</span>
+              </h2>
+              <p className="mt-4 text-lg text-blue-100 max-w-3xl">
+                Join thousands of satisfied customers who trust us for their daily shopping needs. 
+                Fast delivery, quality products, and exceptional service await you.
+              </p>
+            </div>
             <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-              <div className="inline-flex rounded-md shadow">
+              <div className="inline-flex rounded-lg shadow">
                 <a
                   href="/"
-                  className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-blue-700 bg-white hover:bg-blue-50 transition-colors duration-300"
                 >
-                  Start Shopping
+                  Start Shopping Now
+                  <BoltIcon className="ml-2 h-5 w-5" />
                 </a>
               </div>
             </div>
