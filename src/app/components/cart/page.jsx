@@ -29,7 +29,7 @@ const Cart = () => {
     };
 
     checkAuth();
-    
+
     const handleAuthChange = () => checkAuth();
     window.addEventListener('authChange', handleAuthChange);
     window.addEventListener('storage', handleAuthChange);
@@ -82,10 +82,10 @@ const Cart = () => {
 
   const fetchCartItems = async () => {
     if (!isLoggedIn) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const data = await makeAuthenticatedRequest('https://api.fast2.in/api/cart/');
       setCartItems(data.items || []);
@@ -124,7 +124,7 @@ const Cart = () => {
 
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1 || !isLoggedIn) return;
-    
+
     try {
       await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/update/${itemId}`, {
         method: 'PUT',
@@ -132,13 +132,13 @@ const Cart = () => {
           quantity: newQuantity
         })
       });
-      
+
       setCartItems(prevItems =>
         prevItems.map(item =>
           item._id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
-      
+
       updateHeaderCartCount();
     } catch (err) {
       console.error('Error updating quantity:', err);
@@ -154,7 +154,7 @@ const Cart = () => {
       await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/remove/${itemId}`, {
         method: 'DELETE'
       });
-      
+
       setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
       updateHeaderCartCount();
     } catch (err) {
@@ -187,6 +187,13 @@ const Cart = () => {
     }, 0);
   };
 
+  const calculateDeliveryFee = () => {
+    return cartItems.reduce((total, item) => {
+      const product = item.product || item;
+      return total + (product.delivery?.deliveryCharges || 0);
+    }, 0);
+  };
+
   const closeCart = () => {
     setIsOpen(false);
     setError(null);
@@ -194,55 +201,57 @@ const Cart = () => {
 
   const itemCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
 
-  const truncateDescription = (text, maxLength = 40) => {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+  const deliveryFee = calculateDeliveryFee();
+  const subTotal = calculateTotal();
+  const finalTotal = subTotal + deliveryFee;
+
+  // Helper to format weight from product
+  const getProductWeight = (product) => {
+    if (product.weight) {
+      return `${product.weight} ${product.weightUnit || ''}`;
+    }
+    return '';
   };
 
   if (!isLoggedIn && isOpen) {
     return (
       <>
         <div
-          className={`fixed top-0 right-0 h-full w-full max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-xl border-l border-gray-100 z-60 transform transition-transform duration-300 ease-in-out ${
-            isOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+          className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
         >
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-5 flex justify-between items-center">
-            <h2 className="text-xl font-bold">Your Cart</h2>
+          <div className="bg-white px-5 py-4 flex justify-between items-center border-b border-gray-100 shrink-0">
+            <h2 className="text-lg font-bold text-gray-800">My Cart</h2>
             <button
               onClick={closeCart}
-              className="text-white hover:text-blue-200 transition-colors p-1 rounded-full hover:bg-blue-500"
+              className="text-gray-500 hover:text-gray-800 transition-colors bg-gray-100 p-2 rounded-full"
             >
-              <XMarkIcon className="w-6 h-6" />
+              <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="h-full flex items-center justify-center p-8">
-            <div className="text-center">
-              <div className="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-3xl mb-4 text-blue-200">
-                🔒
-              </div>
-              <h3 className="text-lg font-medium text-gray-800 mb-2">Login Required</h3>
-              <p className="text-gray-500 mb-6">Please login to view your cart items</p>
-              <button
-                onClick={() => {
-                  closeCart();
-                  window.location.href = '/login';
-                }}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Login Now
-              </button>
+          <div className="flex-1 flex flex-col items-center justify-center p-8">
+            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center text-3xl mb-4">
+              🔒
             </div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Login Required</h3>
+            <p className="text-gray-500 text-center mb-6 text-sm">Please login to view items in your cart</p>
+            <button
+              onClick={() => {
+                closeCart();
+                window.location.href = '/login';
+              }}
+              className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-shadow shadow-lg shadow-blue-200"
+            >
+              Login to Proceed
+            </button>
           </div>
         </div>
 
         {isOpen && (
           <div
-            className="fixed inset-0 z-50"
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
             onClick={closeCart}
-            style={{ backgroundColor: 'transparent' }}
           />
         )}
       </>
@@ -252,180 +261,212 @@ const Cart = () => {
   return (
     <>
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-xl border-l border-gray-100 z-60 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-5 flex justify-between items-center">
+        {/* Header */}
+        <div className="bg-white px-5 py-4 flex justify-between items-center border-b border-gray-100 shrink-0">
           <div>
-            <h2 className="text-xl font-bold">Your Cart</h2>
-            <p className="text-blue-100 text-sm mt-1">{itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
+            <h2 className="text-lg font-bold text-gray-900">My Cart</h2>
+            <p className="text-xs text-gray-500 mt-0.5">{itemCount} {itemCount === 1 ? 'item' : 'items'}</p>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {cartItems.length > 0 && (
               <button
                 onClick={clearCart}
-                className="text-blue-200 hover:text-white text-xs bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded transition-colors"
+                className="text-xs font-semibold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
               >
-                Clear All
+                Clear
               </button>
             )}
             <button
               onClick={closeCart}
-              className="text-white hover:text-blue-200 transition-colors p-1 rounded-full hover:bg-blue-500"
+              className="text-gray-500 hover:text-gray-800 transition-colors bg-gray-100 p-2 rounded-full"
             >
-              <XMarkIcon className="w-6 h-6" />
+              <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
         </div>
 
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-400 p-4 mx-4 mt-4">
-            <p className="text-red-700 text-sm">{error}</p>
-            <button 
+          <div className="bg-red-50 p-4 mx-4 mt-4 rounded-xl flex justify-between items-start shrink-0">
+            <p className="text-red-600 text-sm font-medium">{error}</p>
+            <button
               onClick={() => setError(null)}
-              className="text-red-500 hover:text-red-700 text-xs mt-1"
+              className="text-red-400 hover:text-red-700 ml-2"
             >
-              Dismiss
+              <XMarkIcon className="w-4 h-4" />
             </button>
           </div>
         )}
 
+        {/* Loading State */}
         {loading && (
-          <div className="flex justify-center items-center py-8">
+          <div className="flex-1 flex justify-center items-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         )}
 
-        <div className="h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] overflow-y-auto p-4">
+        {/* Cart Items Area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {!loading && cartItems.length === 0 ? (
-            <div className="text-center text-gray-500 mt-8">
-              <div className="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center text-3xl mb-4 text-blue-200">
+            <div className="h-full flex flex-col items-center justify-center text-center p-4">
+              <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-4xl mb-4">
                 🛒
               </div>
-              <p className="text-lg font-medium text-gray-600">Your cart is empty</p>
-              <p className="text-sm mt-2 text-gray-400">Add items to see them here</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">Your cart is empty</h3>
+              <p className="text-gray-500 text-sm max-w-[200px]">Add items from the store to see them here</p>
+              <button
+                onClick={closeCart}
+                className="mt-6 text-blue-600 font-bold text-sm bg-blue-50 px-6 py-2.5 rounded-xl hover:bg-blue-100 transition-colors"
+                style={{ width: 'auto' }}
+              >
+                Start Shopping
+              </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {cartItems.map((item) => {
-                const product = item.product || item;
-                const itemId = item._id || item.id;
-                const productName = product.name || product.title || 'Unknown Product';
-                const productDescription = truncateDescription(product.description || '');
-                const productPrice = product.price || 0;
-                let productImage = '';
-                if (product.images && product.images.length > 0) {
-                  productImage = product.images[0].url || '';
-                } else if (product.image) {
-                  productImage = product.image;
-                } else if (product.imageUrl) {
-                  productImage = product.imageUrl;
-                }
-                const quantity = item.quantity || 1;
+            <>
+              <div className="space-y-4">
+                {cartItems.map((item) => {
+                  const product = item.product || item;
+                  const itemId = item._id || item.id;
+                  const productName = product.name || product.title || 'Unknown Product';
+                  const productWeight = getProductWeight(product);
+                  const productPrice = product.price || 0;
+                  const quantity = item.quantity || 1;
 
-                return (
-                  <div key={itemId} className="flex items-center p-3 sm:p-4 bg-white rounded-lg border border-gray-100 shadow-sm">
-                    <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden mr-3 sm:mr-4">
-                      {productImage ? (
-                        <img 
-                          src={productImage} 
-                          alt={productName}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
-                          }}
-                        />
-                      ) : null}
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs" style={{display: productImage ? 'none' : 'flex'}}>
-                        No Image
+                  let productImage = '';
+                  if (product.images && product.images.length > 0) {
+                    productImage = product.images[0].url || '';
+                  } else if (product.image) {
+                    productImage = product.image;
+                  } else if (product.imageUrl) {
+                    productImage = product.imageUrl;
+                  }
+
+                  return (
+                    <div key={itemId} className="flex gap-3 bg-white">
+                      {/* Product Image */}
+                      <div className="relative w-20 h-20 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden shrink-0 flex items-center justify-center">
+                        {productImage ? (
+                          <img
+                            src={productImage}
+                            alt={productName}
+                            className="w-full h-full object-contain p-2"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs" style={{ display: productImage ? 'none' : 'flex' }}>
+                          No Image
+                        </div>
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2">{productName}</h3>
+                          {productWeight && (
+                            <p className="text-xs text-gray-500 mt-1 font-medium">{productWeight}</p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-bold text-gray-900">₹{productPrice}</span>
+                            {product.delivery?.deliveryCharges > 0 && (
+                              <span className="text-[10px] text-gray-500">+ ₹{product.delivery.deliveryCharges} del.</span>
+                            )}
+                          </div>
+
+                          {/* Quantity Control Pill */}
+                          <div className="flex items-center bg-blue-600 rounded-lg shadow-sm shadow-blue-100 p-1 h-8">
+                            <button
+                              onClick={() => quantity === 1 ? removeItem(itemId) : updateQuantity(itemId, quantity - 1)}
+                              disabled={loading}
+                              className="w-7 h-full text-white flex items-center justify-center hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
+                            >
+                              -
+                            </button>
+                            <span className="w-6 text-center text-white font-bold text-sm">{quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(itemId, quantity + 1)}
+                              disabled={loading}
+                              className="w-7 h-full text-white flex items-center justify-center hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex-1 min-w-0 mr-2">
-                      <h3 className="font-medium text-gray-800 text-sm sm:text-base truncate">{productName}</h3>
-                      {productDescription && (
-                        <p className="text-gray-500 text-xs mt-1 line-clamp-2">{productDescription}</p>
-                      )}
-                      <p className="text-blue-600 font-bold mt-1 text-sm sm:text-base">₹{productPrice}</p>
-                    </div>
-                    
-                    <div className="flex flex-col items-end justify-between h-16">
-                      <button
-                        onClick={() => removeItem(itemId)}
-                        disabled={loading}
-                        className="text-gray-400 hover:text-red-500 transition-colors p-1 disabled:opacity-50 mb-2"
-                      >
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                      
-                      <div className="flex items-center bg-blue-50 rounded-full px-2 py-1">
-                        <button
-                          onClick={() => updateQuantity(itemId, quantity - 1)}
-                          disabled={loading || quantity <= 1}
-                          className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors disabled:opacity-50"
-                        >
-                          -
-                        </button>
-                        <span className="w-6 text-center font-medium text-sm">{quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(itemId, quantity + 1)}
-                          disabled={loading}
-                          className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors disabled:opacity-50"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Bill Details */}
+              <div className="bg-gray-50 rounded-2xl p-4 mt-6">
+                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Bill Details</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>Item Total</span>
+                    <span>₹{subTotal}</span>
                   </div>
-                );
-              })}
-            </div>
+                  <div className="flex justify-between items-center text-gray-600">
+                    <div className="flex items-center">
+                      <span>Delivery Fee</span>
+                      {deliveryFee === 0 && (
+                        <span className="ml-2 bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded font-bold">FREE</span>
+                      )}
+                    </div>
+                    <span>{deliveryFee > 0 ? `₹${deliveryFee}` : '₹0'}</span>
+                  </div>
+                  <div className="border-t border-gray-200 my-2 pt-2 flex justify-between items-center font-bold text-gray-900">
+                    <span>Grand Total</span>
+                    <span>₹{finalTotal}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Padding for bottom fixed button */}
+              <div className="h-24"></div>
+            </>
           )}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 sm:p-5">
-          <div className="space-y-3 mb-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">Subtotal:</span>
-              <span className="font-medium text-black">₹{calculateTotal()}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600 text-sm">Delivery:</span>
-              <span className="font-medium text-black">{calculateTotal() > 0 ? '₹25' : '₹0'}</span>
-            </div>
-            <div className="border-t border-gray-100 pt-2 flex justify-between items-center text-lg">
-              <span className="font-bold text-black">Total:</span>
-              <span className="font-bold text-blue-600">₹{calculateTotal() > 0 ? calculateTotal() + 25 : 0}</span>
-            </div>
-          </div>
-          <button
-            disabled={cartItems.length === 0 || loading}
-            onClick={() => {
-              if (cartItems.length > 0 && !loading) {
+        {/* Bottom Action Bar */}
+        {cartItems.length > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 text-center z-10">
+            <button
+              disabled={loading}
+              onClick={() => {
                 closeCart();
                 router.push('/checkout');
-              }
-            }}
-            className={`w-full py-3 rounded-lg font-bold transition-all ${
-              cartItems.length === 0 || loading
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg'
-            }`}
-          >
-            {loading ? 'Loading...' : cartItems.length === 0 ? 'Cart is Empty' : 'Proceed to Checkout'}
-          </button>
-        </div>
+              }}
+              className="w-full bg-blue-600 text-white py-3.5 px-4 rounded-xl font-bold text-base shadow-lg shadow-blue-200 hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 transition-all flex justify-between items-center group disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              <div className="flex flex-col items-start px-2">
+                <span className="text-xs font-medium opacity-90">Total</span>
+                <span className="text-lg">₹{finalTotal}</span>
+              </div>
+              <div className="flex items-center text-white/95 group-hover:text-white">
+                Proceed
+                <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
+          </div>
+        )}
       </div>
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity"
           onClick={closeCart}
-          style={{ backgroundColor: 'transparent' }}
         />
       )}
     </>
