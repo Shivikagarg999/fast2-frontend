@@ -127,7 +127,7 @@ const ProductCard = ({
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
               {product?.delivery?.deliveryCharges > 0 ? (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-600">
                   Delivery: ₹{product.delivery.deliveryCharges}
                 </span>
               ) : (
