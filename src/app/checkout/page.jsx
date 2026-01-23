@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  ArrowLeftIcon, 
-  CheckCircleIcon, 
+import {
+  ArrowLeftIcon,
+  CheckCircleIcon,
   MapPinIcon,
   PlusIcon,
   PencilIcon,
@@ -15,7 +15,7 @@ import {
   CreditCardIcon,
   BanknotesIcon
 } from '@heroicons/react/24/outline';
-import { 
+import {
   CheckCircleIcon as CheckCircleSolidIcon,
   HomeIcon as HomeSolidIcon,
   BuildingOfficeIcon as BuildingOfficeSolidIcon,
@@ -84,14 +84,14 @@ const CheckoutPage = () => {
 
       try {
         setLoading(true);
-        
+
         const cartResponse = await fetch('https://api.fast2.in/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (!cartResponse.ok) throw new Error('Failed to fetch cart items');
         const cartData = await cartResponse.json();
-        
+
         setCart(cartData);
         if (cartData.items && cartData.items.length > 0) {
           setCartItems(cartData.items);
@@ -196,13 +196,19 @@ const CheckoutPage = () => {
     }, 0);
   };
 
+  const calculateDeliveryFee = () => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.product?.delivery?.deliveryCharges || 0);
+    }, 0);
+  };
+
   const calculateWalletDeduction = () => {
-    const total = calculateTotal() + 25;
+    const total = calculateTotal() + calculateDeliveryFee();
     return Math.min(walletBalance, total);
   };
 
   const calculateFinalAmount = () => {
-    const total = calculateTotal() + 25;
+    const total = calculateTotal() + calculateDeliveryFee();
     if (useWallet) {
       return total - calculateWalletDeduction();
     }
@@ -268,7 +274,7 @@ const CheckoutPage = () => {
             });
 
             const verifyData = await verifyResponse.json();
-            
+
             if (verifyResponse.ok && verifyData.success) {
               resolve(verifyData);
             } else {
@@ -291,7 +297,7 @@ const CheckoutPage = () => {
           color: '#2563eb'
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             reject(new Error('Payment cancelled by user'));
           }
         }
@@ -350,13 +356,13 @@ const CheckoutPage = () => {
 
       const newOrderId = responseData.order?.orderId || responseData.orderId;
       setOrderId(newOrderId || 'N/A');
-      
+
       if (paymentMethod === 'online' && responseData.order?.razorpay) {
         setRazorpayOrder(responseData.order.razorpay);
-        
+
         try {
           await processRazorpayPayment(responseData.order.razorpay);
-          setStep(2); 
+          setStep(2);
           await clearCart(token);
         } catch (paymentError) {
           if (paymentError.message !== 'Payment cancelled by user') {
@@ -415,7 +421,7 @@ const CheckoutPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h1>
-          <button 
+          <button
             onClick={() => router.push('/')}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
@@ -497,11 +503,10 @@ const CheckoutPage = () => {
                             <div
                               key={address._id}
                               onClick={() => handleAddressSelect(address)}
-                              className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
-                                selectedAddress?._id === address._id
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
+                              className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${selectedAddress?._id === address._id
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                                }`}
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -578,12 +583,11 @@ const CheckoutPage = () => {
                               <button
                                 key={value}
                                 type="button"
-                                onClick={() => setShippingInfo({...shippingInfo, addressType: value})}
-                                className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
-                                  shippingInfo.addressType === value
-                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                }`}
+                                onClick={() => setShippingInfo({ ...shippingInfo, addressType: value })}
+                                className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${shippingInfo.addressType === value
+                                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                  : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                  }`}
                               >
                                 <Icon className="w-5 h-5 mb-2" />
                                 <span className="text-sm font-medium">{label}</span>
@@ -702,11 +706,10 @@ const CheckoutPage = () => {
                           <div className="flex items-center">
                             <button
                               onClick={() => setUseWallet(!useWallet)}
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
-                                useWallet 
-                                  ? 'border-green-600 bg-green-600' 
-                                  : 'border-gray-300 hover:border-green-400'
-                              }`}
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${useWallet
+                                ? 'border-green-600 bg-green-600'
+                                : 'border-gray-300 hover:border-green-400'
+                                }`}
                             >
                               {useWallet && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                             </button>
@@ -717,12 +720,12 @@ const CheckoutPage = () => {
                           </div>
                           <span className="font-semibold text-green-700">₹{walletBalance}</span>
                         </div>
-                        
+
                         {useWallet && (
                           <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
                             <p className="text-sm text-green-700">
                               ₹{calculateWalletDeduction()} will be deducted from your wallet balance.
-                              {calculateWalletDeduction() < (calculateTotal() + 25) && (
+                              {calculateWalletDeduction() < (calculateTotal() + calculateDeliveryFee()) && (
                                 <span className="block mt-1">
                                   Remaining ₹{calculateFinalAmount()} to be paid via {paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}.
                                 </span>
@@ -735,21 +738,19 @@ const CheckoutPage = () => {
 
                     {/* Payment Methods */}
                     <div className="space-y-3">
-                      <div 
+                      <div
                         onClick={() => setPaymentMethod('cod')}
-                        className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${
-                          paymentMethod === 'cod' 
-                            ? 'border-blue-500 bg-blue-50' 
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${paymentMethod === 'cod'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
-                              paymentMethod === 'cod' 
-                                ? 'border-blue-600 bg-blue-600' 
-                                : 'border-gray-300'
-                            }`}>
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${paymentMethod === 'cod'
+                              ? 'border-blue-600 bg-blue-600'
+                              : 'border-gray-300'
+                              }`}>
                               {paymentMethod === 'cod' && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                             </div>
                             <div className="flex items-center">
@@ -768,21 +769,19 @@ const CheckoutPage = () => {
                         </p>
                       </div>
 
-                      <div 
+                      <div
                         onClick={() => setPaymentMethod('online')}
-                        className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${
-                          paymentMethod === 'online' 
-                            ? 'border-blue-500 bg-blue-50' 
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${paymentMethod === 'online'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${
-                              paymentMethod === 'online' 
-                                ? 'border-blue-600 bg-blue-600' 
-                                : 'border-gray-300'
-                            }`}>
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${paymentMethod === 'online'
+                              ? 'border-blue-600 bg-blue-600'
+                              : 'border-gray-300'
+                              }`}>
                               {paymentMethod === 'online' && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                             </div>
                             <div className="flex items-center">
@@ -844,17 +843,17 @@ const CheckoutPage = () => {
                     {paymentMethod === 'online' ? 'Payment Successful!' : 'Order Confirmed!'}
                   </h2>
                   <p className="text-gray-600 text-lg mb-6 max-w-md mx-auto">
-                    {paymentMethod === 'online' 
+                    {paymentMethod === 'online'
                       ? 'Your payment was successful. Your order will be delivered soon.'
                       : 'Thank you for your purchase. Your order will be delivered to your address soon.'
                     }
                   </p>
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 max-w-md mx-auto mb-8">
                     <h3 className="font-semibold text-blue-800 mb-2">
-                      {paymentMethod === 'online' 
-                        ? 'Online Payment' 
-                        : useWallet 
-                          ? 'Partial Wallet Payment + COD' 
+                      {paymentMethod === 'online'
+                        ? 'Online Payment'
+                        : useWallet
+                          ? 'Partial Wallet Payment + COD'
                           : 'Cash on Delivery'
                       }
                     </h3>
@@ -863,7 +862,7 @@ const CheckoutPage = () => {
                         ? useWallet
                           ? `₹${calculateWalletDeduction()} deducted from wallet, ₹${calculateFinalAmount()} paid online`
                           : `₹${calculateFinalAmount()} paid online`
-                        : useWallet 
+                        : useWallet
                           ? `₹${calculateWalletDeduction()} deducted from wallet, ₹${calculateFinalAmount()} to pay via COD`
                           : 'Please keep cash ready for when your order arrives'
                       }
@@ -894,7 +893,7 @@ const CheckoutPage = () => {
             <div className="lg:w-1/3 mt-8 lg:mt-0">
               <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-200">Order Summary</h3>
-                
+
                 <div className="space-y-4 mb-6 max-h-80 overflow-y-auto">
                   {cartItems.map((item) => {
                     const productName = item.product?.name || item.product?.title || 'Unknown Product';
@@ -920,9 +919,9 @@ const CheckoutPage = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span className="font-medium text-gray-900">₹25</span>
+                    <span className="font-medium text-gray-900">₹{calculateDeliveryFee()}</span>
                   </div>
-                  
+
                   {useWallet && walletBalance > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Wallet Deduction</span>
@@ -937,7 +936,7 @@ const CheckoutPage = () => {
 
                   {useWallet && walletBalance > 0 && (
                     <div className="text-xs text-gray-500 text-center mt-2">
-                      {paymentMethod === 'online' 
+                      {paymentMethod === 'online'
                         ? `₹${calculateWalletDeduction()} from wallet + ₹${calculateFinalAmount()} online`
                         : `₹${calculateWalletDeduction()} from wallet + ₹${calculateFinalAmount()} via COD`
                       }

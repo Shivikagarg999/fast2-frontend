@@ -4,15 +4,15 @@ import React from 'react';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 
-const ProductCard = ({ 
-  product = {}, 
-  formatPrice, 
-  onProductClick = () => {}, 
-  categoryName = "", 
+const ProductCard = ({
+  product = {},
+  formatPrice,
+  onProductClick = () => { },
+  categoryName = "",
   cartQuantity = 0,
-  onAddToCart = () => {}, 
-  onUpdateQuantity = () => {}, 
-  isAddingToCart = false, 
+  onAddToCart = () => { },
+  onUpdateQuantity = () => { },
+  isAddingToCart = false,
   isLoggedIn = false,
   discountInfo = null
 }) => {
@@ -43,15 +43,14 @@ const ProductCard = ({
     }
   };
 
-  // Get the primary image or first image from the images array
   const getProductImage = () => {
     if (!product?.images || product.images.length === 0) {
       return "https://via.placeholder.com/200x200?text=No+Image";
     }
-    
+
     const primaryImage = product.images.find(img => img.isPrimary);
     if (primaryImage) return primaryImage.url;
-    
+
     return product.images[0].url;
   };
 
@@ -61,12 +60,10 @@ const ProductCard = ({
     return html.replace(/<[^>]*>/g, '').substring(0, 100);
   };
 
-  const deliveryTime = `${Math.floor(Math.random() * 11) + 5} mins`;
+
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
 
-  // Calculate discount information
   const calculateDiscountInfo = () => {
-    // Only consider discount if it comes from discountInfo (applied discount)
     if (discountInfo && discountInfo.discountPercentage > 0) {
       const discountedPrice = product.price - (product.price * discountInfo.discountPercentage / 100);
       return {
@@ -79,7 +76,7 @@ const ProductCard = ({
         savings: product.price - discountedPrice
       };
     }
-    
+
     return {
       hasDiscount: false,
       discountPercent: 0,
@@ -94,7 +91,7 @@ const ProductCard = ({
   const displayPrice = discount.hasDiscount ? discount.discountedPrice : product.price;
 
   return (
-    <div 
+    <div
       className="bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md flex flex-col h-full cursor-pointer border border-gray-100 hover:border-gray-200 relative"
       onClick={handleCardClick}
     >
@@ -114,8 +111,8 @@ const ProductCard = ({
 
       {/* Product Image */}
       <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
-        <img 
-          src={getProductImage()} 
+        <img
+          src={getProductImage()}
           alt={product?.name || "Product"}
           className="object-contain h-full w-full transition-transform duration-300 hover:scale-105"
           onError={(e) => {
@@ -123,44 +120,43 @@ const ProductCard = ({
           }}
         />
       </div>
-      
+
       {/* Product Details */}
       <div className="p-3 flex-grow flex flex-col">
         <div className="flex-grow">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
-              <span className="text-xs text-gray-500">{deliveryTime}</span>
+              {product?.delivery?.deliveryCharges > 0 ? (
+                <span className="text-xs text-gray-500">
+                  Delivery: ₹{product.delivery.deliveryCharges}
+                </span>
+              ) : (
+                <span className="text-xs text-green-600 font-medium">Free Delivery</span>
+              )}
             </div>
           </div>
-          
+
           <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
             {product?.name || "Unnamed Product"}
           </h3>
-          
-          {/* Display category name if available */}
-          {categoryName && typeof categoryName === 'string' && (
-            <p className="text-xs text-gray-500 mb-1 line-clamp-1">
-              {categoryName}
+
+
+
+          {/* Product Weight */}
+          {product?.weight && (
+            <p className="text-xs text-gray-500 mb-2 font-bold">
+              {product.weight} {product?.weightUnit || ''}
             </p>
           )}
-          
-          {/* Description */}
-          <div 
-            className="text-xs text-gray-500 mb-2 line-clamp-2 prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ 
-              __html: product?.description ? getPlainTextDescription(product.description) + '...' : "" 
-            }}
-          />
         </div>
-        
-        {/* Price Section - Show DISCOUNTED price as main price */}
+
         <div className="mb-3">
           <div className="flex items-center space-x-2 mb-1">
             {/* DISCOUNTED PRICE as main price */}
             <span className="text-sm font-bold text-gray-900">
               ₹{Math.round(displayPrice)}
             </span>
-            
+
             {/* Show ORIGINAL price crossed out if there's discount */}
             {discount.hasDiscount && (
               <span className="text-xs text-gray-400 line-through">
@@ -168,7 +164,7 @@ const ProductCard = ({
               </span>
             )}
           </div>
-          
+
           {/* Show savings if there's discount */}
           {discount.hasDiscount && (
             <div className="flex items-center space-x-1">
@@ -178,14 +174,13 @@ const ProductCard = ({
             </div>
           )}
         </div>
-        
+
         {/* Add to Cart Section */}
         <div className="mt-auto">
           {cartQuantity === 0 ? (
-            <button 
-              className={`w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-2 px-3 rounded-lg text-xs font-bold transition-colors duration-200 ${
-                isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+            <button
+              className={`w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-2 px-3 rounded-lg text-xs font-bold transition-colors duration-200 ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
             >
@@ -193,18 +188,18 @@ const ProductCard = ({
             </button>
           ) : (
             <div className="flex items-center justify-between border-2 border-blue-600 bg-blue-600 text-white rounded-lg px-2 py-1">
-              <button 
+              <button
                 className="w-6 h-6 flex items-center justify-center hover:bg-blue-700 rounded transition-colors"
                 onClick={handleRemove}
               >
                 <MinusIcon className="w-3 h-3" />
               </button>
-              
+
               <span className="font-bold text-sm px-2">
                 {cartQuantity}
               </span>
-              
-              <button 
+
+              <button
                 className="w-6 h-6 flex items-center justify-center hover:bg-blue-700 rounded transition-colors"
                 onClick={handleIncrement}
               >
