@@ -143,6 +143,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                <a href="/shops" className="hover:text-gray-900 transition-colors">
+                  Browse Shops
+                </a>
+              </li>
+              <li>
                 <a
                   href="/warehouse"
                   target="_blank"
@@ -172,7 +177,7 @@ export default function Footer() {
                   Seller
                 </a>
               </li>
-                 <li>
+              <li>
                 <a
                   href="/promotor"
                   target="_blank"

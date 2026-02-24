@@ -1,9 +1,9 @@
 "use client";
 import { Suspense, useState, useEffect, useRef } from 'react';
-import { 
-  MagnifyingGlassIcon, 
-  ShoppingCartIcon, 
-  UserIcon, 
+import {
+  MagnifyingGlassIcon,
+  ShoppingCartIcon,
+  UserIcon,
   Bars3Icon,
   XMarkIcon,
   Cog6ToothIcon,
@@ -13,7 +13,8 @@ import {
   BanknotesIcon,
   UserGroupIcon,
   MapPinIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  BuildingStorefrontIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
@@ -108,7 +109,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     const savedLocation = localStorage.getItem('userLocation');
     const savedPincode = localStorage.getItem('userPincode');
     const savedStreetAddress = localStorage.getItem('userStreetAddress');
-    
+
     if (savedLocation) {
       setSelectedLocation(savedLocation);
     }
@@ -186,24 +187,24 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
   const extractLocationName = (feature) => {
     if (!feature) return null;
-    
+
     if (feature.place_name && !feature.place_name.includes(',')) {
       return feature.place_name;
     }
-    
+
     const { text, context } = feature;
-    
+
     if (text && context) {
       const localityContext = context.find(ctx => ctx.id.includes('locality'));
       const placeContext = context.find(ctx => ctx.id.includes('place'));
       const regionContext = context.find(ctx => ctx.id.includes('region'));
       const postcodeContext = context.find(ctx => ctx.id.includes('postcode'));
-      
+
       const locality = localityContext?.text;
       const place = placeContext?.text;
       const region = regionContext?.text;
       const pincode = postcodeContext?.text;
-      
+
       if (locality && region && locality !== region) {
         return `${locality}, ${region}`;
       } else if (place && region && place !== region) {
@@ -218,17 +219,17 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
         return text;
       }
     }
-    
+
     if (text) {
       return text;
     }
-    
+
     return null;
   };
 
   const extractPincode = (feature) => {
     if (!feature) return '';
-    
+
     const postcodeContext = feature.context?.find(ctx => ctx.id.includes('postcode'));
     return postcodeContext?.text || '';
   };
@@ -276,24 +277,24 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
           // Reverse geocode to get address details
           const locationData = await reverseGeocode(latitude, longitude);
-          
+
           if (locationData) {
             const locationName = extractLocationName(locationData);
             const locationPincode = extractPincode(locationData);
-            
+
             // Extract street address from place_name
             let address = locationData.place_name || '';
             // Remove country name from address
             address = address.replace(/, India$/, '');
-            
+
             if (locationName) {
               setSelectedLocation(locationName);
               setStreetAddress(address);
             }
-            
+
             if (locationPincode) {
               setPincode(locationPincode);
-              
+
               // Auto-save if we have both address and pincode
               if (address && locationPincode) {
                 const savedLocationData = {
@@ -315,8 +316,8 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                 }
 
                 // Dispatch event for other components
-                window.dispatchEvent(new CustomEvent('locationUpdated', { 
-                  detail: savedLocationData 
+                window.dispatchEvent(new CustomEvent('locationUpdated', {
+                  detail: savedLocationData
                 }));
               }
             }
@@ -331,7 +332,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       (error) => {
         setIsGettingLocation(false);
         let errorMessage = 'Unable to get your location';
-        
+
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = 'Location access denied. Please enable location permissions.';
@@ -343,7 +344,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
             errorMessage = 'Location request timed out.';
             break;
         }
-        
+
         setLocationError(errorMessage);
         // console.error('Geolocation error:', error);
       },
@@ -378,7 +379,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     localStorage.setItem('userLocationData', JSON.stringify(locationData));
 
     setShowLocationDropdown(false);
-    
+
     if (onLocationSelect) {
       onLocationSelect(locationData);
     }
@@ -389,7 +390,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   const handleLocationSelect = (location) => {
     const locationName = extractLocationName(location);
     const locationPincode = extractPincode(location);
-    
+
     if (locationName && locationName !== 'Selected Location') {
       setSelectedLocation(locationName);
       setStreetAddress(locationName);
@@ -422,10 +423,9 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
   return (
     <div className="relative" ref={locationRef}>
-      <div 
-        className={`flex items-center cursor-pointer group ${
-          isMobile ? 'w-full' : 'w-64'
-        }`}
+      <div
+        className={`flex items-center cursor-pointer group ${isMobile ? 'w-full' : 'w-64'
+          }`}
         onClick={() => !isGettingLocation && setShowLocationDropdown(!showLocationDropdown)}
       >
         <div className={`
@@ -448,9 +448,8 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
               <span className="text-xs text-gray-500">Pincode: {pincode}</span>
             )}
           </div>
-          <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
-            showLocationDropdown ? 'rotate-180' : ''
-          }`} />
+          <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 flex-shrink-0 ${showLocationDropdown ? 'rotate-180' : ''
+            }`} />
         </div>
       </div>
 
@@ -461,7 +460,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
         `}>
           <div className="p-4 border-b border-gray-100">
             <h3 className="font-medium text-gray-900 mb-3">Set Delivery Location</h3>
-            
+
             <div className="space-y-3 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -475,7 +474,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                   onChange={(e) => setStreetAddress(e.target.value)}
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Pincode
@@ -502,7 +501,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
               >
                 Save Location
               </button>
-              
+
               <button
                 onClick={autoDetectLocation}
                 disabled={isGettingLocation}
@@ -552,7 +551,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <MagnifyingGlassIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              
+
               {isSearching && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
@@ -670,7 +669,7 @@ function HeaderContent() {
       const urlParams = new URLSearchParams(window.location.search);
       const searchQueryFromUrl = urlParams.get('search') || '';
       setProductSearchQuery(searchQueryFromUrl);
-      
+
       const savedPincode = localStorage.getItem('userPincode');
       if (savedPincode) {
         setUserPincode(savedPincode);
@@ -717,7 +716,7 @@ function HeaderContent() {
             'Authorization': `Bearer ${token}`
           }
         });
-       
+
         if (response.ok) {
           const userData = await response.json();
           setWalletBalance(userData.wallet || 0);
@@ -745,13 +744,13 @@ function HeaderContent() {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         if (response.ok) {
           const cartData = await response.json();
           const totalItems = cartData.items?.reduce((total, item) => {
             return total + (item.quantity || 0);
           }, 0) || 0;
-          
+
           setCartItemCount(totalItems);
         } else {
           setCartItemCount(0);
@@ -780,13 +779,13 @@ function HeaderContent() {
               'Authorization': `Bearer ${token}`
             }
           });
-          
+
           if (response.ok) {
             const cartData = await response.json();
             const totalItems = cartData.items?.reduce((total, item) => {
               return total + (item.quantity || 0);
             }, 0) || 0;
-            
+
             setCartItemCount(totalItems);
           }
         } catch (error) {
@@ -894,7 +893,7 @@ function HeaderContent() {
   };
 
   const handleCartClick = () => {
-    if (!isLoggedIn) return; 
+    if (!isLoggedIn) return;
     closeMenu();
     cartEvents.publish();
   };
@@ -917,9 +916,9 @@ function HeaderContent() {
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            
+
             <div className="flex items-center space-x-6">
-               <div 
+              <div
                 className="hidden lg:flex items-center cursor-pointer"
                 onClick={handleLogoClick}
               >
@@ -947,12 +946,21 @@ function HeaderContent() {
                   <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
                 </div>
                 <Suspense fallback={<SearchInputFallback />}>
-                  <SearchInput 
+                  <SearchInput
                     productSearchQuery={productSearchQuery}
                     setProductSearchQuery={setProductSearchQuery}
                   />
                 </Suspense>
               </div>
+            </div>
+
+            {/* Shops Link */}
+            <div
+              className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
+              onClick={() => router.push('/shops')}
+            >
+              <BuildingStorefrontIcon className="w-5 h-5 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">Shops</span>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -965,7 +973,7 @@ function HeaderContent() {
                     </span>
                   </div>
 
-                  <div 
+                  <div
                     className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
                     onClick={toggleProfileDropdown}
                   >
@@ -973,31 +981,30 @@ function HeaderContent() {
                       <UserIcon className="w-5 h-5 text-blue-600" />
                     </div>
                     <span className="text-sm font-medium text-gray-700">{userName}</span>
-                    <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                      isProfileDropdownOpen ? 'rotate-180' : ''
-                    }`} />
+                    <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''
+                      }`} />
                   </div>
-                  
+
                   {isProfileDropdownOpen && (
                     <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
                       <div className="py-1">
-                        <div 
+                        <div
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={handleProfileClick}
                         >
                           <Cog6ToothIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>My Profile</span>
                         </div>
-                        
-                        <div 
+
+                        <div
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={handleSavedAddresses}
                         >
                           <MapIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>Saved Addresses</span>
                         </div>
-                        
-                        <div 
+
+                        <div
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={handleOrdersClick}
                         >
@@ -1005,17 +1012,17 @@ function HeaderContent() {
                           <span>My Orders</span>
                         </div>
 
-                        <div 
+                        <div
                           className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={handleReferralsClick}
                         >
                           <UserGroupIcon className="w-5 h-5 mr-3 text-gray-400" />
                           <span>Refer & Earn</span>
                         </div>
-                        
+
                         <div className="border-t border-gray-100 my-1"></div>
-                        
-                        <div 
+
+                        <div
                           className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={handleLogout}
                         >
@@ -1027,7 +1034,7 @@ function HeaderContent() {
                   )}
                 </div>
               ) : (
-                <div 
+                <div
                   className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
                   onClick={handleLoginClick}
                 >
@@ -1036,12 +1043,11 @@ function HeaderContent() {
                 </div>
               )}
 
-              <div 
-                className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${
-                  isLoggedIn 
-                    ? 'text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-gray-50' 
+              <div
+                className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${isLoggedIn
+                    ? 'text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-gray-50'
                     : 'text-gray-400 cursor-not-allowed opacity-60'
-                }`}
+                  }`}
                 onClick={isLoggedIn ? handleCartClick : undefined}
               >
                 <div className="relative">
@@ -1055,7 +1061,7 @@ function HeaderContent() {
                 <span className="hidden sm:block text-sm font-medium">Cart</span>
               </div>
 
-              <button 
+              <button
                 className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
@@ -1069,14 +1075,14 @@ function HeaderContent() {
           </div>
         </div>
       </div>
-      
+
       <div className="lg:hidden px-4 py-3 border-b border-gray-200">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
           </div>
           <Suspense fallback={<MobileSearchInputFallback />}>
-            <MobileSearchInput 
+            <MobileSearchInput
               productSearchQuery={productSearchQuery}
               setProductSearchQuery={setProductSearchQuery}
             />
@@ -1098,7 +1104,7 @@ function HeaderContent() {
                     <p className="text-xs text-gray-500">Welcome back!</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                   <BanknotesIcon className="w-6 h-6 text-yellow-600" />
                   <div>
@@ -1110,38 +1116,38 @@ function HeaderContent() {
                 </div>
               </>
             )}
-            
+
             {isLoggedIn ? (
               <>
-                <div 
+                <div
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleProfileClick}
                 >
                   <UserIcon className="w-5 h-5" />
                   <span>My Profile</span>
                 </div>
-                <div 
+                <div
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleSavedAddresses}
                 >
                   <MapIcon className="w-5 h-5" />
                   <span>Saved Addresses</span>
                 </div>
-                <div 
+                <div
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleOrdersClick}
                 >
                   <InboxIcon className="w-5 h-5" />
                   <span>My Orders</span>
                 </div>
-                <div 
+                <div
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleReferralsClick}
                 >
                   <UserGroupIcon className="w-5 h-5" />
                   <span>Refer & Earn</span>
                 </div>
-                <div 
+                <div
                   className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                   onClick={handleLogout}
                 >
@@ -1150,7 +1156,7 @@ function HeaderContent() {
                 </div>
               </>
             ) : (
-              <div 
+              <div
                 className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
                 onClick={handleLoginClick}
               >
@@ -1158,7 +1164,16 @@ function HeaderContent() {
                 <span>Login/Signup</span>
               </div>
             )}
-            
+
+            {/* Shops link in mobile menu */}
+            <div
+              className="flex items-center space-x-2 text-gray-700 cursor-pointer hover:text-blue-600 transition-colors py-2"
+              onClick={() => { closeMenu(); router.push('/shops'); }}
+            >
+              <BuildingStorefrontIcon className="w-5 h-5" />
+              <span>Browse Shops</span>
+            </div>
+
             <div className="pt-4 border-t border-gray-200">
               <h4 className="font-medium mb-2">Categories</h4>
               <div className="space-y-2">
@@ -1166,14 +1181,14 @@ function HeaderContent() {
                   <div className="text-gray-500 py-1">Loading categories...</div>
                 ) : (
                   categories.map((category, index) => (
-                    <div 
-                      key={index} 
+                    <div
+                      key={index}
                       className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 cursor-pointer transition-colors py-2"
                       onClick={() => handleCategoryClick(category.name)}
                     >
                       {category.image && (
-                        <img 
-                          src={category.image} 
+                        <img
+                          src={category.image}
                           alt={category.name}
                           className="w-6 h-6 object-cover rounded"
                           onError={(e) => {
