@@ -356,6 +356,7 @@ const ProductListingComponent = () => {
   const handleProductClick = (product) => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
+      window.scrollTo(0, 0);
     }
     router.push(`/product/${product._id}`);
   };

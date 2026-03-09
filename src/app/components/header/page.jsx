@@ -912,7 +912,7 @@ function HeaderContent() {
   };
 
   return (
-    <header className="bg-white text-black sticky top-0 w-full z-50">
+    <header className="bg-pink-100 text-black font-bold sticky top-0 w-full z-50">
       <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -956,11 +956,11 @@ function HeaderContent() {
 
             {/* Shops Link */}
             <div
-              className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-blue-600 transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
+              className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-black transition-colors px-3 py-2 rounded-lg hover:bg-gray-50"
               onClick={() => router.push('/shops')}
             >
-              <BuildingStorefrontIcon className="w-5 h-5 text-gray-600" />
-              <span className="text-sm font-medium text-gray-700">Shops</span>
+              <BuildingStorefrontIcon className="w-5 h-5 text-black" />
+              <span className="text-sm font-medium text-black">Shops</span>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -974,13 +974,13 @@ function HeaderContent() {
                   </div>
 
                   <div
-                    className="flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                    className="flex items-center space-x-2 cursor-pointer hover:text-black transition-colors p-2 rounded-lg hover:bg-gray-50"
                     onClick={toggleProfileDropdown}
                   >
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <UserIcon className="w-5 h-5 text-blue-600" />
+                      <UserIcon className="w-5 h-5 text-black" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700">{userName}</span>
+                    <span className="text-sm font-medium text-black">{userName}</span>
                     <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''
                       }`} />
                   </div>
@@ -1035,30 +1035,29 @@ function HeaderContent() {
                 </div>
               ) : (
                 <div
-                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-blue-600 transition-colors"
+                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-black transition-colors"
                   onClick={handleLoginClick}
                 >
-                  <UserIcon className="w-6 h-6 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-700">Login/Signup</span>
+                  <UserIcon className="w-6 h-6 text-black" />
+                  <span className="text-sm font-medium text-black">Login/Signup</span>
                 </div>
               )}
-
               <div
                 className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${isLoggedIn
-                    ? 'text-gray-700 cursor-pointer hover:text-blue-600 hover:bg-gray-50'
-                    : 'text-gray-400 cursor-not-allowed opacity-60'
+                    ? 'text-black cursor-pointer hover:text-black hover:bg-gray-50'
+                    : 'text-gray-600 cursor-not-allowed opacity-60'
                   }`}
                 onClick={isLoggedIn ? handleCartClick : undefined}
               >
                 <div className="relative">
-                  <ShoppingCartIcon className="w-7 h-7" />
+                  <ShoppingCartIcon className="w-7 h-7 text-black" />
                   {isLoggedIn && (
                     <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
                       {cartItemCount > 0 ? cartItemCount : 0}
                     </span>
                   )}
                 </div>
-                <span className="hidden sm:block text-sm font-medium">Cart</span>
+                <span className="hidden sm:block text-sm font-medium text-black">Cart</span>
               </div>
 
               <button
@@ -1066,9 +1065,9 @@ function HeaderContent() {
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? (
-                  <XMarkIcon className="w-6 h-6" />
+                  <XMarkIcon className="w-6 h-6 text-black" />
                 ) : (
-                  <Bars3Icon className="w-6 h-6" />
+                  <Bars3Icon className="w-6 h-6 text-black" />
                 )}
               </button>
             </div>

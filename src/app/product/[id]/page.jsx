@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
+import ProductCard from '@/app/components/productCard/page';
 
 const ProductDetailPage = () => {
   const router = useRouter();
@@ -30,6 +31,8 @@ const ProductDetailPage = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [discountInfo, setDiscountInfo] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(false);
   
   // Image gallery states
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -39,6 +42,19 @@ const ProductDetailPage = () => {
     checkAuthStatus();
     getProductData();
     fetchDiscountInfo();
+  }, []);
+
+  useEffect(() => {
+    if (product && product.category?._id) {
+      fetchRelatedProducts(product.category._id, product._id);
+    }
+  }, [product]);
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   useEffect(() => {
@@ -181,6 +197,90 @@ const ProductDetailPage = () => {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const fetchRelatedProducts = async (categoryId, currentProductId) => {
+    setLoadingRelated(true);
+    try {
+      const userPincode = localStorage.getItem('userPincode');
+      let url = `https://api.fast2.in/api/product/category/${categoryId}`;
+      const params = new URLSearchParams();
+      
+      if (userPincode) {
+        params.append('pincode', userPincode);
+      }
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        const products = data.products || data.data || data || [];
+        // Filter out the current product and limit to 8 products
+        const filtered = products
+          .filter(p => p._id !== currentProductId)
+          .slice(0, 8);
+        setRelatedProducts(filtered);
+      }
+    } catch (error) {
+      console.error('Error fetching related products:', error);
+    } finally {
+      setLoadingRelated(false);
+    }
+  };
+
+  const handleProductClick = (product) => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('selectedProduct', JSON.stringify(product));
+      window.scrollTo(0, 0);
+    }
+    router.push(`/product/${product._id}`);
+  };
+
+  const addToCart = async (productId, quantity = 1) => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      setTimeout(() => setShowLoginPrompt(false), 3000);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch('https://api.fast2.in/api/cart/add', {  
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productId,
+          quantity
+        })
+      });
+      
+      const responseData = await response.json();
+
+      if (response.ok) {
+        setCartMessage('Product added to cart successfully!');
+        setTimeout(() => setCartMessage(''), 3000);
+        window.dispatchEvent(new Event('cartUpdated'));
+      } else {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
+          setShowLoginPrompt(true);
+          setTimeout(() => setShowLoginPrompt(false), 3000);
+        }
+        throw new Error(responseData.error || responseData.message || 'Failed to add to cart');
+      }
+    } catch (err) {
+      console.error('Error adding to cart:', err);
+      setCartMessage(err.message || 'Failed to add item to cart. Please try again.');
+      setTimeout(() => setCartMessage(''), 3000);
+    }
   };
 
   const handleAddToCart = async () => {
@@ -659,6 +759,37 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mt-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">More Products from {product.category?.name || 'This Category'}</h2>
+            
+            {loadingRelated ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {relatedProducts.map(relatedProduct => (
+                  <ProductCard 
+                    key={relatedProduct._id} 
+                    product={relatedProduct} 
+                    formatPrice={formatPrice} 
+                    onProductClick={handleProductClick}
+                    categoryName={product.category?.name || ''}
+                    cartQuantity={0}
+                    onAddToCart={addToCart}
+                    onUpdateQuantity={() => {}}
+                    isAddingToCart={false}
+                    isLoggedIn={isLoggedIn}
+                    discountInfo={discountInfo}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       <style jsx>{`
