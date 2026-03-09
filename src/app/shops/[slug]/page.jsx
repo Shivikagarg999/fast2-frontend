@@ -389,156 +389,88 @@ export default function ShopDetailPage() {
                 </div>
             )}
 
-            {/* Cover Image */}
-            <div className="relative h-48 md:h-64 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-400 overflow-hidden">
-                {shop.coverImage?.url ? (
-                    <img
-                        src={shop.coverImage.url}
-                        alt={shop.shopName}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                    />
-                ) : (
-                    <div className="absolute inset-0 opacity-30">
-                        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" opacity="0.3" />
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#grid)" />
-                        </svg>
-                    </div>
-                )}
+            {/* Shop Header - No Images */}
+            <div className="bg-white border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 py-6">
+                    <div className="flex flex-col gap-4">
+                        {/* Shop Name and Badges */}
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                                    {shop.shopName || 'Shop'}
+                                </h1>
+                                {shop.tagline && (
+                                    <p className="text-gray-600 text-sm md:text-base mb-3">{shop.tagline}</p>
+                                )}
 
-                {/* Back button */}
-                <button
-                    onClick={() => router.back()}
-                    className="absolute top-4 left-4 bg-black/30 backdrop-blur-sm text-white rounded-full p-2 hover:bg-black/50 transition-colors z-10"
-                >
-                    <ArrowLeftIcon className="w-5 h-5" />
-                </button>
-
-                {/* Share button */}
-                <button
-                    onClick={handleShare}
-                    className="absolute top-4 right-4 bg-black/30 backdrop-blur-sm text-white rounded-full p-2 hover:bg-black/50 transition-colors z-10"
-                >
-                    <ShareIcon className="w-5 h-5" />
-                </button>
-            </div>
-
-            {/* Shop Info Section */}
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 -mt-12 relative z-10 p-5 md:p-6">
-                    <div className="flex flex-col md:flex-row md:items-start gap-4">
-                        {/* Logo */}
-                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-white flex-shrink-0 -mt-12 md:-mt-16">
-                            <img
-                                src={shop.logo?.url || defaultLogo}
-                                alt={shop.shopName}
-                                className="w-full h-full object-cover"
-                                onError={(e) => { e.target.src = defaultLogo; }}
-                            />
-                        </div>
-
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-3 flex-wrap">
-                                <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
-                                            {shop.shopName}
-                                        </h1>
-                                        {shop.isVerified && (
-                                            <CheckBadgeIcon className="w-6 h-6 text-blue-500 flex-shrink-0" />
-                                        )}
-                                        {!shop.isOpen && (
-                                            <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                                                Currently Closed
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {shop.tagline && (
-                                        <p className="text-gray-500 text-sm mb-2">{shop.tagline}</p>
+                                {/* Badges */}
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {shop.isVerified && (
+                                        <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-sm font-bold px-3 py-1.5 rounded-full border border-blue-200">
+                                            <CheckBadgeIcon className="w-4 h-4" />
+                                            Verified Shop
+                                        </span>
                                     )}
-
-                                    <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
-                                        {shop.address?.city && (
-                                            <div className="flex items-center gap-1">
-                                                <MapPinIcon className="w-4 h-4" />
-                                                <span>
-                                                    {shop.address.city}
-                                                    {shop.address.state ? `, ${shop.address.state}` : ''}
-                                                </span>
-                                            </div>
-                                        )}
-                                        <div className="flex items-center gap-1">
-                                            <UserGroupIcon className="w-4 h-4" />
-                                            <span>{followersCount} Follower{followersCount !== 1 ? 's' : ''}</span>
-                                        </div>
-                                        {shop.rating?.average > 0 && (
-                                            <div className="flex items-center gap-1">
-                                                <StarSolidIcon className="w-4 h-4 text-yellow-400" />
-                                                <span className="font-medium text-gray-800">{shop.rating.average.toFixed(1)}</span>
-                                                <span>({shop.rating.totalReviews} reviews)</span>
-                                            </div>
-                                        )}
-                                    </div>
+                                    {!shop.isOpen && (
+                                        <span className="bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                                            Currently Closed
+                                        </span>
+                                    )}
+                                    {shop.isFeatured && (
+                                        <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                                            Featured
+                                        </span>
+                                    )}
                                 </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={handleFollow}
-                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${isFollowing
-                                                ? 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
-                                            }`}
-                                    >
-                                        {isFollowing ? (
-                                            <>
-                                                <HeartSolidIcon className="w-4 h-4 text-red-500" />
-                                                Following
-                                            </>
-                                        ) : (
-                                            <>
-                                                <HeartIcon className="w-4 h-4" />
-                                                Follow
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Description */}
-                            {shop.description && (
-                                <p className="text-gray-600 text-sm mt-3 line-clamp-2">{shop.description}</p>
-                            )}
-
-                            {/* Policies */}
-                            <div className="flex items-center gap-4 mt-4 flex-wrap">
-                                {shop.shippingPolicy && (
-                                    <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
-                                        <TruckIcon className="w-3.5 h-3.5 text-blue-500" />
-                                        {shop.shippingPolicy.freeShippingAbove > 0
-                                            ? `Free shipping above ₹${shop.shippingPolicy.freeShippingAbove}`
-                                            : `Delivery in ${shop.shippingPolicy.estimatedDeliveryDays} days`}
-                                    </div>
-                                )}
-                                {shop.returnPolicy?.isReturnable && (
-                                    <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
-                                        <ArrowPathIcon className="w-3.5 h-3.5 text-green-500" />
-                                        {shop.returnPolicy.returnWindowDays} Day Returns
-                                    </div>
-                                )}
                             </div>
                         </div>
+
+                        {/* Shop Stats */}
+                        <div className="flex flex-wrap items-center gap-6 text-sm">
+                            {shop.rating?.average > 0 && (
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 bg-green-500 text-white px-2 py-1 rounded-md">
+                                        <StarSolidIcon className="w-4 h-4" />
+                                        <span className="font-bold">{shop.rating.average.toFixed(1)}</span>
+                                    </div>
+                                    <span className="text-gray-500">
+                                        ({shop.rating.totalReviews} reviews)
+                                    </span>
+                                </div>
+                            )}
+                            
+                            {shop.analytics?.totalProductsListed > 0 && (
+                                <div className="flex items-center gap-1 text-gray-600">
+                                    <ShoppingBagIcon className="w-4 h-4" />
+                                    <span>{shop.analytics.totalProductsListed} Products</span>
+                                </div>
+                            )}
+                            
+                            {followersCount > 0 && (
+                                <div className="flex items-center gap-1 text-gray-600">
+                                    <UserGroupIcon className="w-4 h-4" />
+                                    <span>{followersCount >= 1000 ? `${(followersCount / 1000).toFixed(1)}k` : followersCount} Followers</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Location */}
+                        {shop.address && (
+                            <div className="flex items-start gap-2 text-sm text-gray-600">
+                                <MapPinIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    {shop.address.street && <p>{shop.address.street}</p>}
+                                    <p>
+                                        {shop.address.city}{shop.address.state ? `, ${shop.address.state}` : ''} - {shop.address.pincode}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
+            </div>
 
-                {/* Tabs */}
+            <div className="max-w-7xl mx-auto px-4">
                 <div className="mt-6 flex items-center border-b border-gray-200 gap-0">
                     {[
                         { key: 'products', label: 'Products', icon: ShoppingBagIcon },

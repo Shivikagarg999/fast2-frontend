@@ -119,7 +119,6 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     if (savedStreetAddress) {
       setStreetAddress(savedStreetAddress);
     } else {
-      // Auto-fetch location on first load if no saved location
       autoDetectLocation();
     }
   }, []);

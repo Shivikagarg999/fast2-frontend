@@ -137,10 +137,11 @@ function ShopsContent() {
                 <div className="max-w-7xl mx-auto px-4 py-10 md:py-16">
                     <div className="text-center">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
-                            <BuildingStorefrontIcon className="w-5 h-5" />
-                            <span className="text-sm font-medium">Explore Shops</span>
+                            <BuildingStorefrontIcon className="w-6 h-6" />
+                            <span className="text-lg font-medium">Explore Shops</span>
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-bold mb-3">
+                        <h1 className="text-3xl md:text-4xl font-bold mb-3 flex items-center justify-center gap-3">
+                            <BuildingStorefrontIcon className="w-8 h-8 md:w-10 md:h-10" />
                             Discover Amazing Shops
                         </h1>
                         <p className="text-white/80 mb-8 max-w-lg mx-auto">
@@ -269,11 +270,14 @@ function ShopsContent() {
             <div className="max-w-7xl mx-auto px-4 pb-12">
                 {/* Result count */}
                 <div className="mb-4">
-                    <p className="text-sm text-gray-500">
-                        {loading
-                            ? 'Loading...'
-                            : `${pagination.totalShops} shop${pagination.totalShops !== 1 ? 's' : ''} found`}
-                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <BuildingStorefrontIcon className="w-4 h-4" />
+                        <span>
+                            {loading
+                                ? 'Loading shops...'
+                                : `${pagination.totalShops} shop${pagination.totalShops !== 1 ? 's' : ''} found`}
+                        </span>
+                    </div>
                 </div>
 
                 {/* Loading State */}
@@ -295,12 +299,15 @@ function ShopsContent() {
                 ) : shops.length === 0 ? (
                     /* Empty State */
                     <div className="text-center py-20">
-                        <BuildingStorefrontIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <BuildingStorefrontIcon className="w-20 h-20 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-700 mb-2">No shops found</h3>
-                        <p className="text-gray-500 mb-6">Try adjusting your filters or search term</p>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                            <BuildingStorefrontIcon className="w-4 h-4" />
+                            <span>Try adjusting your filters or search terms</span>
+                        </div>
                         <button
                             onClick={clearFilters}
-                            className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium hover:bg-blue-700 transition-colors"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium transition-colors"
                         >
                             Clear Filters
                         </button>
