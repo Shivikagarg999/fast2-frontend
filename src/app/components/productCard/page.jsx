@@ -64,6 +64,22 @@ const ProductCard = ({
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
 
   const calculateDiscountInfo = () => {
+    // Check if product has an explicit oldPrice (higher than current price)
+    if (product.oldPrice && product.oldPrice > product.price) {
+      const savings = product.oldPrice - product.price;
+      const discountPercent = Math.round((savings / product.oldPrice) * 100);
+      return {
+        hasDiscount: true,
+        discountPercent: discountPercent,
+        originalPrice: product.oldPrice,
+        discountedPrice: product.price,
+        type: 'product',
+        discountName: null,
+        savings: savings
+      };
+    }
+    
+    // Check if there's a category-based discount
     if (discountInfo && discountInfo.discountPercentage > 0) {
       const discountedPrice = product.price - (product.price * discountInfo.discountPercentage / 100);
       return {
