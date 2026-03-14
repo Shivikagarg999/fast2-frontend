@@ -224,8 +224,8 @@ const CheckoutPage = () => {
 
   const isMedicalOrder = () => {
     return cartItems.some(item =>
-      item.product?.seller?.shopType === 'medical' ||
-      item.product?.shop?.shopType === 'medical'
+      item.product?.shop?.shopType === 'medical' ||
+      item.product?.seller?.shop?.shopType === 'medical'
     );
   };
 
