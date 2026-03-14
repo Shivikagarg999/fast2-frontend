@@ -9,6 +9,7 @@ import {
     UserGroupIcon,
     ShoppingBagIcon,
     CheckBadgeIcon,
+    BuildingOfficeIcon as Building2,
 } from '@heroicons/react/24/outline';
 
 const ShopCard = ({ shop = {} }) => {
@@ -21,9 +22,16 @@ const ShopCard = ({ shop = {} }) => {
     return (
         <Link href={`/shops/${shop.shopSlug}`}>
             <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300 cursor-pointer group p-4">
-                {/* Header with Badge */}
-                <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
+                {/* Shop Media */}
+                <div className="flex gap-4 mb-4">
+                    <div className="w-16 h-16 rounded-lg border border-gray-100 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
+                        {shop.logo?.url ? (
+                            <img src={shop.logo.url} alt={shop.shopName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                            <Building2 className="w-8 h-8 text-gray-300" />
+                        )}
+                    </div>
+                    <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-1">
                             {shop.shopName || 'Unnamed Shop'}
                         </h3>
@@ -31,18 +39,21 @@ const ShopCard = ({ shop = {} }) => {
                             <p className="text-sm text-gray-500 mt-1 line-clamp-2">{shop.tagline}</p>
                         )}
                     </div>
-                    
+                </div>
+
+                {/* Header Section (Removed old name/tagline block since it's now in Media block) */}
+                <div className="flex items-start justify-between mb-3 absolute top-4 right-4 z-10">
                     {/* Badges */}
-                    <div className="flex flex-col gap-1 ml-3">
+                    <div className="flex flex-col gap-1 items-end">
                         {shop.isVerified && (
-                            <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded-full border border-blue-200">
-                                <CheckBadgeIcon className="w-3.5 h-3.5" />
+                            <span className="flex items-center gap-1 bg-blue-50/90 backdrop-blur-sm text-blue-600 text-[10px] font-bold px-2 py-1 rounded-full border border-blue-200">
+                                <CheckBadgeIcon className="w-3 h-3" />
                                 Verified
                             </span>
                         )}
-                        {!shop.isOpen && (
-                            <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                Closed
+                        {shop.shopType === 'medical' && (
+                            <span className="bg-emerald-100/90 backdrop-blur-sm text-emerald-700 text-[9px] font-bold px-2 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
+                                Medical
                             </span>
                         )}
                     </div>

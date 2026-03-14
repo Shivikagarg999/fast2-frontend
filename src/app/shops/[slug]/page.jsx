@@ -20,6 +20,7 @@ import {
     CheckBadgeIcon,
     ChatBubbleLeftIcon,
     FunnelIcon,
+    BuildingOfficeIcon,
 } from '@heroicons/react/24/outline';
 import {
     StarIcon as StarSolidIcon,
@@ -389,41 +390,67 @@ export default function ShopDetailPage() {
                 </div>
             )}
 
-            {/* Shop Header - No Images */}
+            {/* Shop Header */}
             <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 py-6">
-                    <div className="flex flex-col gap-4">
-                        {/* Shop Name and Badges */}
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                                    {shop.shopName || 'Shop'}
-                                </h1>
-                                {shop.tagline && (
-                                    <p className="text-gray-600 text-sm md:text-base mb-3">{shop.tagline}</p>
-                                )}
+                {/* Cover Image Banner */}
+                <div className="h-48 md:h-64 bg-gray-100 relative overflow-hidden">
+                    {shop.coverImage?.url ? (
+                        <img 
+                            src={shop.coverImage.url} 
+                            alt="Cover" 
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-r from-blue-50 to-indigo-50" />
+                    )}
+                </div>
 
-                                {/* Badges */}
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {shop.isVerified && (
-                                        <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-sm font-bold px-3 py-1.5 rounded-full border border-blue-200">
-                                            <CheckBadgeIcon className="w-4 h-4" />
-                                            Verified Shop
-                                        </span>
-                                    )}
-                                    {!shop.isOpen && (
-                                        <span className="bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
-                                            Currently Closed
-                                        </span>
-                                    )}
-                                    {shop.isFeatured && (
-                                        <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
-                                            Featured
-                                        </span>
-                                    )}
-                                </div>
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="relative -mt-12 md:-mt-16 flex flex-col md:flex-row md:items-end gap-6 pb-6">
+                        {/* Shop Logo */}
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-white border-4 border-white shadow-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            {shop.logo?.url ? (
+                                <img src={shop.logo.url} alt={shop.shopName} className="w-full h-full object-cover" />
+                            ) : (
+                                <BuildingOfficeIcon className="w-12 h-12 text-gray-200" />
+                            )}
+                        </div>
+
+                        {/* Shop Name and Badges */}
+                        <div className="flex-1">
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                                {shop.shopName || 'Shop'}
+                            </h1>
+                            {shop.tagline && (
+                                <p className="text-gray-600 text-sm md:text-base mb-3">{shop.tagline}</p>
+                            )}
+
+                            {/* Badges */}
+                            <div className="flex flex-wrap gap-2 mb-2">
+                                {shop.isVerified && (
+                                    <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-sm font-bold px-3 py-1.5 rounded-full border border-blue-200">
+                                        <CheckBadgeIcon className="w-4 h-4" />
+                                        Verified Shop
+                                    </span>
+                                )}
+                                {!shop.isOpen && (
+                                    <span className="bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                                        Currently Closed
+                                    </span>
+                                )}
+                                {shop.shopType === 'medical' && (
+                                    <span className="bg-emerald-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-sm">
+                                        Medical Shop
+                                    </span>
+                                )}
+                                {shop.isFeatured && (
+                                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                                        Featured
+                                    </span>
+                                )}
                             </div>
                         </div>
+                    </div>
 
                         {/* Shop Stats */}
                         <div className="flex flex-wrap items-center gap-6 text-sm">
@@ -438,14 +465,14 @@ export default function ShopDetailPage() {
                                     </span>
                                 </div>
                             )}
-                            
+
                             {shop.analytics?.totalProductsListed > 0 && (
                                 <div className="flex items-center gap-1 text-gray-600">
                                     <ShoppingBagIcon className="w-4 h-4" />
                                     <span>{shop.analytics.totalProductsListed} Products</span>
                                 </div>
                             )}
-                            
+
                             {followersCount > 0 && (
                                 <div className="flex items-center gap-1 text-gray-600">
                                     <UserGroupIcon className="w-4 h-4" />
@@ -466,9 +493,20 @@ export default function ShopDetailPage() {
                                 </div>
                             </div>
                         )}
+
+                        {/* Shop Video */}
+                        {shop.video?.url && (
+                            <div className="mt-6 rounded-2xl overflow-hidden shadow-lg border border-gray-100 max-w-2xl mx-auto md:mx-0">
+                                <video
+                                    src={shop.video.url}
+                                    className="w-full h-auto"
+                                    controls
+                                    poster={shop.coverImage?.url || ''}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
 
             <div className="max-w-7xl mx-auto px-4">
                 <div className="mt-6 flex items-center border-b border-gray-200 gap-0">
@@ -481,8 +519,8 @@ export default function ShopDetailPage() {
                             key={key}
                             onClick={() => setActiveTab(key)}
                             className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === key
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-blue-600 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <Icon className="w-4 h-4" />

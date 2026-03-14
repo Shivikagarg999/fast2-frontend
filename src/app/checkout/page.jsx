@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeftIcon,
+  CheckBadgeIcon,
   CheckCircleIcon,
   MapPinIcon,
   PlusIcon,
@@ -38,6 +39,8 @@ const CheckoutPage = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [razorpayOrder, setRazorpayOrder] = useState(null);
+  const [prescriptionImage, setPrescriptionImage] = useState(null);
+  const [prescriptionPreview, setPrescriptionPreview] = useState(null);
   const router = useRouter();
 
   const [shippingInfo, setShippingInfo] = useState({
@@ -219,6 +222,21 @@ const CheckoutPage = () => {
     return Math.round(calculateFinalAmount() * 100);
   };
 
+  const isMedicalOrder = () => {
+    return cartItems.some(item =>
+      item.product?.seller?.shopType === 'medical' ||
+      item.product?.shop?.shopType === 'medical'
+    );
+  };
+
+  const handlePrescriptionChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPrescriptionImage(file);
+      setPrescriptionPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleShippingChange = (e) => {
     const { name, value } = e.target;
     setShippingInfo(prev => ({ ...prev, [name]: value }));
@@ -311,6 +329,11 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     if (!validateShipping()) return;
 
+    if (isMedicalOrder() && !prescriptionImage) {
+      setError('A doctor\'s prescription is required for medical shops');
+      return;
+    }
+
     setProcessing(true);
     const token = localStorage.getItem('token');
 
@@ -335,15 +358,24 @@ const CheckoutPage = () => {
         useWallet: useWallet
       };
 
-      console.log('Sending order data:', orderData);
+      const formData = new FormData();
+      formData.append('items', JSON.stringify(items));
+      formData.append('shippingAddress', JSON.stringify(orderData.shippingAddress));
+      formData.append('paymentMethod', paymentMethod);
+      formData.append('useWallet', useWallet);
+
+      if (prescriptionImage) {
+        formData.append('prescriptionImage', prescriptionImage);
+      }
+
+      console.log('Sending order data via FormData');
 
       const response = await fetch('https://api.fast2.in/api/order/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(orderData)
+        body: formData
       });
 
       const responseData = await response.json();
@@ -699,6 +731,55 @@ const CheckoutPage = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Prescription Upload Section */}
+                  {isMedicalOrder() && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                      <div className="flex items-center mb-4">
+                        <CheckBadgeIcon className="w-6 h-6 text-blue-600 mr-2" />
+                        <h3 className="text-lg font-bold text-blue-900">Medical Order - Prescription Required</h3>
+                      </div>
+                      <p className="text-sm text-blue-700 mb-6">
+                        One or more items in your cart belong to a medical shop. Please upload your doctor&apos;s prescription to proceed.
+                      </p>
+
+                      <div className="flex items-start space-x-4">
+                        <div className="w-32 h-32 border-2 border-dashed border-blue-300 rounded-xl flex items-center justify-center bg-white relative overflow-hidden flex-shrink-0">
+                          {prescriptionPreview ? (
+                            <img src={prescriptionPreview} alt="Prescription preview" className="w-full h-full object-cover" />
+                          ) : (
+                            <PencilIcon className="h-8 w-8 text-blue-300" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePrescriptionChange}
+                            className="hidden"
+                            id="prescription-upload"
+                          />
+                          <label
+                            htmlFor="prescription-upload"
+                            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 cursor-pointer shadow-sm transition-all"
+                          >
+                            <PlusIcon className="w-5 h-5 mr-2" />
+                            {prescriptionImage ? 'Change Prescription' : 'Upload Prescription'}
+                          </label>
+                          <p className="text-xs text-blue-500 mt-2">Maximum file size: 5MB (JPG, PNG)</p>
+                          {prescriptionImage && (
+                            <button
+                              onClick={() => { setPrescriptionImage(null); setPrescriptionPreview(null); }}
+                              className="mt-2 block text-xs text-red-600 hover:text-red-700 font-medium"
+                            >
+                              Remove File
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-4 mb-6">
                     {walletBalance > 0 && (
                       <div className="bg-green-50 border border-green-200 rounded-xl p-6">
