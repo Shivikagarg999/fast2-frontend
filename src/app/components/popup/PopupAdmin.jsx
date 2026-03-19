@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import PopupService from '../services/popupService';
+import PopupService from '../../services/popupService';
 
 const PopupAdmin = ({ adminToken }) => {
   const [popups, setPopups] = useState([]);
