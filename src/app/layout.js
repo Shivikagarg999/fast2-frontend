@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/header/page";
 import Cart from "./components/cart/page";
+import PopupManager from "./components/popup/PopupManager";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -54,6 +55,7 @@ export default function RootLayout({ children }) {
 
         <main className="relative z-10">{children}</main>
         <Cart />
+        <PopupManager />
       </body>
     </html>
   );

@@ -130,11 +130,24 @@ const ProductCard = ({
         <img
           src={getProductImage()}
           alt={product?.name || "Product"}
-          className="object-contain h-full w-full transition-transform duration-300 hover:scale-105"
+          className={`object-contain h-full w-full transition-transform duration-300 hover:scale-105 ${
+            product?.stockStatus === 'out-of-stock' ? 'blur-sm opacity-60' : ''
+          }`}
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/200x200?text=No+Image";
           }}
         />
+        
+        {/* Out of Stock Overlay */}
+        {product?.stockStatus === 'out-of-stock' && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <div className="text-center">
+              <div className="bg-red-600 text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
+                Out of Stock
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Product Details */}
@@ -193,7 +206,14 @@ const ProductCard = ({
 
         {/* Add to Cart Section */}
         <div className="mt-auto">
-          {cartQuantity === 0 ? (
+          {product?.stockStatus === 'out-of-stock' ? (
+            <button
+              className="w-full bg-gray-100 text-gray-500 py-2 px-3 rounded-lg text-sm font-bold cursor-not-allowed border border-gray-200"
+              disabled
+            >
+              Out of Stock
+            </button>
+          ) : cartQuantity === 0 ? (
             <button
               className={`w-full bg-blue-50 border border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}

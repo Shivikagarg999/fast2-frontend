@@ -139,9 +139,9 @@ const Banner = () => {
               index === currentSlide 
                 ? 'opacity-100 translate-x-0 scale-100' 
                 : 'opacity-0 translate-x-full scale-95'
-            }`}
+            } ${slide.gradient ? `bg-gradient-to-r ${slide.gradient}` : ''}`}
             style={{ 
-              background: slide.gradient || slide.accentColor || '#f3f4f6'
+              backgroundColor: !slide.gradient ? (slide.accentColor || '#f3f4f6') : undefined
             }}
           >
             <div className="flex items-center h-full px-6 md:px-8 lg:px-12 relative overflow-hidden">

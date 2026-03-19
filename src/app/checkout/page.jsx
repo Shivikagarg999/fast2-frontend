@@ -200,6 +200,14 @@ const CheckoutPage = () => {
   };
 
   const calculateDeliveryFee = () => {
+    const subtotal = calculateTotal();
+    
+    // Global Free Delivery Threshold - same as backend logic
+    if (subtotal > 199) {
+      return 0;
+    }
+    
+    // Otherwise, sum up individual product delivery charges
     return cartItems.reduce((total, item) => {
       return total + (item.product?.delivery?.deliveryCharges || 0);
     }, 0);
@@ -331,6 +339,81 @@ const CheckoutPage = () => {
 
     if (isMedicalOrder() && !prescriptionImage) {
       setError('A doctor\'s prescription is required for medical shops');
+      return;
+    }
+
+    // Check shop timings before placing order
+    const isShopOpen = (shopTimings) => {
+      if (!shopTimings) return true; // Default to open if no timings set
+      
+      const now = new Date();
+      const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const currentDay = days[now.getDay()];
+      const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+      const todayTimings = shopTimings[currentDay];
+      
+      if (!todayTimings || todayTimings.closed) {
+        return false;
+      }
+
+      if (!todayTimings.open || !todayTimings.close) {
+        return false;
+      }
+
+      return currentTime >= todayTimings.open && currentTime <= todayTimings.close;
+    };
+
+    const getNextOpenTime = (shopTimings) => {
+      if (!shopTimings) return null;
+      
+      const now = new Date();
+      const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      
+      for (let i = 0; i < 7; i++) {
+        const checkDate = new Date(now);
+        checkDate.setDate(now.getDate() + i);
+        const dayName = days[checkDate.getDay()];
+        const dayTimings = shopTimings[dayName];
+        
+        if (dayTimings && !dayTimings.closed && dayTimings.open && dayTimings.close) {
+          if (i === 0) {
+            // Today
+            const currentTime = now.toTimeString().slice(0, 5);
+            if (currentTime < dayTimings.open) {
+              return { day: dayName, time: dayTimings.open, isToday: true };
+            }
+          } else {
+            // Future day
+            return { day: dayName, time: dayTimings.open, isToday: false };
+          }
+        }
+      }
+      
+      return null;
+    };
+
+    // Check if any shops in the order are closed
+    const closedShops = [];
+    for (const item of cartItems) {
+      const shopTimings = item.product?.shop?.timings;
+      if (!isShopOpen(shopTimings)) {
+        const nextOpenTime = getNextOpenTime(shopTimings);
+        closedShops.push({
+          shopName: item.product?.shop?.shopName || 'Unknown Shop',
+          nextOpenTime: nextOpenTime
+        });
+      }
+    }
+
+    if (closedShops.length > 0) {
+      const shopNames = closedShops.map(s => s.shopName).join(', ');
+      const nextOpenInfo = closedShops[0].nextOpenTime;
+      const nextOpenText = nextOpenInfo 
+        ? `Opens ${nextOpenInfo.isToday ? 'today' : nextOpenInfo.day} at ${nextOpenInfo.time}`
+        : 'Shop is currently closed';
+      
+      setError(`Cannot place order. The following shops are currently closed: ${shopNames}. ${nextOpenText}`);
       return;
     }
 
@@ -1000,8 +1083,25 @@ const CheckoutPage = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span className="font-medium text-gray-900">₹{calculateDeliveryFee()}</span>
+                    <div className="text-right">
+                      {calculateTotal() > 199 ? (
+                        <div>
+                          <span className="font-medium text-green-600 line-through text-sm">₹{calculateDeliveryFee()}</span>
+                          <span className="font-medium text-green-600 ml-2">FREE</span>
+                        </div>
+                      ) : (
+                        <span className="font-medium text-gray-900">₹{calculateDeliveryFee()}</span>
+                      )}
+                    </div>
                   </div>
+
+                  {calculateTotal() > 199 && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
+                      <p className="text-sm text-green-700 font-medium">
+                        🎉 Free delivery applied! Your order exceeds ₹199
+                      </p>
+                    </div>
+                  )}
 
                   {useWallet && walletBalance > 0 && (
                     <div className="flex justify-between text-green-600">

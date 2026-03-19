@@ -168,6 +168,73 @@ export default function ShopDetailPage() {
         }
     };
 
+    // ─── Shop Timing Functions ─────────────────────────────────────────────────────
+    const isShopOpen = useCallback(() => {
+        if (!shop?.timings) return true; // Default to open if no timings set
+        
+        const now = new Date();
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const currentDay = days[now.getDay()];
+        const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+        const todayTimings = shop.timings[currentDay];
+        
+        if (!todayTimings || todayTimings.closed) {
+            return false;
+        }
+
+        if (!todayTimings.open || !todayTimings.close) {
+            return false;
+        }
+
+        return currentTime >= todayTimings.open && currentTime <= todayTimings.close;
+    }, [shop?.timings]);
+
+    const getNextOpenTime = useCallback(() => {
+        if (!shop?.timings) return null;
+        
+        const now = new Date();
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        
+        for (let i = 0; i < 7; i++) {
+            const checkDate = new Date(now);
+            checkDate.setDate(now.getDate() + i);
+            const dayName = days[checkDate.getDay()];
+            const dayTimings = shop.timings[dayName];
+            
+            if (dayTimings && !dayTimings.closed && dayTimings.open && dayTimings.close) {
+                if (i === 0) {
+                    // Today
+                    const currentTime = now.toTimeString().slice(0, 5);
+                    if (currentTime < dayTimings.open) {
+                        return { day: dayName, time: dayTimings.open, isToday: true };
+                    }
+                } else {
+                    // Future day
+                    return { day: dayName, time: dayTimings.open, isToday: false };
+                }
+            }
+        }
+        
+        return null;
+    }, [shop?.timings]);
+
+    const getShopStatus = useCallback(() => {
+        const isOpen = isShopOpen();
+        const now = new Date();
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const currentDay = days[now.getDay()];
+        const todayTimings = shop?.timings?.[currentDay];
+
+        return {
+            isOpen,
+            currentDay,
+            todayTimings: todayTimings || { closed: true },
+            nextOpenTime: getNextOpenTime(),
+            timezone: shop?.timings?.timezone || 'Asia/Kolkata'
+        };
+    }, [isShopOpen, getNextOpenTime, shop?.timings]);
+
     // ─── Fetch Reviews ───────────────────────────────────────────────────────────
     const fetchReviews = async (page = 1, append = false) => {
         if (!shop?._id) return;
@@ -433,9 +500,20 @@ export default function ShopDetailPage() {
                                         Verified Shop
                                     </span>
                                 )}
-                                {!shop.isOpen && (
-                                    <span className="bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full">
-                                        Currently Closed
+                                {/* Shop Status with timing */}
+                                <span className={`flex items-center gap-2 text-sm font-bold px-3 py-1.5 rounded-full ${
+                                    isShopOpen() 
+                                        ? 'bg-green-50 text-green-600 border border-green-200' 
+                                        : 'bg-red-50 text-red-600 border border-red-200'
+                                }`}>
+                                    <div className={`w-2 h-2 rounded-full ${
+                                        isShopOpen() ? 'bg-green-500' : 'bg-red-500'
+                                    }`} />
+                                    {isShopOpen() ? 'Open Now' : 'Closed Now'}
+                                </span>
+                                {!isShopOpen() && getShopStatus().nextOpenTime && (
+                                    <span className="text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full">
+                                        Opens {getShopStatus().nextOpenTime.isToday ? 'today' : getShopStatus().nextOpenTime.day} at {getShopStatus().nextOpenTime.time}
                                     </span>
                                 )}
                                 {shop.shopType === 'medical' && (
@@ -608,7 +686,9 @@ export default function ShopDetailPage() {
                                                 <img
                                                     src={getProductImage(product)}
                                                     alt={product.name}
-                                                    className="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300"
+                                                    className={`object-contain h-full w-full group-hover:scale-105 transition-transform duration-300 ${
+                                                        product.stockStatus === 'out-of-stock' ? 'blur-sm opacity-60' : ''
+                                                    }`}
                                                     onError={(e) => { e.target.src = 'https://via.placeholder.com/200x200?text=No+Image'; }}
                                                 />
                                                 {product.discountPercentage > 0 && (
@@ -617,10 +697,12 @@ export default function ShopDetailPage() {
                                                     </div>
                                                 )}
                                                 {product.stockStatus === 'out-of-stock' && (
-                                                    <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-                                                        <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">
-                                                            Out of Stock
-                                                        </span>
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                        <div className="text-center">
+                                                            <div className="bg-red-600 text-white text-sm font-bold px-4 py-2 rounded-lg shadow-lg">
+                                                                Out of Stock
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>
@@ -996,6 +1078,51 @@ export default function ShopDetailPage() {
                                             {shop.address.pincode ? ` - ${shop.address.pincode}` : ''}
                                         </p>
                                         <p>{shop.address.country || 'India'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Shop Timings */}
+                        {shop.timings && (
+                            <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                                <h3 className="font-bold text-gray-900 mb-3">Shop Timings</h3>
+                                <div className="grid grid-cols-7 gap-2 text-xs mb-4">
+                                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map((day) => (
+                                        <div key={day} className="text-center">
+                                            <p className="font-bold text-gray-700 capitalize mb-2">{day.slice(0, 3)}</p>
+                                            {shop.timings[day]?.closed ? (
+                                                <p className="text-red-600 font-medium">Closed</p>
+                                            ) : (
+                                                <div>
+                                                    <p className="text-gray-900">{shop.timings[day]?.open || '09:00'}</p>
+                                                    <p className="text-gray-500">to</p>
+                                                    <p className="text-gray-900">{shop.timings[day]?.close || '18:00'}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="pt-3 border-t border-gray-100">
+                                    <p className="text-xs text-gray-500">
+                                        Timezone: <span className="font-medium text-gray-700">{shop.timings.timezone || 'Asia/Kolkata'}</span>
+                                    </p>
+                                    <div className="mt-2">
+                                        <span className={`inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full ${
+                                            isShopOpen() 
+                                                ? 'bg-green-50 text-green-600 border border-green-200' 
+                                                : 'bg-red-50 text-red-600 border border-red-200'
+                                        }`}>
+                                            <div className={`w-2 h-2 rounded-full ${
+                                                isShopOpen() ? 'bg-green-500' : 'bg-red-500'
+                                            }`} />
+                                            Currently {isShopOpen() ? 'Open' : 'Closed'}
+                                        </span>
+                                        {!isShopOpen() && getShopStatus().nextOpenTime && (
+                                            <span className="ml-2 text-xs text-gray-500">
+                                                Opens {getShopStatus().nextOpenTime.isToday ? 'today' : getShopStatus().nextOpenTime.day} at {getShopStatus().nextOpenTime.time}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>

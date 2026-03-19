@@ -82,13 +82,13 @@ export default function CategoryPage() {
                 href={`/category/${category._id}`}
                 className="block bg-white rounded-xl overflow-hidden border border-gray-100 transition-all duration-200 hover:shadow-lg hover:border-blue-200 hover:scale-105 group"
               >
-                <div className="relative h-24 overflow-hidden bg-gray-50">
+                <div className="relative aspect-square overflow-hidden bg-gray-50/50 p-2 flex items-center justify-center">
                   <Image
                     src={category.image || fallbackImage}
                     alt={category.name}
                     fill
                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 16vw"
-                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="object-contain group-hover:scale-110 transition-transform duration-300 p-2"
                     onError={(e) => {
                       e.target.src = fallbackImage;
                     }}

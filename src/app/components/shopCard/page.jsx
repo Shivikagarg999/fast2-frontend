@@ -19,6 +19,56 @@ const ShopCard = ({ shop = {} }) => {
         return 'bg-orange-500';
     };
 
+    const isShopOpen = () => {
+        if (!shop.timings) return true; // Default to open if no timings set
+        
+        const now = new Date();
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const currentDay = days[now.getDay()];
+        const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+        const todayTimings = shop.timings[currentDay];
+        
+        if (!todayTimings || todayTimings.closed) {
+            return false;
+        }
+
+        if (!todayTimings.open || !todayTimings.close) {
+            return false;
+        }
+
+        return currentTime >= todayTimings.open && currentTime <= todayTimings.close;
+    };
+
+    const getNextOpenTime = () => {
+        if (!shop.timings) return null;
+        
+        const now = new Date();
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        
+        for (let i = 0; i < 7; i++) {
+            const checkDate = new Date(now);
+            checkDate.setDate(now.getDate() + i);
+            const dayName = days[checkDate.getDay()];
+            const dayTimings = shop.timings[dayName];
+            
+            if (dayTimings && !dayTimings.closed && dayTimings.open && dayTimings.close) {
+                if (i === 0) {
+                    // Today
+                    const currentTime = now.toTimeString().slice(0, 5);
+                    if (currentTime < dayTimings.open) {
+                        return { day: dayName, time: dayTimings.open, isToday: true };
+                    }
+                } else {
+                    // Future day
+                    return { day: dayName, time: dayTimings.open, isToday: false };
+                }
+            }
+        }
+        
+        return null;
+    };
+
     return (
         <Link href={`/shops/${shop.shopSlug}`}>
             <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300 cursor-pointer group p-4">
@@ -56,6 +106,17 @@ const ShopCard = ({ shop = {} }) => {
                                 Medical
                             </span>
                         )}
+                        {/* Shop Status */}
+                        <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${
+                            isShopOpen() 
+                                ? 'bg-green-50/90 backdrop-blur-sm text-green-600 border-green-200' 
+                                : 'bg-red-50/90 backdrop-blur-sm text-red-600 border-red-200'
+                        }`}>
+                            <div className={`w-2 h-2 rounded-full ${
+                                isShopOpen() ? 'bg-green-500' : 'bg-red-500'
+                            }`} />
+                            {isShopOpen() ? 'Open' : 'Closed'}
+                        </span>
                     </div>
                 </div>
 

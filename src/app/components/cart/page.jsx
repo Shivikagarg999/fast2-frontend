@@ -188,6 +188,14 @@ const Cart = () => {
   };
 
   const calculateDeliveryFee = () => {
+    const subtotal = calculateTotal();
+    
+    // Global Free Delivery Threshold - same as backend logic
+    if (subtotal > 199) {
+      return 0;
+    }
+    
+    // Otherwise, sum up individual product delivery charges
     return cartItems.reduce((total, item) => {
       const product = item.product || item;
       return total + (product.delivery?.deliveryCharges || 0);
@@ -422,8 +430,28 @@ const Cart = () => {
                         <span className="ml-2 bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded font-bold">FREE</span>
                       )}
                     </div>
-                    <span>{deliveryFee > 0 ? `₹${deliveryFee}` : '₹0'}</span>
+                    <div className="text-right">
+                      {subTotal > 199 ? (
+                        <div>
+                          <span className="text-gray-400 line-through text-xs">₹{cartItems.reduce((total, item) => {
+                            const product = item.product || item;
+                            return total + (product.delivery?.deliveryCharges || 0);
+                          }, 0)}</span>
+                          <span className="text-green-600 ml-2 font-medium">₹0</span>
+                        </div>
+                      ) : (
+                        <span>{deliveryFee > 0 ? `₹${deliveryFee}` : '₹0'}</span>
+                      )}
+                    </div>
                   </div>
+
+                  {subTotal > 199 && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-center">
+                      <p className="text-xs text-green-700 font-medium">
+                        🎉 Free delivery applied! Your order exceeds ₹199
+                      </p>
+                    </div>
+                  )}
                   <div className="border-t border-gray-200 my-2 pt-2 flex justify-between items-center font-bold text-gray-900">
                     <span>Grand Total</span>
                     <span>₹{finalTotal}</span>
