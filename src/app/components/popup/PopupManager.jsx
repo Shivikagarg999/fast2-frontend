@@ -11,6 +11,10 @@ const PopupManager = () => {
     const fetchActivePopup = async () => {
       if (isLoading) return; // Prevent multiple simultaneous requests
       
+      // Check if popup has already been shown in this session
+      const popupShown = sessionStorage.getItem('popupShown');
+      if (popupShown) return; // Don't fetch if already shown in this session
+      
       setIsLoading(true);
       try {
         const response = await fetch('/api/popups/active');
@@ -22,6 +26,8 @@ const PopupManager = () => {
           if (currentPath === '/') {
             setPopup(result.data);
             setIsVisible(true);
+            // Mark popup as shown in this session
+            sessionStorage.setItem('popupShown', 'true');
           }
         } else {
           setPopup(null);
@@ -34,14 +40,8 @@ const PopupManager = () => {
       }
     };
 
-    // Initial fetch
+    // Initial fetch only once when component mounts
     fetchActivePopup();
-
-    // Check for new popups every 30 seconds
-    const interval = setInterval(fetchActivePopup, 30000);
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
