@@ -123,12 +123,12 @@ const PopupManager = () => {
 
       {/* Centered Popup */}
       <div
-        className={`fixed z-[9999] max-w-md w-11/12 ${colors.border} ${colors.bg} rounded-lg shadow-2xl border-2 transition-all duration-300 transform ${
+        className={`fixed z-[9999] max-w-2xl w-11/12 rounded-lg shadow-2xl transition-all duration-300 transform ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={getPopupStyle()}
       >
-        <div className="p-6 relative">
+        <div className="relative">
           {/* Close Button - Always Visible */}
           <button
             onClick={closePopup}
@@ -152,11 +152,11 @@ const PopupManager = () => {
 
           {/* Popup Image */}
           {popup.imageUrl && (
-            <div className="mb-4">
+            <div>
               <img
                 src={popup.imageUrl}
                 alt={popup.title}
-                className="w-full h-auto rounded-md object-cover"
+                className="w-full h-auto rounded-lg object-cover"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
@@ -164,22 +164,7 @@ const PopupManager = () => {
             </div>
           )}
 
-          {/* Popup Content */}
-          <div className="pr-8">
-            <h3 className={`font-bold text-lg mb-2 ${colors.titleColor}`}>
-              {popup.title}
-            </h3>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              {popup.message}
-            </p>
-          </div>
 
-          {/* Auto-close indicator */}
-          {popup.autoCloseAfter && (
-            <div className="text-xs text-gray-500 mt-2">
-              Auto-closes in {popup.autoCloseAfter} seconds
-            </div>
-          )}
         </div>
       </div>
     </>
