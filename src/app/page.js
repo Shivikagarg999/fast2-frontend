@@ -6,6 +6,7 @@ import Footer from "./components/footer/page";
 import CategorySection from "./category/page";
 import ProductListingSection from "./pages/productListing/page";
 import Banner from "./components/banner/page";
+import PopupManager from "./components/popup/PopupManager";
 
 const LoadingProducts = () => {
   return (
@@ -40,6 +41,7 @@ function HomeContent() {
 export default function Home() {
   return (
     <Suspense fallback={<LoadingProducts />}>
+      <PopupManager />
       <HomeContent />
     </Suspense>
   );

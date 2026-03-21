@@ -13,15 +13,13 @@ const PopupManager = () => {
       
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/popups/active');
+        const response = await fetch('/api/popups/active');
         const result = await response.json();
         
         if (result.success && result.data) {
-          // Check if current page is in target pages (if specified)
+          // Only show popup on home route (/)
           const currentPath = window.location.pathname;
-          const targetPages = result.data.targetPages || [];
-          
-          if (targetPages.length === 0 || targetPages.includes(currentPath)) {
+          if (currentPath === '/') {
             setPopup(result.data);
             setIsVisible(true);
           }
@@ -65,18 +63,12 @@ const PopupManager = () => {
   };
 
   const getPopupStyle = () => {
-    if (!popup) return {};
-
-    const positions = {
-      'top-left': { top: '20px', left: '20px' },
-      'top-center': { top: '20px', left: '50%', transform: 'translateX(-50%)' },
-      'top-right': { top: '20px', right: '20px' },
-      'bottom-left': { bottom: '20px', left: '20px' },
-      'bottom-center': { bottom: '20px', left: '50%', transform: 'translateX(-50%)' },
-      'bottom-right': { bottom: '20px', right: '20px' }
+    // Always center the popup on screen
+    return {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
     };
-    
-    return positions[popup.position] || positions['top-center'];
   };
 
   const getPopupColors = () => {
@@ -121,22 +113,30 @@ const PopupManager = () => {
   const colors = getPopupColors();
 
   return (
-    <div
-      className={`fixed z-[9999] max-w-md w-full mx-4 ${colors.border} ${colors.bg} rounded-lg shadow-xl border-2 transition-all duration-300 transform ${
-        isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-      }`}
-      style={getPopupStyle()}
-    >
-      <div className="p-6 relative">
-        {/* Close Button */}
-        {popup.showCloseButton && (
+    <>
+      {/* Blurred Backdrop */}
+      <div
+        className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+        style={{ opacity: isVisible ? 1 : 0 }}
+        onClick={closePopup}
+      />
+
+      {/* Centered Popup */}
+      <div
+        className={`fixed z-[9999] max-w-md w-11/12 ${colors.border} ${colors.bg} rounded-lg shadow-2xl border-2 transition-all duration-300 transform ${
+          isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        }`}
+        style={getPopupStyle()}
+      >
+        <div className="p-6 relative">
+          {/* Close Button - Always Visible */}
           <button
             onClick={closePopup}
-            className={`absolute top-3 right-3 ${colors.buttonBg} ${colors.buttonHover} text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors duration-200`}
+            className="absolute top-4 right-4 text-white bg-red-500 hover:bg-red-600 transition-colors duration-200 rounded-full p-2"
             aria-label="Close popup"
           >
             <svg
-              className="w-4 h-4"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -149,40 +149,40 @@ const PopupManager = () => {
               />
             </svg>
           </button>
-        )}
 
-        {/* Popup Image */}
-        {popup.imageUrl && (
-          <div className="mb-4">
-            <img
-              src={popup.imageUrl}
-              alt={popup.title}
-              className="w-full h-auto rounded-md object-cover"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
+          {/* Popup Image */}
+          {popup.imageUrl && (
+            <div className="mb-4">
+              <img
+                src={popup.imageUrl}
+                alt={popup.title}
+                className="w-full h-auto rounded-md object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
+          {/* Popup Content */}
+          <div className="pr-8">
+            <h3 className={`font-bold text-lg mb-2 ${colors.titleColor}`}>
+              {popup.title}
+            </h3>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              {popup.message}
+            </p>
           </div>
-        )}
 
-        {/* Popup Content */}
-        <div className="pr-8">
-          <h3 className={`font-bold text-lg mb-2 ${colors.titleColor}`}>
-            {popup.title}
-          </h3>
-          <p className="text-gray-700 leading-relaxed mb-4">
-            {popup.message}
-          </p>
+          {/* Auto-close indicator */}
+          {popup.autoCloseAfter && (
+            <div className="text-xs text-gray-500 mt-2">
+              Auto-closes in {popup.autoCloseAfter} seconds
+            </div>
+          )}
         </div>
-
-        {/* Auto-close indicator */}
-        {popup.autoCloseAfter && (
-          <div className="text-xs text-gray-500 mt-2">
-            Auto-closes in {popup.autoCloseAfter} seconds
-          </div>
-        )}
       </div>
-    </div>
+    </>
   );
 };
 
