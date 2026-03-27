@@ -15,13 +15,13 @@ const Banner = () => {
       try {
         setLoading(true);
         const response = await fetch('https://api.fast2.in/api/admin/banners/getall');
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch banners: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           setBannerData(result.data);
         } else {
@@ -42,11 +42,11 @@ const Banner = () => {
   // Auto-rotate slides every 4 seconds
   useEffect(() => {
     if (bannerData.length === 0) return;
-    
+
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % bannerData.length);
     }, 4000);
-    
+
     return () => clearInterval(interval);
   }, [bannerData.length]);
 
@@ -65,7 +65,7 @@ const Banner = () => {
   // Safe image URL handling
   const getSafeImageUrl = (url) => {
     if (!url) return '/fallback-banner.jpg';
-    
+
     try {
       new URL(url);
       return url;
@@ -103,7 +103,7 @@ const Banner = () => {
             <div className="text-center">
               <p className="text-red-600 text-lg font-semibold">Failed to load banners</p>
               <p className="text-red-500 text-sm mt-2">{error}</p>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
               >
@@ -136,11 +136,11 @@ const Banner = () => {
           <div
             key={slide._id || slide.id}
             className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-              index === currentSlide 
-                ? 'opacity-100 translate-x-0 scale-100' 
+              index === currentSlide
+                ? 'opacity-100 translate-x-0 scale-100'
                 : 'opacity-0 translate-x-full scale-95'
             } ${slide.gradient ? `bg-gradient-to-r ${slide.gradient}` : ''}`}
-            style={{ 
+            style={{
               backgroundColor: !slide.gradient ? (slide.accentColor || '#f3f4f6') : undefined
             }}
           >
@@ -151,7 +151,7 @@ const Banner = () => {
                   <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black leading-tight">
                     {slide.title}
                   </h1>
-                  <h2 
+                  <h2
                     className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-black leading-tight"
                   >
                     {slide.subtitle}
@@ -162,7 +162,7 @@ const Banner = () => {
                 </p>
                 {/* Button removed as requested */}
               </div>
-              
+
               {/* Image Section */}
               <div className="flex-1 max-w-[40%] h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -182,7 +182,7 @@ const Banner = () => {
                     />
                   </div>
                 </div>
-                
+
                 {/* Decorative elements */}
                 <div className="absolute top-4 right-4 w-20 h-20 bg-white/20 rounded-full blur-xl"></div>
                 <div className="absolute bottom-6 right-8 w-16 h-16 bg-white/15 rounded-full blur-lg"></div>
@@ -190,11 +190,11 @@ const Banner = () => {
             </div>
           </div>
         ))}
-        
+
         {/* Navigation Arrows */}
         {bannerData.length > 1 && (
           <>
-            <button 
+            <button
               className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
               onClick={goToPrevSlide}
               aria-label="Previous slide"
@@ -203,8 +203,8 @@ const Banner = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            
-            <button 
+
+            <button
               className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
               onClick={goToNextSlide}
               aria-label="Next slide"
@@ -215,7 +215,7 @@ const Banner = () => {
             </button>
           </>
         )}
-        
+
         {/* Progress Dots */}
         {bannerData.length > 1 && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
@@ -223,8 +223,8 @@ const Banner = () => {
               <button
                 key={index}
                 className={`transition-all duration-300 rounded-full ${
-                  index === currentSlide 
-                    ? 'w-8 h-3 bg-white shadow-md' 
+                  index === currentSlide
+                    ? 'w-8 h-3 bg-white shadow-md'
                     : 'w-3 h-3 bg-white/60 hover:bg-white/80'
                 }`}
                 onClick={() => goToSlide(index)}
@@ -233,6 +233,28 @@ const Banner = () => {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Stats Bar */}
+      <div className="bg-[#1a3d1a] rounded-2xl mt-4 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[10px] text-white/40 uppercase tracking-[0.15em] font-semibold">FROM LOCAL STORES</span>
+          <span className="text-xl font-bold text-white">10 Minute Delivery</span>
+          <p className="text-xs text-white/50 max-w-xs leading-relaxed hidden sm:block">
+            Our network of farm-to-warehouse ensures your quality is never empty. Real-time tracking from farm to your doorstep.
+          </p>
+        </div>
+        <div className="flex items-center gap-8 sm:gap-12 shrink-0">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-white">98%</div>
+            <div className="text-[10px] text-white/40 mt-0.5">On-time delivery</div>
+          </div>
+          <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-white">500+</div>
+            <div className="text-[10px] text-white/40 mt-0.5">Products</div>
+          </div>
+        </div>
       </div>
     </div>
   );

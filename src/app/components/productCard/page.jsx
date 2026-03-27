@@ -131,7 +131,7 @@ const ProductCard = ({
           src={getProductImage()}
           alt={product?.name || "Product"}
           className={`object-contain h-full w-full transition-transform duration-300 hover:scale-105 ${
-            product?.stockStatus === 'out-of-stock' ? 'blur-sm opacity-60' : ''
+            product?.stockStatus === 'out-of-stock' ? 'opacity-80' : ''
           }`}
           onError={(e) => {
             e.target.src = "https://via.placeholder.com/200x200?text=No+Image";
@@ -140,7 +140,7 @@ const ProductCard = ({
         
         {/* Out of Stock Overlay */}
         {product?.stockStatus === 'out-of-stock' && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-white/30 flex items-center justify-center">
             <div className="text-center">
               <div className="bg-red-600 text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
                 Out of Stock

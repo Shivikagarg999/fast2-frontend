@@ -30,9 +30,9 @@ function HomeContent() {
           <CategorySection />
         </>
       )}
-      
+
       <ProductListingSection searchQuery={searchQuery} />
-      
+
       <Footer />
     </>
   );
