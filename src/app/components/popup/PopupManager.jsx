@@ -76,11 +76,11 @@ const PopupManager = () => {
 
     const colors = {
       'info': {
-        border: 'border-blue-200',
-        bg: 'bg-blue-50',
-        titleColor: 'text-blue-800',
-        buttonBg: 'bg-blue-600',
-        buttonHover: 'hover:bg-blue-700'
+        border: 'border-green-200',
+        bg: 'bg-green-50',
+        titleColor: 'text-green-800',
+        buttonBg: 'bg-green-600',
+        buttonHover: 'hover:bg-green-700'
       },
       'success': {
         border: 'border-green-200',

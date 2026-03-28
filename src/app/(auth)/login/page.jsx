@@ -140,7 +140,7 @@ export default function LoginPage() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-blue-600 py-4 px-6">
+          <div className="bg-green-600 py-4 px-6">
             <h2 className="text-white text-xl font-bold text-center">
               {showForgotPassword ? 'Reset Password' : isLogin ? 'Login to Your Account' : 'Create New Account'}
             </h2>
@@ -159,14 +159,14 @@ export default function LoginPage() {
               <div className="flex justify-center mb-6 bg-gray-100 rounded-md p-1">
                 <button
                   type="button"
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${!isLogin ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${!isLogin ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
                   onClick={switchToRegister}
                 >
                   Register
                 </button>
                 <button
                   type="button"
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${isLogin ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${isLogin ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
                   onClick={switchToLogin}
                 >
                   Login
@@ -190,7 +190,7 @@ export default function LoginPage() {
                     name="forgotEmail"
                     type="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -214,7 +214,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={handleForgotPassword}
                     disabled={forgotLoading || !email}
-                    className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                    className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                   >
                     {forgotLoading ? (
                       <>
@@ -230,7 +230,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={toggleForgotPassword}
-                    className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+                    className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
                   >
                     Cancel
                   </button>
@@ -240,7 +240,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={switchToLogin}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-sm text-green-600 hover:text-green-800 font-medium"
                   >
                     ← Back to Login
                   </button>
@@ -258,7 +258,7 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -274,7 +274,7 @@ export default function LoginPage() {
                     name="password"
                     type="password"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
                     placeholder={isLogin ? "Enter your password" : "Create a password (min 6 characters)"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -297,7 +297,7 @@ export default function LoginPage() {
                         name="confirmPassword"
                         type="password"
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
                         placeholder="Confirm your password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -312,7 +312,7 @@ export default function LoginPage() {
                         id="referralCode"
                         name="referralCode"
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
                         placeholder="Enter referral code if you have one"
                         value={referralCode}
                         onChange={(e) => setReferralCode(e.target.value)}
@@ -331,7 +331,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={toggleForgotPassword}
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      className="text-sm text-green-600 hover:text-green-800 font-medium"
                     >
                       Forgot Password?
                     </button>
@@ -353,7 +353,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !email || !password || (!isLogin && password !== confirmPassword)}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <>
@@ -375,7 +375,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={switchToLogin}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-green-600 hover:text-green-800 font-medium"
                   >
                     Login here
                   </button>
@@ -390,7 +390,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={switchToRegister}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-green-600 hover:text-green-800 font-medium"
                   >
                     Register here
                   </button>
@@ -401,11 +401,11 @@ export default function LoginPage() {
             {!showForgotPassword && (
               <p className="mt-6 text-center text-xs text-gray-500">
                 By continuing, you agree to our{' '}
-                <Link href="/terms" className="text-blue-600 hover:underline">
+                <Link href="/terms" className="text-green-600 hover:underline">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-blue-600 hover:underline">
+                <Link href="/privacy" className="text-green-600 hover:underline">
                   Privacy Policy
                 </Link>
               </p>

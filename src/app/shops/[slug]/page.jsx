@@ -438,7 +438,7 @@ export default function ShopDetailPage() {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">Shop not found</h2>
-                    <button onClick={() => router.push('/shops')} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors">
+                    <button onClick={() => router.push('/shops')} className="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700 transition-colors">
                         Browse Shops
                     </button>
                 </div>
@@ -452,7 +452,7 @@ export default function ShopDetailPage() {
         <div className="min-h-screen bg-gray-50 pb-10">
             {/* Login Prompt */}
             {showLoginPrompt && (
-                <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
                     <p className="text-sm font-medium">Please login to continue</p>
                 </div>
             )}
@@ -468,7 +468,7 @@ export default function ShopDetailPage() {
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        <div className="w-full h-full bg-gradient-to-r from-blue-50 to-indigo-50" />
+                        <div className="w-full h-full bg-gradient-to-r from-green-50 to-indigo-50" />
                     )}
                 </div>
 
@@ -495,7 +495,7 @@ export default function ShopDetailPage() {
                             {/* Badges */}
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {shop.isVerified && (
-                                    <span className="flex items-center gap-1 bg-blue-50 text-blue-600 text-sm font-bold px-3 py-1.5 rounded-full border border-blue-200">
+                                    <span className="flex items-center gap-1 bg-green-50 text-green-600 text-sm font-bold px-3 py-1.5 rounded-full border border-green-200">
                                         <CheckBadgeIcon className="w-4 h-4" />
                                         Verified Shop
                                     </span>
@@ -597,7 +597,7 @@ export default function ShopDetailPage() {
                             key={key}
                             onClick={() => setActiveTab(key)}
                             className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === key
-                                ? 'border-blue-600 text-blue-600'
+                                ? 'border-green-600 text-green-600'
                                 : 'border-transparent text-gray-500 hover:text-gray-700'
                                 }`}
                         >
@@ -624,7 +624,7 @@ export default function ShopDetailPage() {
                                     placeholder="Search products in this shop..."
                                     value={productSearchInput}
                                     onChange={(e) => setProductSearchInput(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:border-blue-400"
+                                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:outline-none focus:border-green-400"
                                 />
                                 {productSearchInput && (
                                     <button
@@ -643,7 +643,7 @@ export default function ShopDetailPage() {
                                     setProductSort(s);
                                     setProductSortOrder(o);
                                 }}
-                                className="bg-white border border-gray-200 rounded-full px-4 py-2.5 text-sm text-gray-700 cursor-pointer focus:outline-none focus:border-blue-400"
+                                className="bg-white border border-gray-200 rounded-full px-4 py-2.5 text-sm text-gray-700 cursor-pointer focus:outline-none focus:border-green-400"
                             >
                                 <option value="createdAt-desc">Newest First</option>
                                 <option value="createdAt-asc">Oldest First</option>
@@ -676,7 +676,7 @@ export default function ShopDetailPage() {
                                     {products.map((product) => (
                                         <div
                                             key={product._id}
-                                            className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col"
+                                            className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-green-200 hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col"
                                         >
                                             {/* Product Image */}
                                             <div
@@ -741,18 +741,18 @@ export default function ShopDetailPage() {
                                             <div className="px-3 pb-3">
                                                 {product.stockStatus !== 'out-of-stock' && (
                                                     cart[product._id] ? (
-                                                        <div className="flex items-center justify-center bg-blue-600 text-white rounded-lg h-9 text-sm font-bold">
+                                                        <div className="flex items-center justify-center bg-green-600 text-white rounded-lg h-9 text-sm font-bold">
                                                             ✓ Added ({cart[product._id]})
                                                         </div>
                                                     ) : (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleAddToCart(product._id); }}
                                                             disabled={addingToCart[product._id]}
-                                                            className="w-full bg-blue-50 border border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                                                            className="w-full bg-green-50 border border-green-600 text-green-700 hover:bg-green-600 hover:text-white py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
                                                         >
                                                             {addingToCart[product._id] ? (
                                                                 <span className="flex items-center justify-center gap-2">
-                                                                    <span className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                                                    <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
                                                                     Adding
                                                                 </span>
                                                             ) : (
@@ -830,7 +830,7 @@ export default function ShopDetailPage() {
                                     <div>
                                         <button
                                             onClick={() => setShowReviewForm(!showReviewForm)}
-                                            className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors"
+                                            className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors"
                                         >
                                             Write a Review
                                         </button>
@@ -865,21 +865,21 @@ export default function ShopDetailPage() {
                                         placeholder="Review title (optional)"
                                         value={reviewForm.title}
                                         onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
-                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:border-blue-400"
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:border-green-400"
                                         maxLength={100}
                                     />
                                     <textarea
                                         placeholder="Share your experience with this shop..."
                                         value={reviewForm.comment}
                                         onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-blue-400 resize-none h-24"
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-green-400 resize-none h-24"
                                         maxLength={1000}
                                     />
                                     <div className="flex items-center gap-3">
                                         <button
                                             type="submit"
                                             disabled={submittingReview}
-                                            className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                            className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors disabled:opacity-50"
                                         >
                                             {submittingReview ? 'Submitting...' : 'Submit Review'}
                                         </button>
@@ -899,7 +899,7 @@ export default function ShopDetailPage() {
                         <div className="flex items-center gap-2 mb-5 overflow-x-auto">
                             <button
                                 onClick={() => setReviewRatingFilter('')}
-                                className={`px-4 py-2 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${!reviewRatingFilter ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-gray-200 text-gray-600'
+                                className={`px-4 py-2 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${!reviewRatingFilter ? 'bg-green-50 border-green-300 text-green-700' : 'bg-white border-gray-200 text-gray-600'
                                     }`}
                             >
                                 All
@@ -908,7 +908,7 @@ export default function ShopDetailPage() {
                                 <button
                                     key={r}
                                     onClick={() => setReviewRatingFilter(reviewRatingFilter === r.toString() ? '' : r.toString())}
-                                    className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${reviewRatingFilter === r.toString() ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-white border-gray-200 text-gray-600'
+                                    className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-medium border transition-colors whitespace-nowrap ${reviewRatingFilter === r.toString() ? 'bg-green-50 border-green-300 text-green-700' : 'bg-white border-gray-200 text-gray-600'
                                         }`}
                                 >
                                     <StarSolidIcon className="w-3 h-3 text-yellow-400" />
@@ -941,7 +941,7 @@ export default function ShopDetailPage() {
                                 <p className="text-gray-500 mb-4">Be the first to review this shop!</p>
                                 <button
                                     onClick={() => setShowReviewForm(true)}
-                                    className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors"
+                                    className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors"
                                 >
                                     Write a Review
                                 </button>
@@ -953,7 +953,7 @@ export default function ShopDetailPage() {
                                         {/* Review Header */}
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                                     {review.user?.name?.charAt(0)?.toUpperCase() || '?'}
                                                 </div>
                                                 <div>
@@ -996,8 +996,8 @@ export default function ShopDetailPage() {
 
                                         {/* Seller Response */}
                                         {review.sellerResponse?.message && (
-                                            <div className="bg-blue-50 rounded-lg p-3 mt-3 border-l-3 border-blue-400">
-                                                <p className="text-xs font-semibold text-blue-700 mb-1">Seller Response:</p>
+                                            <div className="bg-green-50 rounded-lg p-3 mt-3 border-l-3 border-green-400">
+                                                <p className="text-xs font-semibold text-green-700 mb-1">Seller Response:</p>
                                                 <p className="text-xs text-gray-700">{review.sellerResponse.message}</p>
                                             </div>
                                         )}
@@ -1006,10 +1006,10 @@ export default function ShopDetailPage() {
                                         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
                                             <button
                                                 onClick={() => handleHelpful(review._id)}
-                                                className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600 transition-colors"
+                                                className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors"
                                             >
                                                 {review._voted ? (
-                                                    <HandThumbUpSolidIcon className="w-4 h-4 text-blue-500" />
+                                                    <HandThumbUpSolidIcon className="w-4 h-4 text-green-500" />
                                                 ) : (
                                                     <HandThumbUpIcon className="w-4 h-4" />
                                                 )}
@@ -1069,7 +1069,7 @@ export default function ShopDetailPage() {
                             <div className="bg-white rounded-2xl p-6 border border-gray-100">
                                 <h3 className="font-bold text-gray-900 mb-3">Location</h3>
                                 <div className="flex items-start gap-2 text-sm text-gray-600">
-                                    <MapPinIcon className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                                    <MapPinIcon className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                     <div>
                                         {shop.address.street && <p>{shop.address.street}</p>}
                                         <p>
@@ -1150,7 +1150,7 @@ export default function ShopDetailPage() {
                             {shop.shippingPolicy && (
                                 <div className="bg-white rounded-2xl p-6 border border-gray-100">
                                     <div className="flex items-center gap-2 mb-3">
-                                        <TruckIcon className="w-5 h-5 text-blue-500" />
+                                        <TruckIcon className="w-5 h-5 text-green-500" />
                                         <h3 className="font-bold text-gray-900">Shipping Policy</h3>
                                     </div>
                                     <p className="text-sm text-gray-600">
@@ -1179,7 +1179,7 @@ export default function ShopDetailPage() {
                                         </a>
                                     )}
                                     {shop.socialLinks.facebook && (
-                                        <a href={shop.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
+                                        <a href={shop.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:text-green-700 transition-colors">
                                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" /></svg>
                                         </a>
                                     )}

@@ -159,7 +159,7 @@ The popup system uses Tailwind CSS classes for styling:
 .transition-all.duration-300 /* Smooth animations */
 
 /* Type-based colors */
-.bg-blue-50.border-blue-200.text-blue-800    /* Info type */
+.bg-green-50.border-green-200.text-green-800    /* Info type */
 .bg-green-50.border-green-200.text-green-800  /* Success type */
 .bg-yellow-50.border-yellow-200.text-yellow-800 /* Warning type */
 .bg-red-50.border-red-200.text-red-800        /* Error type */
@@ -251,7 +251,7 @@ Available positions:
 
 #### Popup Types
 Available types:
-- `info` (blue theme)
+- `info` (green theme)
 - `success` (green theme)
 - `warning` (yellow theme)
 - `error` (red theme)

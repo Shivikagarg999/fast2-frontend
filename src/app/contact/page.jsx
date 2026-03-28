@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { 
-  EnvelopeIcon, 
-  PhoneIcon, 
+import ContactModal from '../components/contactModal/ContactModal';
+import {
+  EnvelopeIcon,
+  PhoneIcon,
   MapPinIcon, 
   GlobeAltIcon,
   ClockIcon,
@@ -12,6 +13,7 @@ import {
 import Footer from '../components/footer/page';
 
 const ContactPage = () => {
+  const [contactModalOpen, setContactModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,8 +31,8 @@ const ContactPage = () => {
       description: 'support@fast2.in',
       href: 'mailto:support@fast2.in',
       icon: EnvelopeIcon,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
     },
     {
       title: 'Phone Number',
@@ -196,16 +198,24 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
+
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800">
+      <div className="bg-gradient-to-r from-green-600 to-green-800">
         <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
               Contact Us
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-xl text-blue-100">
+            <p className="mt-6 max-w-2xl mx-auto text-xl text-green-100">
               Get in touch with our team. We're here to help with any questions or concerns.
             </p>
+            <button
+              onClick={() => setContactModalOpen(true)}
+              className="mt-8 inline-flex items-center px-8 py-3 rounded-xl bg-white text-green-700 font-semibold shadow-lg hover:bg-green-50 transition-colors"
+            >
+              Send us a Message
+            </button>
           </div>
         </div>
       </div>
@@ -249,7 +259,7 @@ const handleSubmit = async (e) => {
                         href={info.href} 
                         target={info.title === 'Website' ? '_blank' : '_self'}
                         rel={info.title === 'Website' ? 'noopener noreferrer' : ''}
-                        className="text-gray-600 hover:text-blue-600 transition-colors"
+                        className="text-gray-600 hover:text-green-600 transition-colors"
                       >
                         {info.description}
                       </a>
@@ -297,7 +307,7 @@ const handleSubmit = async (e) => {
                   value={formData.name}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                    formErrors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="Enter your full name"
                 />
@@ -318,7 +328,7 @@ const handleSubmit = async (e) => {
                   value={formData.email}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                    formErrors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="your@email.com"
                 />
@@ -339,7 +349,7 @@ const handleSubmit = async (e) => {
                   value={formData.phone}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                    formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="10-digit mobile number"
                 />
@@ -359,7 +369,7 @@ const handleSubmit = async (e) => {
                   value={formData.subject}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.subject ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                    formErrors.subject ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                 >
                   <option value="">Select a subject</option>
@@ -386,7 +396,7 @@ const handleSubmit = async (e) => {
                   value={formData.message}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.message ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                    formErrors.message ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="How can we help you?"
                 />
@@ -402,9 +412,9 @@ const handleSubmit = async (e) => {
                   disabled={loading}
                   className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-300 ${
                     loading
-                      ? 'bg-blue-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                      ? 'bg-green-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800'
+                  } focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">
@@ -422,8 +432,8 @@ const handleSubmit = async (e) => {
             </form>
 
             {/* Form Note */}
-            <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
+            <div className="mt-8 p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-green-800">
                 <strong>Note:</strong> We typically respond within 2-4 hours during business hours. 
                 For urgent matters, please call our support number.
               </p>

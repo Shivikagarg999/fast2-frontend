@@ -136,7 +136,7 @@ const ReferralPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
   }
@@ -185,8 +185,8 @@ const ReferralPage = () => {
           {/* Stats Cards */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <UserGroupIcon className="w-6 h-6 text-blue-600" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <UserGroupIcon className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Referrals</p>
@@ -238,7 +238,7 @@ const ReferralPage = () => {
                 </span>
                 <button
                   onClick={() => copyToClipboard(referralStats?.yourReferralCode)}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
                   {copied ? (
                     <>
@@ -309,7 +309,7 @@ const ReferralPage = () => {
                     value={referralCode}
                     onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                     placeholder="Enter friend's referral code"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
                     maxLength={10}
                   />
                 </div>
@@ -317,7 +317,7 @@ const ReferralPage = () => {
                 <button
                   type="submit"
                   disabled={applying || !referralCode.trim()}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {applying ? (
                     <div className="flex items-center justify-center">
@@ -336,15 +336,15 @@ const ReferralPage = () => {
               <h3 className="font-semibold text-gray-900 mb-3">How it works:</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">1</span>
+                  <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">1</span>
                   Share your referral code with friends
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">2</span>
+                  <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">2</span>
                   Friend signs up using your code
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
+                  <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
                   Both get ₹50 bonus in wallet
                 </li>
               </ul>
@@ -353,10 +353,10 @@ const ReferralPage = () => {
         </div>
 
         {/* Referral Benefits Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-700 rounded-xl shadow-sm p-8 mt-8 text-white">
+        <div className="bg-gradient-to-r from-green-600 to-purple-700 rounded-xl shadow-sm p-8 mt-8 text-white">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold mb-2">Earn More With Every Referral</h2>
-            <p className="text-blue-100">Unlock amazing rewards as you refer more friends</p>
+            <p className="text-green-100">Unlock amazing rewards as you refer more friends</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -365,7 +365,7 @@ const ReferralPage = () => {
                 <UserGroupIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Refer Friends</h3>
-              <p className="text-blue-100 text-sm">Share your code with friends and family</p>
+              <p className="text-green-100 text-sm">Share your code with friends and family</p>
             </div>
 
             <div className="text-center">
@@ -373,7 +373,7 @@ const ReferralPage = () => {
                 <GiftIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Earn ₹50 Each</h3>
-              <p className="text-blue-100 text-sm">Both you and your friend get ₹50 bonus</p>
+              <p className="text-green-100 text-sm">Both you and your friend get ₹50 bonus</p>
             </div>
 
             <div className="text-center">
@@ -381,7 +381,7 @@ const ReferralPage = () => {
                 <CurrencyRupeeIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Use Wallet Money</h3>
-              <p className="text-blue-100 text-sm">Use your earnings for shopping on Fast2</p>
+              <p className="text-green-100 text-sm">Use your earnings for shopping on Fast2</p>
             </div>
           </div>
         </div>

@@ -372,7 +372,7 @@ const ProductListingComponent = () => {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading products...</p>
         </div>
       </div>
@@ -387,7 +387,7 @@ const ProductListingComponent = () => {
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
             onClick={() => fetchProducts(userPincode)}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
           >
             Try Again
           </button>
@@ -399,7 +399,7 @@ const ProductListingComponent = () => {
   return (
     <div className="bg-white">
       {showLoginPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg z-50">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
@@ -488,7 +488,7 @@ const ProductListingComponent = () => {
                     </p>
                     <button
                       onClick={handleSetLocation}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
                     >
                       Change Location
                     </button>
@@ -574,7 +574,7 @@ const ProductListingComponent = () => {
             </p>
             <button
               onClick={handleSetLocation}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
             >
               Try Different Location
             </button>
@@ -589,7 +589,7 @@ const ProductListing = () => {
   const fallback = (
     <div className="bg-white min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
         <p className="mt-4 text-gray-600">Loading products...</p>
       </div>
     </div>

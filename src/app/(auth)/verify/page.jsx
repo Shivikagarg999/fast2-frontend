@@ -172,7 +172,7 @@ export default function VerifyPage() {
       </Head>
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-blue-600 py-4 px-6">
+          <div className="bg-green-600 py-4 px-6">
             <h2 className="text-white text-xl font-bold">Verify OTP</h2>
           </div>
           
@@ -202,7 +202,7 @@ export default function VerifyPage() {
                       value={data}
                       onChange={e => handleOtpChange(e.target, index)}
                       onKeyDown={e => handleKeyDown(e, index)}
-                      className="w-12 h-12 border text-black border-gray-300 rounded-lg text-center text-xl font-semibold focus:ring-blue-500 focus:border-blue-500"
+                      className="w-12 h-12 border text-black border-gray-300 rounded-lg text-center text-xl font-semibold focus:ring-green-500 focus:border-green-500"
                     />
                   ))}
                 </div>
@@ -215,15 +215,15 @@ export default function VerifyPage() {
               )}
               
               {success && (
-                <div className="mb-4 rounded-md bg-blue-50 p-4">
-                  <div className="text-sm text-blue-700">{success}</div>
+                <div className="mb-4 rounded-md bg-green-50 p-4">
+                  <div className="text-sm text-green-700">{success}</div>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed mb-4"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed mb-4"
               >
                 {loading ? (
                   <>
@@ -243,7 +243,7 @@ export default function VerifyPage() {
                 {canResend ? (
                   <button
                     onClick={handleResendOTP}
-                    className="text-blue-600 font-medium hover:text-blue-700 focus:outline-none"
+                    className="text-green-600 font-medium hover:text-green-700 focus:outline-none"
                   >
                     Resend OTP
                   </button>

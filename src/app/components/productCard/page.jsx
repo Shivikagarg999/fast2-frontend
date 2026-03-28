@@ -118,7 +118,7 @@ const ProductCard = ({
             {discount.discountPercent}% OFF
           </div>
           {discount.discountName && (
-            <div className="mt-1 px-2 py-1 bg-blue-500 text-white text-xs rounded-full">
+            <div className="mt-1 px-2 py-1 bg-green-700 text-white text-xs rounded-full">
               {discount.discountName}
             </div>
           )}
@@ -215,14 +215,14 @@ const ProductCard = ({
             </button>
           ) : cartQuantity === 0 ? (
             <button
-              className={`w-full bg-blue-50 border border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-full bg-green-50 border border-green-600 text-green-700 hover:bg-green-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
             >
               {isAddingToCart ? (
                 <span className="flex items-center justify-center">
-                  <span className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></span>
+                  <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin mr-2"></span>
                   ADDING
                 </span>
               ) : (
@@ -230,9 +230,9 @@ const ProductCard = ({
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-blue-600 text-white rounded-lg shadow-md h-9">
+            <div className="flex items-center justify-between bg-green-600 text-white rounded-lg shadow-md h-9">
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-blue-700 rounded-l-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-l-lg transition-colors"
                 onClick={handleRemove}
               >
                 <MinusIcon className="w-4 h-4 font-bold" />
@@ -243,7 +243,7 @@ const ProductCard = ({
               </span>
 
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-blue-700 rounded-r-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-r-lg transition-colors"
                 onClick={handleIncrement}
               >
                 <PlusIcon className="w-4 h-4 font-bold" />

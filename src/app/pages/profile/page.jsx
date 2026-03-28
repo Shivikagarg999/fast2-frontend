@@ -295,7 +295,7 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blinkit-blue"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blinkit-green"></div>
       </div>
     );
   }
@@ -304,14 +304,14 @@ const ProfilePage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <UserIcon className="w-12 h-12 text-blue-600" />
+          <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <UserIcon className="w-12 h-12 text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Please log in to view your profile</h2>
           <p className="text-gray-600 mb-6">Access your orders, addresses, and account settings</p>
           <button 
             onClick={handleLoginRedirect}
-            className="bg-blinkit-blue text-white px-8 py-3 rounded-lg font-medium hover:bg-blinkit-dark transition-colors shadow-md"
+            className="bg-blinkit-green text-white px-8 py-3 rounded-lg font-medium hover:bg-blinkit-dark transition-colors shadow-md"
           >
             Login to Continue
           </button>
@@ -323,7 +323,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header with Blinkit-style gradient background */}
-      <div className="bg-gradient-to-r from-blinkit-orange to-blinkit-blue text-black pb-24 pt-6">
+      <div className="bg-gradient-to-r from-blinkit-orange to-blinkit-green text-black pb-24 pt-6">
         <div className="max-w-2xl mx-auto px-4">
           <div className="flex items-center mb-6">
             <button 
@@ -357,7 +357,7 @@ const ProfilePage = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6 text-gray-800">
             <div className="flex items-center space-x-4 mb-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-blue-100 overflow-hidden flex items-center justify-center border-4 border-white shadow-md">
+                <div className="w-20 h-20 rounded-full bg-green-100 overflow-hidden flex items-center justify-center border-4 border-white shadow-md">
                   {avatarPreview ? (
                     <img 
                       src={avatarPreview} 
@@ -365,11 +365,11 @@ const ProfilePage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <UserIcon className="w-10 h-10 text-blue-600" />
+                    <UserIcon className="w-10 h-10 text-green-600" />
                   )}
                 </div>
                 
-                <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-blinkit-blue p-2 rounded-full text-white cursor-pointer shadow-md hover:bg-blinkit-dark transition-colors">
+                <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-blinkit-green p-2 rounded-full text-white cursor-pointer shadow-md hover:bg-blinkit-dark transition-colors">
                   <CameraIcon className="w-4 h-4" />
                   <input
                     id="avatar-upload"
@@ -392,7 +392,7 @@ const ProfilePage = () => {
               <button
                 onClick={uploadAvatar}
                 disabled={saving}
-                className="w-full bg-blinkit-blue text-white py-2 rounded-lg text-sm font-medium hover:bg-blinkit-dark disabled:opacity-50 transition-colors"
+                className="w-full bg-blinkit-green text-white py-2 rounded-lg text-sm font-medium hover:bg-blinkit-dark disabled:opacity-50 transition-colors"
               >
                 {saving ? 'Uploading...' : 'Save Profile Picture'}
               </button>
@@ -417,12 +417,12 @@ const ProfilePage = () => {
           </div>
         )}
         {success && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
             <div className="flex justify-between items-center">
               <span>{success}</span>
               <button 
                 onClick={() => setSuccess('')}
-                className="text-blue-800 font-bold text-lg"
+                className="text-green-800 font-bold text-lg"
               >
                 ×
               </button>
@@ -442,7 +442,7 @@ const ProfilePage = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-green focus:border-transparent"
                   placeholder="Enter your full name"
                 />
               ) : (
@@ -460,7 +460,7 @@ const ProfilePage = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-green focus:border-transparent"
                   placeholder="Enter your email"
                 />
               ) : (
@@ -478,7 +478,7 @@ const ProfilePage = () => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-blue focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blinkit-green focus:border-transparent"
                   placeholder="Enter your phone number"
                 />
               ) : (
@@ -494,7 +494,7 @@ const ProfilePage = () => {
             <button
               onClick={updateProfile}
               disabled={saving}
-              className="w-full bg-blinkit-blue text-black py-4 rounded-xl font-bold hover:bg-blinkit-dark disabled:opacity-50 transition-colors shadow-md"
+              className="w-full bg-blinkit-green text-black py-4 rounded-xl font-bold hover:bg-blinkit-dark disabled:opacity-50 transition-colors shadow-md"
             >
               {saving ? 'Saving Changes...' : 'Save Changes'}
             </button>

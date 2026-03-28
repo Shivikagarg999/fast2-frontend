@@ -75,7 +75,7 @@ export default function TermsAndConditionsPage() {
 
   const getPolicyColor = (policyType) => {
     switch(policyType) {
-      case 'terms': return 'from-blue-600 to-blue-700';
+      case 'terms': return 'from-green-600 to-green-700';
       case 'return': return 'from-green-600 to-green-700';
       case 'cancellation': return 'from-red-600 to-red-700';
       case 'refund': return 'from-amber-600 to-amber-700';
@@ -96,7 +96,7 @@ export default function TermsAndConditionsPage() {
     <div className="min-h-screen bg-white">
      
       {/* Main Content */}
-      <section className="py-12 bg-gradient-to-b from-blue-50 to-white">
+      <section className="py-12 bg-gradient-to-b from-green-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -111,7 +111,7 @@ export default function TermsAndConditionsPage() {
           {/* Loading State */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
               <p className="text-gray-600">Loading policies...</p>
             </div>
           )}
@@ -128,7 +128,7 @@ export default function TermsAndConditionsPage() {
               <p className="text-gray-600 mb-4">{error}</p>
               <button
                 onClick={fetchAllPolicies}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
               >
                 Try Again
               </button>
@@ -230,8 +230,8 @@ export default function TermsAndConditionsPage() {
                           </div>
                         )}
                         {currentPolicy.metadata.contactEmail && (
-                          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                            <p className="text-sm text-blue-600 font-medium mb-1">Contact Email</p>
+                          <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                            <p className="text-sm text-green-600 font-medium mb-1">Contact Email</p>
                             <p className="text-lg font-semibold text-gray-900">{currentPolicy.metadata.contactEmail}</p>
                           </div>
                         )}
@@ -282,7 +282,7 @@ export default function TermsAndConditionsPage() {
                     </div>
 
                     {/* Contact Information */}
-                    <div className="mt-8 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6">
+                    <div className="mt-8 bg-gradient-to-r from-gray-50 to-green-50 rounded-2xl p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Questions About This Policy?</h3>
                       <p className="text-gray-600 mb-4">
                         If you have any questions regarding our {getPolicyTitle(activeTab).toLowerCase()}, please contact us:

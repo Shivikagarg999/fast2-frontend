@@ -22,14 +22,14 @@ const PopupDemo = () => {
                 placeholder="Admin Token"
                 value={adminToken}
                 onChange={(e) => setAdminToken(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
               <button
                 onClick={() => setShowAdmin(!showAdmin)}
                 disabled={!adminToken}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   adminToken
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-green-600 text-white hover:bg-green-700'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
@@ -56,11 +56,11 @@ const PopupDemo = () => {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-xl font-semibold text-blue-900 mb-3">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 className="text-xl font-semibold text-green-900 mb-3">
                   🎯 Features
                 </h3>
-                <ul className="space-y-2 text-blue-800">
+                <ul className="space-y-2 text-green-800">
                   <li>✅ Time-based scheduling</li>
                   <li>✅ Image support</li>
                   <li>✅ Multiple positions</li>

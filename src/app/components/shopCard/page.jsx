@@ -71,7 +71,7 @@ const ShopCard = ({ shop = {} }) => {
 
     return (
         <Link href={`/shops/${shop.shopSlug}`}>
-            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300 cursor-pointer group p-4">
+            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all duration-300 cursor-pointer group p-4">
                 {/* Shop Media */}
                 <div className="flex gap-4 mb-4">
                     <div className="w-16 h-16 rounded-lg border border-gray-100 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
@@ -82,7 +82,7 @@ const ShopCard = ({ shop = {} }) => {
                         )}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-blue-600 transition-colors line-clamp-1">
+                        <h3 className="font-bold text-gray-900 text-lg leading-tight group-hover:text-green-600 transition-colors line-clamp-1">
                             {shop.shopName || 'Unnamed Shop'}
                         </h3>
                         {shop.tagline && (
@@ -96,7 +96,7 @@ const ShopCard = ({ shop = {} }) => {
                     {/* Badges */}
                     <div className="flex flex-col gap-1 items-end">
                         {shop.isVerified && (
-                            <span className="flex items-center gap-1 bg-blue-50/90 backdrop-blur-sm text-blue-600 text-[10px] font-bold px-2 py-1 rounded-full border border-blue-200">
+                            <span className="flex items-center gap-1 bg-green-50/90 backdrop-blur-sm text-green-600 text-[10px] font-bold px-2 py-1 rounded-full border border-green-200">
                                 <CheckBadgeIcon className="w-3 h-3" />
                                 Verified
                             </span>
