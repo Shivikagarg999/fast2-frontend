@@ -32,6 +32,15 @@ const CheckoutPage = () => {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [orderId, setOrderId] = useState(null);
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState('');
+  const [scratchCard, setScratchCard] = useState(null);
+  const [scratching, setScratching] = useState(false);
+  const [scratchRevealed, setScratchRevealed] = useState(false);
+  const [scratchError, setScratchError] = useState('');
+  const [scratchCopied, setScratchCopied] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -225,15 +234,18 @@ const CheckoutPage = () => {
 
   const calculateWalletDeduction = () => {
     const total = calculateTotal() + calculateDeliveryFee() + calculateGst();
-    return Math.min(walletBalance, total);
+    const couponDiscount = appliedCoupon?.discountAmount || 0;
+    return Math.min(walletBalance, total - couponDiscount);
   };
 
   const calculateFinalAmount = () => {
     const total = calculateTotal() + calculateDeliveryFee() + calculateGst();
+    const couponDiscount = appliedCoupon?.discountAmount || 0;
+    const afterCoupon = total - couponDiscount;
     if (useWallet) {
-      return total - calculateWalletDeduction();
+      return afterCoupon - calculateWalletDeduction();
     }
-    return total;
+    return afterCoupon;
   };
 
   const calculateRazorpayAmount = () => {
@@ -459,6 +471,10 @@ const CheckoutPage = () => {
         formData.append('prescriptionImage', prescriptionImage);
       }
 
+      if (appliedCoupon) {
+        formData.append('couponCode', couponCode.trim());
+      }
+
       console.log('Sending order data via FormData');
 
       const response = await fetch('https://api.fast2.in/api/order/create', {
@@ -479,6 +495,14 @@ const CheckoutPage = () => {
 
       const newOrderId = responseData.order?.orderId || responseData.orderId;
       setOrderId(newOrderId || 'N/A');
+      setScratchCard(
+        responseData.order?.orderScratchCard ||
+        responseData.orderScratchCard ||
+        responseData.order?.scratchCard ||
+        responseData.scratchCard ||
+        null
+      );
+      console.log('Scratch card data:', responseData.order?.orderScratchCard, responseData);
 
       if (paymentMethod === 'online' && responseData.order?.razorpay) {
         setRazorpayOrder(responseData.order.razorpay);
@@ -501,6 +525,62 @@ const CheckoutPage = () => {
     } catch (err) {
       setError(err.message);
       setProcessing(false);
+    }
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError('');
+    setAppliedCoupon(null);
+    try {
+      const token = localStorage.getItem('token');
+      const orderAmount = calculateTotal() + calculateDeliveryFee() + calculateGst();
+      const res = await fetch('https://api.fast2.in/api/order/redeem-scratch-coupon', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ couponCode: couponCode.trim(), orderAmount })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAppliedCoupon({ ...data.coupon, discountAmount: data.discount });
+      } else {
+        setCouponError(data.message || 'Invalid coupon code');
+      }
+    } catch {
+      setCouponError('Could not apply coupon. Please try again.');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleScratch = async () => {
+    if (!orderId || orderId === 'N/A') return;
+    setScratching(true);
+    setScratchError('');
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`https://api.fast2.in/api/order/${orderId}/scratch-coupon`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if (data.couponCode) {
+        setScratchCard(prev => ({ ...prev, isScratched: true, couponCode: data.couponCode }));
+        setScratchRevealed(true);
+      } else {
+        setScratchError(data.message || 'Could not scratch the card. Please try again.');
+      }
+    } catch {
+      setScratchError('Something went wrong. Please try again.');
+    } finally {
+      setScratching(false);
     }
   };
 
@@ -1066,10 +1146,59 @@ const CheckoutPage = () => {
                     </div>
                   )}
 
+                  {/* Coupon Input */}
+                  <div className="border border-dashed border-gray-300 rounded-lg p-3">
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold text-green-700">🎟️ Coupon Applied</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{couponCode.toUpperCase()} — Save ₹{appliedCoupon.discountAmount}</p>
+                          {appliedCoupon.description && (
+                            <p className="text-xs text-gray-400 mt-0.5">{appliedCoupon.description}</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => { setAppliedCoupon(null); setCouponCode(''); setCouponError(''); }}
+                          className="text-xs text-red-500 hover:text-red-600 font-medium ml-3"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponError(''); }}
+                            onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
+                            placeholder="Scratch card coupon code"
+                            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase placeholder-normal"
+                          />
+                          <button
+                            onClick={handleApplyCoupon}
+                            disabled={couponLoading || !couponCode.trim()}
+                            className="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {couponLoading ? '...' : 'Apply'}
+                          </button>
+                        </div>
+                        {couponError && <p className="text-red-500 text-xs mt-2">{couponError}</p>}
+                      </div>
+                    )}
+                  </div>
+
                   {calculateGst() > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">GST</span>
                       <span className="font-medium text-gray-900">₹{calculateGst().toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Coupon ({couponCode.toUpperCase()})</span>
+                      <span className="font-medium">-₹{appliedCoupon.discountAmount}</span>
                     </div>
                   )}
 
@@ -1182,6 +1311,52 @@ const CheckoutPage = () => {
                   : 'Keep cash ready when your order arrives'}
             </p>
           </div>
+
+          {/* Scratch Card */}
+          {scratchCard?.isEligible && (
+            <div className="relative mb-5">
+              {(scratchCard.isScratched || scratchRevealed) ? (
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-4 text-center">
+                  <p className="text-xs font-semibold text-yellow-900 mb-2">🎉 Your Scratch Card Reward</p>
+                  <div className="bg-white rounded-xl px-4 py-2.5 inline-flex items-center gap-3 shadow-sm">
+                    <code className="text-base font-bold text-gray-900 tracking-widest">{scratchCard.couponCode}</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(scratchCard.couponCode);
+                        setScratchCopied(true);
+                        setTimeout(() => setScratchCopied(false), 2000);
+                      }}
+                      className="text-xs text-green-600 font-semibold hover:text-green-700 transition-colors"
+                    >
+                      {scratchCopied ? '✓ Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-yellow-900/80 mt-2">Use this on your next order at checkout</p>
+                </div>
+              ) : (
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-300 via-amber-300 to-orange-300 p-5 text-center">
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.1)_10px,rgba(255,255,255,0.1)_20px)]" />
+                  <p className="relative text-yellow-900 font-bold text-sm mb-1">🎟️ You earned a Scratch Card!</p>
+                  <p className="relative text-yellow-800/80 text-xs mb-3">Your order total exceeded ₹200 — reveal your reward</p>
+                  <button
+                    onClick={handleScratch}
+                    disabled={scratching}
+                    className="relative bg-white text-amber-700 font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-amber-50 active:scale-95 transition-all shadow-md disabled:opacity-70"
+                  >
+                    {scratching ? (
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin inline-block w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full" />
+                        Scratching...
+                      </span>
+                    ) : '✨ Scratch to Reveal'}
+                  </button>
+                  {scratchError && (
+                    <p className="text-red-700 text-xs mt-2 relative bg-white/60 rounded px-2 py-1">{scratchError}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Estimated Delivery */}
           <div className="relative flex items-center justify-center gap-2 mb-6 text-sm text-gray-500">

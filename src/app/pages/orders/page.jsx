@@ -132,7 +132,8 @@ const MyOrdersPage = () => {
           paymentMethod: order.paymentMethod || 'cod',
           paymentStatus: order.paymentStatus || 'pending',
           createdAt: order.createdAt || new Date(),
-          updatedAt: order.updatedAt || new Date()
+          updatedAt: order.updatedAt || new Date(),
+          orderScratchCard: order.orderScratchCard || null
         }));
 
         console.log('Transformed orders:', transformedOrders);
@@ -340,6 +341,41 @@ const MyOrdersPage = () => {
   const OrderDetailsModal = ({ order, onClose }) => {
     const statusInfo = getStatusInfo(order.status);
     const payableAmount = getPayableAmount(order);
+    const [scratchCard, setScratchCard] = useState(order.orderScratchCard || null);
+    const [scratching, setScratching] = useState(false);
+    const [scratchError, setScratchError] = useState('');
+    const [scratchRevealed, setScratchRevealed] = useState(order.orderScratchCard?.isScratched || false);
+    const [copied, setCopied] = useState(false);
+
+    const handleScratch = async () => {
+      setScratching(true);
+      setScratchError('');
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`https://api.fast2.in/api/order/${order.orderId}/scratch-coupon`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await res.json();
+        if (data.couponCode) {
+          const updated = { ...scratchCard, isScratched: true, couponCode: data.couponCode };
+          setScratchCard(updated);
+          setScratchRevealed(true);
+          setOrders(prev => prev.map(o =>
+            o._id === order._id ? { ...o, orderScratchCard: updated } : o
+          ));
+        } else {
+          setScratchError(data.message || 'Could not scratch the card. Please try again.');
+        }
+      } catch {
+        setScratchError('Something went wrong. Please try again.');
+      } finally {
+        setScratching(false);
+      }
+    };
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
@@ -582,6 +618,60 @@ const MyOrdersPage = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Scratch Card */}
+              {scratchCard?.isEligible && (
+                <div className="mt-4 pt-4 border-t border-dashed border-yellow-300">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <ReceiptPercentIcon className="w-4 h-4 text-yellow-600" />
+                    <h4 className="font-semibold text-gray-900 text-sm">Scratch Card</h4>
+                    {!scratchCard.isScratched && !scratchRevealed && (
+                      <span className="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">NEW</span>
+                    )}
+                  </div>
+
+                  {(scratchCard.isScratched || scratchRevealed) ? (
+                    <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-4 text-center">
+                      <p className="text-xs font-medium text-yellow-900 mb-2">🎉 Your Coupon Code</p>
+                      <div className="bg-white rounded-lg px-4 py-2.5 inline-flex items-center space-x-3 shadow-sm">
+                        <code className="text-base font-bold text-gray-900 tracking-widest">{scratchCard.couponCode}</code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(scratchCard.couponCode);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }}
+                          className="text-xs text-green-600 font-semibold hover:text-green-700 transition-colors"
+                        >
+                          {copied ? '✓ Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                      <p className="text-xs text-yellow-900/80 mt-2">Apply at checkout on your next order</p>
+                    </div>
+                  ) : (
+                    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-300 via-amber-300 to-orange-300 p-5 text-center">
+                      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.1)_10px,rgba(255,255,255,0.1)_20px)]" />
+                      <p className="relative text-yellow-900 font-bold text-sm mb-1">You earned a Scratch Card!</p>
+                      <p className="relative text-yellow-800/80 text-xs mb-4">Order total exceeded ₹200 — scratch to reveal your reward</p>
+                      <button
+                        onClick={handleScratch}
+                        disabled={scratching}
+                        className="relative bg-white text-amber-700 font-bold text-sm px-6 py-2.5 rounded-lg hover:bg-amber-50 active:scale-95 transition-all shadow-md disabled:opacity-70"
+                      >
+                        {scratching ? (
+                          <span className="flex items-center space-x-2">
+                            <span className="animate-spin inline-block w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full" />
+                            <span>Scratching...</span>
+                          </span>
+                        ) : '✨ Scratch to Reveal'}
+                      </button>
+                      {scratchError && (
+                        <p className="text-red-700 text-xs mt-3 relative bg-white/60 rounded px-2 py-1">{scratchError}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex space-x-2 mt-4">
                 <button
@@ -852,6 +942,12 @@ const MyOrdersPage = () => {
                                 <div>
                                   <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Pay on Delivery</p>
                                   <p className="text-xs font-semibold text-orange-600 mt-0.5">₹{payableAmount}</p>
+                                </div>
+                              )}
+                              {order.orderScratchCard?.isEligible && !order.orderScratchCard?.isScratched && (
+                                <div>
+                                  <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Scratch Card</p>
+                                  <p className="text-xs font-bold text-amber-600 mt-0.5 animate-pulse">Tap to Scratch!</p>
                                 </div>
                               )}
                             </div>
