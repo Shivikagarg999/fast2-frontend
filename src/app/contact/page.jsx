@@ -129,7 +129,7 @@ const handleSubmit = async (e) => {
   setStatus({ type: '', message: '' });
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/contact/submit`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.fast2.in'}/api/contact/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

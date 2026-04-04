@@ -98,7 +98,7 @@ const CheckoutPage = () => {
       try {
         setLoading(true);
 
-        const cartResponse = await fetch('http://localhost:5000/api/cart/', {
+        const cartResponse = await fetch('https://api.fast2.in/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -114,7 +114,7 @@ const CheckoutPage = () => {
           setCartItems([]);
         }
 
-        const addressesResponse = await fetch('http://localhost:5000/api/user/addresses/get', {
+        const addressesResponse = await fetch('https://api.fast2.in/api/user/addresses/get', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -130,7 +130,7 @@ const CheckoutPage = () => {
           }
         }
 
-        const walletResponse = await fetch('http://localhost:5000/api/user/wallet', {
+        const walletResponse = await fetch('https://api.fast2.in/api/user/wallet', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -363,7 +363,7 @@ const CheckoutPage = () => {
         handler: async function (response) {
           try {
             const token = localStorage.getItem('token');
-            const verifyResponse = await fetch('http://localhost:5000/api/order/verify-payment', {
+            const verifyResponse = await fetch('https://api.fast2.in/api/order/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -543,7 +543,7 @@ const CheckoutPage = () => {
 
       console.log('Sending order data via FormData');
 
-      const response = await fetch('http://localhost:5000/api/order/create', {
+      const response = await fetch('https://api.fast2.in/api/order/create', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -623,7 +623,7 @@ const CheckoutPage = () => {
       const token = localStorage.getItem('token');
       const breakdown = getAmountBreakdown();
       const orderAmount = breakdown.total + breakdown.gst;
-      const res = await fetch('http://localhost:5000/api/order/redeem-scratch-coupon', {
+      const res = await fetch('https://api.fast2.in/api/order/redeem-scratch-coupon', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -650,7 +650,7 @@ const CheckoutPage = () => {
     setScratchError('');
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/order/${orderId}/scratch-coupon`, {
+      const res = await fetch(`https://api.fast2.in/api/order/${orderId}/scratch-coupon`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -673,7 +673,7 @@ const CheckoutPage = () => {
 
   const clearCart = async (token) => {
     try {
-      await fetch('http://localhost:5000/api/cart/clear', {
+      await fetch('https://api.fast2.in/api/cart/clear', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

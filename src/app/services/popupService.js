@@ -1,6 +1,6 @@
 // Popup service for handling popup-related API calls
 
-const API_BASE_URL = 'http://localhost:5000/api/popups';
+const API_BASE_URL = 'https://api.fast2.in/api/popups';
 
 class PopupService {
   // Get active popup

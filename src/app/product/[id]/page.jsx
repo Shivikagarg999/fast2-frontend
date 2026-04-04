@@ -114,7 +114,7 @@ const ProductDetailPage = () => {
 
   const fetchDiscountInfo = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/discount/active');
+      const response = await fetch('https://api.fast2.in/api/admin/discount/active');
       const data = await response.json();
       
       if (data.discounts && data.discounts.length > 0) {
@@ -203,7 +203,7 @@ const ProductDetailPage = () => {
     setLoadingRelated(true);
     try {
       const userPincode = localStorage.getItem('userPincode');
-      let url = `http://localhost:5000/api/product/category/${categoryId}`;
+      let url = `https://api.fast2.in/api/product/category/${categoryId}`;
       const params = new URLSearchParams();
       
       if (userPincode) {
@@ -249,7 +249,7 @@ const ProductDetailPage = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('http://localhost:5000/api/cart/add', {  
+      const response = await fetch('https://api.fast2.in/api/cart/add', {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -311,7 +311,7 @@ const ProductDetailPage = () => {
         cartData.variantSelection = selectedVariant;
       }
 
-      const response = await fetch('http://localhost:5000/api/cart/add', {
+      const response = await fetch('https://api.fast2.in/api/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

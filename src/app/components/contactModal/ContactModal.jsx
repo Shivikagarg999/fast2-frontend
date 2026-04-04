@@ -77,7 +77,7 @@ const ContactModal = ({ isOpen, onClose }) => {
     setStatus({ type: '', message: '', referenceId: '' });
 
     try {
-      const response = await fetch('http://localhost:5000/api/contact/submit', {
+      const response = await fetch('https://api.fast2.in/api/contact/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

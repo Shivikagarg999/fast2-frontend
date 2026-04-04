@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     // Fetch active popup from the backend API
-    const response = await fetch('http://localhost:5000/api/popups/active', {
+    const response = await fetch('https://api.fast2.in/api/popups/active', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

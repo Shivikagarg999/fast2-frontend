@@ -58,7 +58,7 @@ const MyOrdersPage = () => {
 
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/order/my-orders', {
+        const response = await fetch('https://api.fast2.in/api/order/my-orders', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -183,7 +183,7 @@ const MyOrdersPage = () => {
   const handleDownloadInvoice = async (orderIdentifier) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/order/${orderIdentifier}/invoice`, {
+      const response = await fetch(`https://api.fast2.in/api/order/${orderIdentifier}/invoice`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -343,7 +343,7 @@ const MyOrdersPage = () => {
   const handleReorder = async (order) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/cart/reorder', {
+      const response = await fetch('https://api.fast2.in/api/cart/reorder', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -374,7 +374,7 @@ const MyOrdersPage = () => {
     let lastErrorMessage = 'Could not scratch the card. Please try again.';
 
     for (const candidateId of candidateIds) {
-      const res = await fetch(`http://localhost:5000/api/order/${candidateId}/scratch-coupon`, {
+      const res = await fetch(`https://api.fast2.in/api/order/${candidateId}/scratch-coupon`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -419,7 +419,7 @@ const MyOrdersPage = () => {
         let revealedCouponCode = '';
 
         for (const candidateId of candidateIds) {
-          const res = await fetch(`http://localhost:5000/api/order/${candidateId}/scratch-coupon`, {
+          const res = await fetch(`https://api.fast2.in/api/order/${candidateId}/scratch-coupon`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,

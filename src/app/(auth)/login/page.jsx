@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Footer from '@/app/components/footer/page';
 import Link from 'next/link';
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://api.fast2.in";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(false);

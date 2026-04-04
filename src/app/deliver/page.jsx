@@ -66,7 +66,7 @@ export default function DeliveryPartnerPage() {
       formDataToSend.append('aadharBack', formData.aadharBack);
       formDataToSend.append('panCard', formData.panCard);
 
-      const response = await fetch('http://localhost:5000/api/driver/register', {
+      const response = await fetch('https://api.fast2.in/api/driver/register', {
         method: 'POST',
         body: formDataToSend,
       });
