@@ -14,7 +14,8 @@ import {
   UserGroupIcon,
   MapPinIcon,
   ChevronDownIcon,
-  BuildingStorefrontIcon
+  BuildingStorefrontIcon,
+  TicketIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
@@ -710,7 +711,7 @@ function HeaderContent() {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://api.fast2.in/api/user/me', {
+        const response = await fetch('http://localhost:5000/api/user/me', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -738,7 +739,7 @@ function HeaderContent() {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://api.fast2.in/api/cart/', {
+        const response = await fetch('http://localhost:5000/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -773,7 +774,7 @@ function HeaderContent() {
 
         try {
           const token = localStorage.getItem('token');
-          const response = await fetch('https://api.fast2.in/api/cart/', {
+          const response = await fetch('http://localhost:5000/api/cart/', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -808,7 +809,7 @@ function HeaderContent() {
     const fetchCategories = async () => {
       setLoadingCategories(true);
       try {
-        const response = await fetch('https://api.fast2.in/api/category/getall');
+        const response = await fetch('http://localhost:5000/api/category/getall');
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
@@ -868,6 +869,11 @@ function HeaderContent() {
   const handleOrdersClick = () => {
     closeMenu();
     router.push('/pages/orders');
+  };
+
+  const handleCouponsClick = () => {
+    closeMenu();
+    router.push('/pages/coupons');
   };
 
   const handleWalletClick = () => {
@@ -1013,6 +1019,14 @@ function HeaderContent() {
 
                         <div
                           className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
+                          onClick={handleCouponsClick}
+                        >
+                          <TicketIcon className="w-5 h-5 mr-3 text-green-400" />
+                          <span>My Coupons</span>
+                        </div>
+
+                        <div
+                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleReferralsClick}
                         >
                           <UserGroupIcon className="w-5 h-5 mr-3 text-green-400" />
@@ -1137,6 +1151,13 @@ function HeaderContent() {
                 >
                   <InboxIcon className="w-5 h-5" />
                   <span>My Orders</span>
+                </div>
+                <div
+                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  onClick={handleCouponsClick}
+                >
+                  <TicketIcon className="w-5 h-5" />
+                  <span>My Coupons</span>
                 </div>
                 <div
                   className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"

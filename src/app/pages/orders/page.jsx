@@ -45,6 +45,7 @@ const MyOrdersPage = () => {
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [scratchingOrderId, setScratchingOrderId] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const MyOrdersPage = () => {
 
       try {
         setLoading(true);
-        const response = await fetch('https://api.fast2.in/api/order/my-orders', {
+        const response = await fetch('http://localhost:5000/api/order/my-orders', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -90,19 +91,47 @@ const MyOrdersPage = () => {
           ordersData = [];
         }
 
-        const transformedOrders = ordersData.map(order => ({
+        const transformedOrders = ordersData.map(order => {
+          const subtotal = Number(order.subtotal) || (order.items?.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0) || 0);
+          const deliveryFee = Number(order.deliveryCharges ?? order.deliveryFee) || 0;
+          const handlingCharge = Number(order.handlingCharge) || 0;
+          const total = Number(order.total) || (subtotal + deliveryFee + handlingCharge);
+          const totalGst = Number(order.totalGst) || 0;
+          const couponDiscount =
+            Number(order.couponDiscount) ||
+            Number(order.couponApplied?.discountAmount) ||
+            0;
+          const scratchCouponDiscount =
+            Number(order.scratchCouponDiscount) ||
+            Number(order.scratchCouponApplied?.discountAmount) ||
+            0;
+          const finalAmount =
+            Number(order.finalAmount) ||
+            Math.max(0, total + totalGst - couponDiscount - scratchCouponDiscount);
+          const walletDeduction = Number(order.walletDeduction) || 0;
+          const paymentMethod = order.paymentMethod || 'cod';
+          const cashOnDelivery =
+            typeof order.cashOnDelivery === 'number'
+              ? order.cashOnDelivery
+              : (paymentMethod === 'cod' ? Math.max(0, finalAmount - walletDeduction) : 0);
+
+          return {
           _id: order._id,
           orderId: order.orderId,
           orderNumber: order.orderId || `ORD${order._id?.slice(-6)?.toUpperCase() || '000000'}`,
           status: order.status || 'pending',
-          total: order.total || 0,
-          finalAmount: order.finalAmount || order.total || 0,
-          walletDeduction: order.walletDeduction || 0,
-          cashOnDelivery: order.cashOnDelivery || order.finalAmount || order.total || 0,
+          total,
+          finalAmount,
+          walletDeduction,
+          cashOnDelivery,
           secretCode: order.secretCode,
-          totalGst: order.totalGst || 0,
-          subtotal: order.items?.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0) || 0,
-          deliveryFee: Math.max(0, (order.total || 0) - (order.items?.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 1), 0) || 0)),
+          totalGst,
+          subtotal,
+          deliveryFee,
+          handlingCharge,
+          numberOfShops: Number(order.numberOfShops) || 0,
+          couponDiscount,
+          scratchCouponDiscount,
           items: order.items?.map(item => ({
             _id: item._id,
             product: {
@@ -129,12 +158,13 @@ const MyOrdersPage = () => {
             pinCode: '',
             phone: ''
           },
-          paymentMethod: order.paymentMethod || 'cod',
+          paymentMethod,
           paymentStatus: order.paymentStatus || 'pending',
           createdAt: order.createdAt || new Date(),
           updatedAt: order.updatedAt || new Date(),
           orderScratchCard: order.orderScratchCard || null
-        }));
+          };
+        });
 
         console.log('Transformed orders:', transformedOrders);
         setOrders(transformedOrders.reverse());
@@ -150,10 +180,10 @@ const MyOrdersPage = () => {
     fetchOrders();
   }, [router]);
 
-  const handleDownloadInvoice = async (orderId) => {
+  const handleDownloadInvoice = async (orderIdentifier) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://api.fast2.in/api/order/${orderId}/invoice`, {
+      const response = await fetch(`http://localhost:5000/api/order/${orderIdentifier}/invoice`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -170,7 +200,7 @@ const MyOrdersPage = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `invoice-${orderId}.pdf`;
+      link.download = `invoice-${orderIdentifier}.pdf`;
       document.body.appendChild(link);
       link.click();
       
@@ -313,7 +343,7 @@ const MyOrdersPage = () => {
   const handleReorder = async (order) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://api.fast2.in/api/cart/reorder', {
+      const response = await fetch('http://localhost:5000/api/cart/reorder', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -338,6 +368,38 @@ const MyOrdersPage = () => {
     setShowOrderDetails(true);
   };
 
+  const scratchOrderCoupon = async (order) => {
+    const token = localStorage.getItem('token');
+    const candidateIds = [order.orderId, order._id].filter(Boolean);
+    let lastErrorMessage = 'Could not scratch the card. Please try again.';
+
+    for (const candidateId of candidateIds) {
+      const res = await fetch(`http://localhost:5000/api/order/${candidateId}/scratch-coupon`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      const couponCode =
+        data?.couponCode ||
+        data?.coupon?.code ||
+        data?.scratchCoupon?.couponCode ||
+        data?.data?.couponCode;
+
+      if (couponCode) {
+        return { success: true, couponCode };
+      }
+
+      if (data?.message) {
+        lastErrorMessage = data.message;
+      }
+    }
+
+    return { success: false, message: lastErrorMessage };
+  };
+
   const OrderDetailsModal = ({ order, onClose }) => {
     const statusInfo = getStatusInfo(order.status);
     const payableAmount = getPayableAmount(order);
@@ -352,23 +414,44 @@ const MyOrdersPage = () => {
       setScratchError('');
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`https://api.fast2.in/api/order/${order.orderId}/scratch-coupon`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        const candidateIds = [order.orderId, order._id].filter(Boolean);
+        let lastErrorMessage = 'Could not scratch the card. Please try again.';
+        let revealedCouponCode = '';
+
+        for (const candidateId of candidateIds) {
+          const res = await fetch(`http://localhost:5000/api/order/${candidateId}/scratch-coupon`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await res.json();
+          const couponCode =
+            data?.couponCode ||
+            data?.coupon?.code ||
+            data?.scratchCoupon?.couponCode ||
+            data?.data?.couponCode;
+
+          if (couponCode) {
+            revealedCouponCode = couponCode;
+            break;
           }
-        });
-        const data = await res.json();
-        if (data.couponCode) {
-          const updated = { ...scratchCard, isScratched: true, couponCode: data.couponCode };
+
+          if (data?.message) {
+            lastErrorMessage = data.message;
+          }
+        }
+
+        if (revealedCouponCode) {
+          const updated = { ...scratchCard, isScratched: true, couponCode: revealedCouponCode };
           setScratchCard(updated);
           setScratchRevealed(true);
           setOrders(prev => prev.map(o =>
             o._id === order._id ? { ...o, orderScratchCard: updated } : o
           ));
         } else {
-          setScratchError(data.message || 'Could not scratch the card. Please try again.');
+          setScratchError(lastErrorMessage);
         }
       } catch {
         setScratchError('Something went wrong. Please try again.');
@@ -467,8 +550,8 @@ const MyOrdersPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-gray-900">₹{order.total}</p>
-                  <p className="text-xs text-gray-500">Order Total</p>
+                  <p className="text-lg font-bold text-gray-900">₹{order.finalAmount}</p>
+                  <p className="text-xs text-gray-500">Final Amount</p>
                 </div>
               </div>
 
@@ -596,6 +679,27 @@ const MyOrdersPage = () => {
                     <span className="text-gray-600">Delivery</span>
                     <span className="text-gray-900">₹{order.deliveryFee}</span>
                   </div>
+                  {order.handlingCharge > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">
+                        Handling Charge
+                        {order.numberOfShops > 0 ? ` (${order.numberOfShops} shop${order.numberOfShops > 1 ? 's' : ''})` : ''}
+                      </span>
+                      <span className="text-gray-900">₹{order.handlingCharge}</span>
+                    </div>
+                  )}
+                  {order.couponDiscount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Coupon Discount</span>
+                      <span>-₹{order.couponDiscount}</span>
+                    </div>
+                  )}
+                  {order.scratchCouponDiscount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Scratch Coupon Discount</span>
+                      <span>-₹{order.scratchCouponDiscount}</span>
+                    </div>
+                  )}
                   {order.totalGst > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">GST</span>
@@ -684,7 +788,7 @@ const MyOrdersPage = () => {
                 
                 {/* Invoice Download Button */}
                 <button
-                  onClick={() => handleDownloadInvoice(order._id)}
+                  onClick={() => handleDownloadInvoice(order.orderId || order._id)}
                   className="flex-1 border border-green-600 text-green-600 py-2.5 rounded-lg font-medium hover:bg-green-50 transition-colors flex items-center justify-center text-sm"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1.5" />
@@ -930,7 +1034,7 @@ const MyOrdersPage = () => {
                               </div>
                               <div>
                                 <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Amount</p>
-                                <p className="text-xs font-semibold text-gray-900 mt-0.5">₹{order.total}</p>
+                                <p className="text-xs font-semibold text-gray-900 mt-0.5">₹{order.finalAmount}</p>
                               </div>
                               {order.secretCode && (
                                 <div>
@@ -947,7 +1051,37 @@ const MyOrdersPage = () => {
                               {order.orderScratchCard?.isEligible && !order.orderScratchCard?.isScratched && (
                                 <div>
                                   <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Scratch Card</p>
-                                  <p className="text-xs font-bold text-amber-600 mt-0.5 animate-pulse">Tap to Scratch!</p>
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      setScratchingOrderId(order._id);
+                                      try {
+                                        const result = await scratchOrderCoupon(order);
+                                        if (result.success) {
+                                          const updatedScratchCard = {
+                                            ...(order.orderScratchCard || {}),
+                                            isEligible: true,
+                                            isScratched: true,
+                                            couponCode: result.couponCode
+                                          };
+                                          setOrders(prev => prev.map(o =>
+                                            o._id === order._id ? { ...o, orderScratchCard: updatedScratchCard } : o
+                                          ));
+                                          alert(`Coupon revealed: ${result.couponCode}`);
+                                        } else {
+                                          alert(result.message || 'Could not scratch the card. Please try again.');
+                                        }
+                                      } catch {
+                                        alert('Something went wrong. Please try again.');
+                                      } finally {
+                                        setScratchingOrderId(null);
+                                      }
+                                    }}
+                                    disabled={scratchingOrderId === order._id}
+                                    className="text-xs font-bold text-amber-600 mt-0.5 animate-pulse hover:text-amber-700 transition-colors"
+                                  >
+                                    {scratchingOrderId === order._id ? 'Scratching...' : 'Scratch Now'}
+                                  </button>
                                 </div>
                               )}
                             </div>
@@ -966,7 +1100,7 @@ const MyOrdersPage = () => {
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
                           <button
-                            onClick={() => handleDownloadInvoice(order._id)}
+                            onClick={() => handleDownloadInvoice(order.orderId || order._id)}
                             className="text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors"
                           >
                             Download Invoice

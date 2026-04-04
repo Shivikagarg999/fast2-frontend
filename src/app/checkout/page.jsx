@@ -48,6 +48,7 @@ const CheckoutPage = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [razorpayOrder, setRazorpayOrder] = useState(null);
+  const [placedOrderSummary, setPlacedOrderSummary] = useState(null);
   const [prescriptionImage, setPrescriptionImage] = useState(null);
   const [prescriptionPreview, setPrescriptionPreview] = useState(null);
   const router = useRouter();
@@ -97,7 +98,7 @@ const CheckoutPage = () => {
       try {
         setLoading(true);
 
-        const cartResponse = await fetch('https://api.fast2.in/api/cart/', {
+        const cartResponse = await fetch('http://localhost:5000/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -113,7 +114,7 @@ const CheckoutPage = () => {
           setCartItems([]);
         }
 
-        const addressesResponse = await fetch('https://api.fast2.in/api/user/addresses/get', {
+        const addressesResponse = await fetch('http://localhost:5000/api/user/addresses/get', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -129,7 +130,7 @@ const CheckoutPage = () => {
           }
         }
 
-        const walletResponse = await fetch('https://api.fast2.in/api/user/wallet', {
+        const walletResponse = await fetch('http://localhost:5000/api/user/wallet', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -200,7 +201,6 @@ const CheckoutPage = () => {
   };
 
   const calculateTotal = () => {
-    if (cart && cart.total) return cart.total;
     return cartItems.reduce((total, item) => {
       const price = item.price || item.product?.price || 0;
       const quantity = item.quantity || 0;
@@ -232,20 +232,77 @@ const CheckoutPage = () => {
     }, 0);
   };
 
+  const calculateNumberOfShops = () => {
+    const shopIds = new Set();
+    cartItems.forEach((item) => {
+      const rawShopId =
+        item.product?.shop?._id ||
+        item.product?.shopId ||
+        item.product?.shop ||
+        item.shop?._id ||
+        item.shop;
+
+      if (rawShopId) {
+        shopIds.add(String(rawShopId));
+      }
+    });
+
+    if (shopIds.size > 0) {
+      return shopIds.size;
+    }
+
+    return Number(cart?.numberOfShops) || 0;
+  };
+
+  const calculateHandlingCharge = () => {
+    if (typeof cart?.handlingCharge === 'number') {
+      return cart.handlingCharge;
+    }
+    return calculateNumberOfShops() * 2;
+  };
+
+  const getRegularCouponDiscount = () => {
+    return (
+      Number(cart?.couponDiscount) ||
+      Number(cart?.couponApplied?.discountAmount) ||
+      Number(cart?.appliedCoupon?.discountAmount) ||
+      0
+    );
+  };
+
+  const getAmountBreakdown = () => {
+    const subtotal = calculateTotal();
+    const deliveryCharges = calculateDeliveryFee();
+    const handlingCharge = calculateHandlingCharge();
+    const total = subtotal + deliveryCharges + handlingCharge;
+    const gst = calculateGst();
+    const regularCouponDiscount = getRegularCouponDiscount();
+    const scratchCouponDiscount = Number(appliedCoupon?.discountAmount) || 0;
+    const afterDiscounts = Math.max(0, total + gst - regularCouponDiscount - scratchCouponDiscount);
+    const walletDeduction = useWallet ? Math.min(walletBalance, afterDiscounts) : 0;
+    const payableAmount = Math.max(0, afterDiscounts - walletDeduction);
+
+    return {
+      subtotal,
+      deliveryCharges,
+      handlingCharge,
+      numberOfShops: calculateNumberOfShops(),
+      total,
+      gst,
+      regularCouponDiscount,
+      scratchCouponDiscount,
+      afterDiscounts,
+      walletDeduction,
+      payableAmount
+    };
+  };
+
   const calculateWalletDeduction = () => {
-    const total = calculateTotal() + calculateDeliveryFee() + calculateGst();
-    const couponDiscount = appliedCoupon?.discountAmount || 0;
-    return Math.min(walletBalance, total - couponDiscount);
+    return getAmountBreakdown().walletDeduction;
   };
 
   const calculateFinalAmount = () => {
-    const total = calculateTotal() + calculateDeliveryFee() + calculateGst();
-    const couponDiscount = appliedCoupon?.discountAmount || 0;
-    const afterCoupon = total - couponDiscount;
-    if (useWallet) {
-      return afterCoupon - calculateWalletDeduction();
-    }
-    return afterCoupon;
+    return getAmountBreakdown().payableAmount;
   };
 
   const calculateRazorpayAmount = () => {
@@ -306,7 +363,7 @@ const CheckoutPage = () => {
         handler: async function (response) {
           try {
             const token = localStorage.getItem('token');
-            const verifyResponse = await fetch('https://api.fast2.in/api/order/verify-payment', {
+            const verifyResponse = await fetch('http://localhost:5000/api/order/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -472,12 +529,21 @@ const CheckoutPage = () => {
       }
 
       if (appliedCoupon) {
-        formData.append('couponCode', couponCode.trim());
+        formData.append('scratchCouponCode', couponCode.trim());
+      }
+
+      const regularCouponCode =
+        cart?.coupon ||
+        cart?.couponCode ||
+        cart?.couponApplied?.code ||
+        cart?.appliedCoupon?.code;
+      if (regularCouponCode) {
+        formData.append('coupon', regularCouponCode);
       }
 
       console.log('Sending order data via FormData');
 
-      const response = await fetch('https://api.fast2.in/api/order/create', {
+      const response = await fetch('http://localhost:5000/api/order/create', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -494,7 +560,27 @@ const CheckoutPage = () => {
       console.log('Order response:', responseData);
 
       const newOrderId = responseData.order?.orderId || responseData.orderId;
+      const orderResponse = responseData.order || {};
       setOrderId(newOrderId || 'N/A');
+      setPlacedOrderSummary({
+        total: Number(orderResponse.total) || 0,
+        subtotal: Number(orderResponse.subtotal) || 0,
+        deliveryCharges: Number(orderResponse.deliveryCharges) || 0,
+        handlingCharge: Number(orderResponse.handlingCharge) || 0,
+        numberOfShops: Number(orderResponse.numberOfShops) || 0,
+        totalGst: Number(orderResponse.totalGst) || 0,
+        finalAmount: Number(orderResponse.finalAmount) || 0,
+        walletDeduction: Number(orderResponse.walletDeduction) || 0,
+        cashOnDelivery: Number(orderResponse.cashOnDelivery) || 0,
+        couponDiscount:
+          Number(orderResponse.couponDiscount) ||
+          Number(orderResponse.couponApplied?.discountAmount) ||
+          0,
+        scratchCouponDiscount:
+          Number(orderResponse.scratchCouponDiscount) ||
+          Number(orderResponse.scratchCouponApplied?.discountAmount) ||
+          0
+      });
       setScratchCard(
         responseData.order?.orderScratchCard ||
         responseData.orderScratchCard ||
@@ -535,8 +621,9 @@ const CheckoutPage = () => {
     setAppliedCoupon(null);
     try {
       const token = localStorage.getItem('token');
-      const orderAmount = calculateTotal() + calculateDeliveryFee() + calculateGst();
-      const res = await fetch('https://api.fast2.in/api/order/redeem-scratch-coupon', {
+      const breakdown = getAmountBreakdown();
+      const orderAmount = breakdown.total + breakdown.gst;
+      const res = await fetch('http://localhost:5000/api/order/redeem-scratch-coupon', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -563,7 +650,7 @@ const CheckoutPage = () => {
     setScratchError('');
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`https://api.fast2.in/api/order/${orderId}/scratch-coupon`, {
+      const res = await fetch(`http://localhost:5000/api/order/${orderId}/scratch-coupon`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -586,7 +673,7 @@ const CheckoutPage = () => {
 
   const clearCart = async (token) => {
     try {
-      await fetch('https://api.fast2.in/api/cart/clear', {
+      await fetch('http://localhost:5000/api/cart/clear', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -610,6 +697,19 @@ const CheckoutPage = () => {
       default: return 'text-purple-600 bg-purple-50 border-purple-200';
     }
   };
+
+  const amountBreakdown = getAmountBreakdown();
+  const displaySummary = placedOrderSummary || {};
+  const displayWalletDeduction =
+    typeof displaySummary.walletDeduction === 'number'
+      ? displaySummary.walletDeduction
+      : amountBreakdown.walletDeduction;
+  const displayPayableAmount =
+    paymentMethod === 'online'
+      ? amountBreakdown.payableAmount
+      : (typeof displaySummary.cashOnDelivery === 'number'
+        ? displaySummary.cashOnDelivery
+        : amountBreakdown.payableAmount);
 
   if (loading) {
     return (
@@ -977,10 +1077,10 @@ const CheckoutPage = () => {
                         {useWallet && (
                           <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
                             <p className="text-sm text-green-700">
-                              ₹{calculateWalletDeduction()} will be deducted from your wallet balance.
-                              {calculateWalletDeduction() < (calculateTotal() + calculateDeliveryFee()) && (
+                              ₹{amountBreakdown.walletDeduction} will be deducted from your wallet balance.
+                              {amountBreakdown.walletDeduction < amountBreakdown.afterDiscounts && (
                                 <span className="block mt-1">
-                                  Remaining ₹{calculateFinalAmount()} to be paid via {paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}.
+                                  Remaining ₹{amountBreakdown.payableAmount} to be paid via {paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}.
                                 </span>
                               )}
                             </p>
@@ -1014,7 +1114,7 @@ const CheckoutPage = () => {
                             </div>
                           </div>
                           <span className={`font-medium ${paymentMethod === 'cod' ? 'text-green-700' : 'text-gray-700'}`}>
-                            {useWallet && walletBalance > 0 ? `₹${calculateFinalAmount()} to pay` : 'Pay with cash'}
+                            {useWallet && walletBalance > 0 ? `₹${amountBreakdown.payableAmount} to pay` : 'Pay with cash'}
                           </span>
                         </div>
                         <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'cod' ? 'text-green-600' : 'text-gray-600'}`}>
@@ -1069,9 +1169,9 @@ const CheckoutPage = () => {
                         {paymentMethod === 'online' ? 'Processing Payment...' : 'Placing Order...'}
                       </div>
                     ) : paymentMethod === 'online' ? (
-                      `Pay Now • ₹${calculateFinalAmount()}`
+                      `Pay Now • ₹${amountBreakdown.payableAmount}`
                     ) : (
-                      `Place Order • ₹${calculateFinalAmount()}`
+                      `Place Order • ₹${amountBreakdown.payableAmount}`
                     )}
                   </button>
 
@@ -1122,23 +1222,31 @@ const CheckoutPage = () => {
                 <div className="space-y-3 border-t border-gray-200 pt-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium text-gray-900">₹{calculateTotal()}</span>
+                    <span className="font-medium text-gray-900">₹{amountBreakdown.subtotal}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
                     <div className="text-right">
-                      {calculateTotal() > 199 ? (
+                      {amountBreakdown.subtotal > 199 ? (
                         <div>
-                          <span className="font-medium text-green-600 line-through text-sm">₹{calculateDeliveryFee()}</span>
+                          <span className="font-medium text-green-600 line-through text-sm">₹{amountBreakdown.deliveryCharges}</span>
                           <span className="font-medium text-green-600 ml-2">FREE</span>
                         </div>
                       ) : (
-                        <span className="font-medium text-gray-900">₹{calculateDeliveryFee()}</span>
+                        <span className="font-medium text-gray-900">₹{amountBreakdown.deliveryCharges}</span>
                       )}
                     </div>
                   </div>
 
-                  {calculateTotal() > 199 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">
+                      Handling Charge
+                      {amountBreakdown.numberOfShops > 0 ? ` (${amountBreakdown.numberOfShops} shop${amountBreakdown.numberOfShops > 1 ? 's' : ''})` : ''}
+                    </span>
+                    <span className="font-medium text-gray-900">₹{amountBreakdown.handlingCharge}</span>
+                  </div>
+
+                  {amountBreakdown.subtotal > 199 && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
                       <p className="text-sm text-green-700 font-medium">
                         🎉 Free delivery applied! Your order exceeds ₹199
@@ -1151,7 +1259,7 @@ const CheckoutPage = () => {
                     {appliedCoupon ? (
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs font-semibold text-green-700">🎟️ Coupon Applied</p>
+                          <p className="text-xs font-semibold text-green-700">🎟️ Scratch Coupon Applied</p>
                           <p className="text-xs text-gray-500 mt-0.5">{couponCode.toUpperCase()} — Save ₹{appliedCoupon.discountAmount}</p>
                           {appliedCoupon.description && (
                             <p className="text-xs text-gray-400 mt-0.5">{appliedCoupon.description}</p>
@@ -1188,37 +1296,44 @@ const CheckoutPage = () => {
                     )}
                   </div>
 
-                  {calculateGst() > 0 && (
+                  {amountBreakdown.gst > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">GST</span>
-                      <span className="font-medium text-gray-900">₹{calculateGst().toFixed(2)}</span>
+                      <span className="font-medium text-gray-900">₹{amountBreakdown.gst.toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  {amountBreakdown.regularCouponDiscount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Coupon Discount</span>
+                      <span className="font-medium">-₹{amountBreakdown.regularCouponDiscount}</span>
                     </div>
                   )}
 
                   {appliedCoupon && (
                     <div className="flex justify-between text-green-600">
-                      <span>Coupon ({couponCode.toUpperCase()})</span>
-                      <span className="font-medium">-₹{appliedCoupon.discountAmount}</span>
+                      <span>Scratch Coupon ({couponCode.toUpperCase()})</span>
+                      <span className="font-medium">-₹{amountBreakdown.scratchCouponDiscount}</span>
                     </div>
                   )}
 
                   {useWallet && walletBalance > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Wallet Deduction</span>
-                      <span className="font-medium">-₹{calculateWalletDeduction()}</span>
+                      <span className="font-medium">-₹{amountBreakdown.walletDeduction}</span>
                     </div>
                   )}
 
                   <div className="flex justify-between pt-3 border-t border-gray-200">
                     <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-lg font-bold text-green-600">₹{calculateFinalAmount()}</span>
+                    <span className="text-lg font-bold text-green-600">₹{amountBreakdown.payableAmount}</span>
                   </div>
 
                   {useWallet && walletBalance > 0 && (
                     <div className="text-xs text-gray-500 text-center mt-2">
                       {paymentMethod === 'online'
-                        ? `₹${calculateWalletDeduction()} from wallet + ₹${calculateFinalAmount()} online`
-                        : `₹${calculateWalletDeduction()} from wallet + ₹${calculateFinalAmount()} via COD`
+                        ? `₹${amountBreakdown.walletDeduction} from wallet + ₹${amountBreakdown.payableAmount} online`
+                        : `₹${amountBreakdown.walletDeduction} from wallet + ₹${amountBreakdown.payableAmount} via COD`
                       }
                     </div>
                   )}
@@ -1304,10 +1419,10 @@ const CheckoutPage = () => {
             <p className="text-sm text-green-700 font-medium">
               {paymentMethod === 'online'
                 ? useWallet
-                  ? `₹${calculateWalletDeduction()} wallet + ₹${calculateFinalAmount()} online`
-                  : `₹${calculateFinalAmount()} paid online`
+                  ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} online`
+                  : `₹${displayPayableAmount} paid online`
                 : useWallet
-                  ? `₹${calculateWalletDeduction()} wallet + ₹${calculateFinalAmount()} on delivery`
+                  ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} on delivery`
                   : 'Keep cash ready when your order arrives'}
             </p>
           </div>

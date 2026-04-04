@@ -75,7 +75,7 @@ const ProfilePage = () => {
         return;
       }
 
-      const response = await fetch('https://api.fast2.in/api/user/profile/', {
+      const response = await fetch('http://localhost:5000/api/user/profile/', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -128,7 +128,7 @@ const ProfilePage = () => {
       setSuccess('');
       
       const token = getToken();
-      const response = await fetch('https://api.fast2.in/api/user/profile', {
+      const response = await fetch('http://localhost:5000/api/user/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -177,7 +177,7 @@ const ProfilePage = () => {
       const formData = new FormData();
       formData.append('avatar', avatarFile);
 
-      const response = await fetch('https://api.fast2.in/api/user/profile/avatar', {
+      const response = await fetch('http://localhost:5000/api/user/profile/avatar', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -219,7 +219,7 @@ const ProfilePage = () => {
 
     try {
       const token = getToken();
-      const response = await fetch('https://api.fast2.in/api/user/profile/', {
+      const response = await fetch('http://localhost:5000/api/user/profile/', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

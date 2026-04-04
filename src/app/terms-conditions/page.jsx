@@ -24,7 +24,7 @@ export default function TermsAndConditionsPage() {
   const fetchAllPolicies = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://api.fast2.in/api/policy/active', {
+      const response = await fetch('http://localhost:5000/api/policy/active', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
