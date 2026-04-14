@@ -32,6 +32,10 @@ const ProfilePage = () => {
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   // Check authentication status and get token
@@ -213,37 +217,51 @@ const ProfilePage = () => {
 
   // Delete account
   const deleteAccount = async () => {
-    if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    if (!deletePassword.trim()) {
+      setDeleteError('Password is required to delete your account');
       return;
     }
 
     try {
+      setDeleting(true);
+      setDeleteError('');
       const token = getToken();
-      const response = await fetch('https://api.fast2.in/api/user/profile/', {
+      const response = await fetch('https://api.fast2.in/api/user/delete-account', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ password: deletePassword }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
+        if (response.status === 401 && data.error === 'Incorrect password') {
+          setDeleteError('Incorrect password. Please try again.');
+          return;
+        }
         if (response.status === 401) {
           localStorage.removeItem('token');
           setIsLoggedIn(false);
           window.dispatchEvent(new Event('authChange'));
           setError('Session expired. Please login again.');
+          setShowDeleteModal(false);
           return;
         }
-        throw new Error('Failed to delete account');
+        setDeleteError(data.error || 'Failed to delete account');
+        return;
       }
 
       localStorage.removeItem('token');
-      setIsLoggedIn(false);
       window.dispatchEvent(new Event('authChange'));
-      router.push('/');
+      window.location.href = '/';
     } catch (err) {
-      setError(err.message);
+      setDeleteError('Something went wrong. Please try again.');
       console.error('Error deleting account:', err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -501,7 +519,69 @@ const ProfilePage = () => {
           </div>
         )}
 
+        {/* Danger Zone */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-red-100">
+          <h2 className="text-lg font-semibold text-red-600 mb-2 border-b border-red-100 pb-2">Danger Zone</h2>
+          <p className="text-sm text-gray-500 mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
+          <button
+            onClick={() => { setShowDeleteModal(true); setDeletePassword(''); setDeleteError(''); }}
+            className="flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+          >
+            <TrashIcon className="w-4 h-4" />
+            Delete Account
+          </button>
+        </div>
       </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <TrashIcon className="w-5 h-5 text-red-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900">Delete Account</h2>
+            </div>
+            <p className="text-sm text-gray-600 mb-5">
+              This will permanently delete your account and all your data. Enter your password to confirm.
+            </p>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(''); }}
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none"
+                autoFocus
+              />
+              {deleteError && (
+                <p className="text-red-600 text-sm mt-2">{deleteError}</p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeletePassword(''); setDeleteError(''); }}
+                disabled={deleting}
+                className="flex-1 border border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteAccount}
+                disabled={deleting}
+                className="flex-1 bg-red-600 text-white py-3 rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {deleting ? 'Deleting...' : 'Delete Account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer/>
     </div>
   );
