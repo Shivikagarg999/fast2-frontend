@@ -917,7 +917,7 @@ function HeaderContent() {
   };
 
   return (
-    <header className="bg-green-300 text-black font-bold sticky top-0 w-full z-50">
+    <header className="bg-white text-black font-bold fixed top-0 left-0 right-0 w-full z-50">
       <div className="border-b border-green-200">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">

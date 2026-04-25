@@ -19,15 +19,15 @@ export const metadata = {
   title: "Fast2",
   description: "Fast2 - Your shopping partner",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon/logo.jpeg",
+    shortcut: "/favicon/logo.jpeg",
+    apple: "/favicon/logo.jpeg",
   },
 };
 
 const HeaderFallback = () => {
   return (
-    <header className="bg-white sticky top-0 w-full z-50">
+    <header className="bg-white fixed top-0 left-0 right-0 w-full z-50">
       <div className="border-b border-gray-200 h-[70px]">
       </div>
     </header>
@@ -53,7 +53,7 @@ export default function RootLayout({ children }) {
         {/* Use the conditional header component */}
         <ConditionalHeader />
 
-        <main className="relative z-10">{children}</main>
+        <main className="relative z-10 pt-[70px]">{children}</main>
         <Cart />
         <PopupManager />
       </body>

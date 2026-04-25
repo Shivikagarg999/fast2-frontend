@@ -130,8 +130,8 @@ const Banner = () => {
   }
 
   return (
-    <div className="relative bg-white w-full px-4 py-4">
-      <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-white">
+    <div className="relative bg-white w-full mt-12 px-4 py-4">
+      <div className="relative w-full h-64 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-white">
         {bannerData.map((slide, index) => (
           <div
             key={slide._id || slide.id}
@@ -164,16 +164,16 @@ const Banner = () => {
               </div>
 
               {/* Image Section */}
-              <div className="flex-1 max-w-[40%] h-full relative">
+              <div className="flex-1 max-w-[80%] h-full relative">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full h-[80%] max-w-sm">
+                  <div className="relative w-full h-[80%] max-w-md">
                     <Image
                       src={getSafeImageUrl(slide.image)}
                       alt={slide.title || 'Banner image'}
                       fill
                       className="object-contain drop-shadow-2xl"
                       priority={index === 0}
-                      sizes="(max-width: 768px) 40vw, (max-width: 1200px) 30vw, 25vw"
+                      sizes="(max-width: 868px) 40vw, (max-width: 1300px) 30vw, 25vw"
                       onError={(e) => {
                         if (slide.fallbackImage) {
                           e.target.src = slide.fallbackImage;
@@ -235,27 +235,6 @@ const Banner = () => {
         )}
       </div>
 
-      {/* Stats Bar */}
-      <div className="bg-[#1a3d1a] rounded-2xl mt-4 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[10px] text-white/40 uppercase tracking-[0.15em] font-semibold">FROM LOCAL STORES</span>
-          <span className="text-xl font-bold text-white">10 Minute Delivery</span>
-          <p className="text-xs text-white/50 max-w-xs leading-relaxed hidden sm:block">
-            Our network of farm-to-warehouse ensures your quality is never empty. Real-time tracking from farm to your doorstep.
-          </p>
-        </div>
-        <div className="flex items-center gap-8 sm:gap-12 shrink-0">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">98%</div>
-            <div className="text-[10px] text-white/40 mt-0.5">On-time delivery</div>
-          </div>
-          <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">500+</div>
-            <div className="text-[10px] text-white/40 mt-0.5">Products</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
