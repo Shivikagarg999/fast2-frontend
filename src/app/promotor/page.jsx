@@ -30,7 +30,7 @@ export default function PromoterPartnerPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://api.fast2.in/api/promoter/partner-application', {
+      const response = await fetch('https://www.fast2.in/proxy/api/promoter/partner-application', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

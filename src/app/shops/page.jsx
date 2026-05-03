@@ -14,7 +14,7 @@ import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import ShopCard from '../components/shopCard/page';
 import Footer from '../components/footer/page';
 
-const API_BASE = 'https://api.fast2.in';
+const API_BASE = 'https://www.fast2.in/proxy';
 
 function ShopsContent() {
     const router = useRouter();

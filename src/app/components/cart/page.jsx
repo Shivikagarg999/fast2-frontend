@@ -87,7 +87,7 @@ const Cart = () => {
     setError(null);
 
     try {
-      const data = await makeAuthenticatedRequest('https://api.fast2.in/api/cart/');
+      const data = await makeAuthenticatedRequest('https://www.fast2.in/proxy/api/cart/');
       setCartItems(data.items || []);
       updateHeaderCartCount();
     } catch (err) {
@@ -108,7 +108,7 @@ const Cart = () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest('https://api.fast2.in/api/cart/add', {
+      await makeAuthenticatedRequest('https://www.fast2.in/proxy/api/cart/add', {
         method: 'POST',
         body: JSON.stringify({
           productId,
@@ -126,7 +126,7 @@ const Cart = () => {
     if (newQuantity < 1 || !isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/update/${itemId}`, {
+      await makeAuthenticatedRequest(`https://www.fast2.in/proxy/api/cart/update/${itemId}`, {
         method: 'PUT',
         body: JSON.stringify({
           quantity: newQuantity
@@ -151,7 +151,7 @@ const Cart = () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest(`https://api.fast2.in/api/cart/remove/${itemId}`, {
+      await makeAuthenticatedRequest(`https://www.fast2.in/proxy/api/cart/remove/${itemId}`, {
         method: 'DELETE'
       });
 
@@ -168,7 +168,7 @@ const Cart = () => {
     if (!isLoggedIn) return;
 
     try {
-      await makeAuthenticatedRequest('https://api.fast2.in/api/cart/clear', {
+      await makeAuthenticatedRequest('https://www.fast2.in/proxy/api/cart/clear', {
         method: 'DELETE'
       });
       setCartItems([]);
@@ -525,7 +525,7 @@ Cart.addToCart = async (productId, quantity = 1) => {
   }
 
   try {
-    const response = await fetch('https://api.fast2.in/api/cart/add', {
+    const response = await fetch('https://www.fast2.in/proxy/api/cart/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

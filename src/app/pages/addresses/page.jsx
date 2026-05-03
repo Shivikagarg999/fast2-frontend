@@ -86,7 +86,7 @@ const AddressPage = () => {
         return;
       }
 
-      const response = await fetch('https://api.fast2.in/api/user/addresses/get', {
+      const response = await fetch('https://www.fast2.in/proxy/api/user/addresses/get', {
         headers: getAuthHeaders(),
       });
 
@@ -120,7 +120,7 @@ const AddressPage = () => {
       setError('');
       setSuccess('');
 
-      const response = await fetch('https://api.fast2.in/api/user/addresses/create', {
+      const response = await fetch('https://www.fast2.in/proxy/api/user/addresses/create', {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(addressForm),
@@ -150,7 +150,7 @@ const AddressPage = () => {
       setError('');
       setSuccess('');
 
-      const response = await fetch(`https://api.fast2.in/api/user/addresses/update/${editingAddress._id}`, {
+      const response = await fetch(`https://www.fast2.in/proxy/api/user/addresses/update/${editingAddress._id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(addressForm),
@@ -179,7 +179,7 @@ const AddressPage = () => {
       setDeleting(addressId);
       setError('');
 
-      const response = await fetch(`https://api.fast2.in/api/user/addresses/delete/${addressId}`, {
+      const response = await fetch(`https://www.fast2.in/proxy/api/user/addresses/delete/${addressId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
@@ -205,7 +205,7 @@ const AddressPage = () => {
     try {
       setError('');
 
-      const response = await fetch(`https://api.fast2.in/api/user/addresses/${addressId}/default`, {
+      const response = await fetch(`https://www.fast2.in/proxy/api/user/addresses/${addressId}/default`, {
         method: 'PATCH',
         headers: getAuthHeaders(),
       });

@@ -235,7 +235,7 @@ The popup is fully responsive:
 No additional environment variables required. The system uses:
 
 ```javascript
-const API_BASE_URL = 'https://api.fast2.in/api/popups';
+const API_BASE_URL = 'http://localhost:5000/api/popups';
 ```
 
 ### Customization Options
@@ -330,10 +330,10 @@ useEffect(() => {
 ### Environment Configuration
 ```javascript
 // For production
-const API_BASE_URL = 'https://api.fast2.in/api/popups';
+const API_BASE_URL = 'http://localhost:5000/api/popups';
 
 // For development
-const API_BASE_URL = 'https://api.fast2.in/api/popups';
+const API_BASE_URL = 'http://localhost:5000/api/popups';
 ```
 
 ## 📚 API Reference

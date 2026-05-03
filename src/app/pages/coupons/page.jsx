@@ -28,7 +28,7 @@ const MyCouponsPage = () => {
         return;
       }
       try {
-        const res = await fetch('https://api.fast2.in/api/order/my-scratch-coupons', {
+        const res = await fetch('https://www.fast2.in/proxy/api/order/my-scratch-coupons', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!res.ok) throw new Error('Failed to fetch coupons');

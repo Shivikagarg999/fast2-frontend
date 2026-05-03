@@ -76,7 +76,7 @@ const CategoryProductsComponent = () => {
         setError(null);
 
         const categoryResponse = await fetch(
-          `https://api.fast2.in/api/category/${categoryId}`
+          `https://www.fast2.in/proxy/api/category/${categoryId}`
         );
         
         if (!categoryResponse.ok) {
@@ -86,7 +86,7 @@ const CategoryProductsComponent = () => {
         const categoryData = await categoryResponse.json();
 
         const productsResponse = await fetch(
-          `https://api.fast2.in/api/product/category/${categoryId}`
+          `https://www.fast2.in/proxy/api/product/category/${categoryId}`
         );
         
         if (!productsResponse.ok) {
@@ -118,7 +118,7 @@ const CategoryProductsComponent = () => {
       try {
         const token = localStorage.getItem('token');
         
-        const response = await fetch('https://api.fast2.in/api/cart/', {
+        const response = await fetch('https://www.fast2.in/proxy/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -160,7 +160,7 @@ const CategoryProductsComponent = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch('https://api.fast2.in/api/cart/add', {  
+      const response = await fetch('https://www.fast2.in/proxy/api/cart/add', {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ const CategoryProductsComponent = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
+      const cartItems = await fetch('https://www.fast2.in/proxy/api/cart/', {  
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -217,7 +217,7 @@ const CategoryProductsComponent = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`https://api.fast2.in/api/cart/update/${cartItem._id}`, {  
+        const response = await fetch(`https://www.fast2.in/proxy/api/cart/update/${cartItem._id}`, {  
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ const CategoryProductsComponent = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const cartItems = await fetch('https://api.fast2.in/api/cart/', {  
+      const cartItems = await fetch('https://www.fast2.in/proxy/api/cart/', {  
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
@@ -253,7 +253,7 @@ const CategoryProductsComponent = () => {
       );
 
       if (cartItem) {
-        const response = await fetch(`https://api.fast2.in/api/cart/remove/${cartItem._id}`, {  
+        const response = await fetch(`https://www.fast2.in/proxy/api/cart/remove/${cartItem._id}`, {  
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
