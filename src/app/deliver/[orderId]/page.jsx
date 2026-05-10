@@ -36,7 +36,6 @@ export default function TrackOrderPage() {
   const [connected, setConnected] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Place or move driver marker
   const updateDriverMarker = useCallback((lat, lng) => {
     if (!mapRef.current || !mapReadyRef.current) return;
     const mapboxgl = mapboxglRef.current;
@@ -56,7 +55,6 @@ export default function TrackOrderPage() {
     }
   }, []);
 
-  // Place destination marker (only once)
   const placeDestinationMarker = useCallback((lat, lng, address) => {
     if (!mapRef.current || !mapReadyRef.current || destinationMarkerRef.current) return;
     const mapboxgl = mapboxglRef.current;
@@ -73,7 +71,6 @@ export default function TrackOrderPage() {
       .addTo(mapRef.current);
   }, []);
 
-  // Load Mapbox dynamically (avoids SSR issues)
   useEffect(() => {
     let cancelled = false;
 
@@ -109,7 +106,6 @@ export default function TrackOrderPage() {
     };
   }, []);
 
-  // Fetch initial tracking data
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (!token) { router.push('/login'); return; }

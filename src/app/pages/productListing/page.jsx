@@ -94,7 +94,7 @@ const ProductListingComponent = () => {
       setLoading(true);
       setError(null);
       
-      let url = 'https://www.fast2.in/proxy/api/product/';
+      let url = 'https://www.fast2.in/proxy/api/product';
       const params = new URLSearchParams();
       
       if (pincode) {

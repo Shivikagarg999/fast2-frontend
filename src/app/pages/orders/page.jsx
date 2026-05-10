@@ -368,6 +368,15 @@ const MyOrdersPage = () => {
     setShowOrderDetails(true);
   };
 
+  const handleTrackOrder = (order) => {
+    const orderIdentifier = order.orderId || order._id;
+    if (!orderIdentifier) {
+      handleViewDetails(order);
+      return;
+    }
+    router.push(`/deliver/${orderIdentifier}`);
+  };
+
   const scratchOrderCoupon = async (order) => {
     const token = localStorage.getItem('token');
     const candidateIds = [order.orderId, order._id].filter(Boolean);
@@ -1121,7 +1130,7 @@ const MyOrdersPage = () => {
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleViewDetails(order)}
+                              onClick={() => handleTrackOrder(order)}
                               className="bg-[#1a3d1a] text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-[#0f2510] transition-colors"
                             >
                               Track Order

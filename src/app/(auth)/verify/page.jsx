@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Footer from '@/app/components/footer/page';
-const BASE_URL = "https://www.fast2.in/proxy";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://www.fast2.in/proxy";
 
 export default function VerifyPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
