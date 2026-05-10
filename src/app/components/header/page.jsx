@@ -424,31 +424,31 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   return (
     <div className="relative" ref={locationRef}>
       <div
-        className={`flex items-center cursor-pointer group ${isMobile ? 'w-full' : 'w-64'
+        className={`flex items-center cursor-pointer group ${isMobile ? 'w-full min-w-0' : 'w-64'
           }`}
         onClick={() => !isGettingLocation && setShowLocationDropdown(!showLocationDropdown)}
       >
         <div className={`
-          flex items-center space-x-2 bg-green-50 hover:bg-green-100 px-3 py-2 rounded-lg
+          flex items-center space-x-2 bg-green-50 hover:bg-green-100 px-2.5 py-2.5 rounded-lg sm:px-3 sm:py-2
           transition-colors duration-200 border border-green-200 w-full
-          ${isMobile ? 'justify-center' : ''}
+          ${isMobile ? 'min-w-0' : ''}
           ${isGettingLocation ? 'opacity-75' : ''}
         `}>
           {isGettingLocation ? (
-            <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+            <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-green-600 border-t-transparent sm:h-4 sm:w-4"></div>
           ) : (
-            <MapPinIcon className="w-4 h-4 text-red-500 flex-shrink-0" />
+            <MapPinIcon className="h-6 w-6 flex-shrink-0 text-red-500 sm:h-4 sm:w-4" />
           )}
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-xs text-green-700 whitespace-nowrap">Delivery to</span>
-            <span className="text-sm font-medium text-green-900 truncate max-w-[180px]">
+            <span className="text-[11px] text-green-700 whitespace-nowrap sm:text-xs">Delivery to</span>
+            <span className="max-w-[120px] truncate text-sm font-semibold text-green-900 sm:max-w-[180px] sm:font-medium">
               {displayLocation}
             </span>
             {pincode && !isGettingLocation && (
               <span className="text-xs text-green-700">Pincode: {pincode}</span>
             )}
           </div>
-          <ChevronDownIcon className={`w-4 h-4 text-green-700 transition-transform duration-200 flex-shrink-0 ${showLocationDropdown ? 'rotate-180' : ''
+          <ChevronDownIcon className={`h-5 w-5 flex-shrink-0 text-green-700 transition-transform duration-200 sm:h-4 sm:w-4 ${showLocationDropdown ? 'rotate-180' : ''
             }`} />
         </div>
       </div>
@@ -456,7 +456,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       {showLocationDropdown && (
         <div className={`
           absolute top-full left-0 mt-2 bg-white border border-green-200 rounded-lg shadow-lg z-50 overflow-hidden
-          ${isMobile ? 'w-full' : 'w-96'}
+          ${isMobile ? 'left-0 right-0 w-[calc(100vw-1.5rem)] max-w-sm' : 'w-96'}
         `}>
           <div className="p-4 border-b border-green-100">
             <h3 className="font-medium text-green-900 mb-3">Set Delivery Location</h3>
@@ -919,10 +919,10 @@ function HeaderContent() {
   return (
     <header className="bg-white text-black font-bold fixed top-0 left-0 right-0 w-full z-50">
       <div className="border-b border-green-200">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="flex items-center justify-between gap-2">
 
-            <div className="flex items-center space-x-6">
+            <div className="flex min-w-0 flex-1 items-center lg:flex-none lg:space-x-6">
               <div
                 className="hidden lg:flex items-center cursor-pointer"
                 onClick={handleLogoClick}
@@ -940,7 +940,7 @@ function HeaderContent() {
                 <LocationSelector isMobile={false} onLocationSelect={handleLocationSelect} />
               </div>
 
-              <div className="lg:hidden">
+              <div className="min-w-0 flex-1 lg:hidden">
                 <LocationSelector isMobile={true} onLocationSelect={handleLocationSelect} />
               </div>
             </div>
@@ -968,7 +968,7 @@ function HeaderContent() {
               <span className="text-sm font-medium text-black">Shops</span>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex shrink-0 items-center gap-2 sm:gap-4">
               {isLoggedIn ? (
                 <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
                   <div className="flex items-center space-x-1 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
@@ -1056,16 +1056,17 @@ function HeaderContent() {
                 </div>
               )}
               <div
-                className={`flex items-center space-x-1 p-2 rounded-lg transition-colors ${isLoggedIn
+                className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors sm:space-x-1 ${isLoggedIn
                     ? 'text-black cursor-pointer hover:text-black hover:bg-green-50'
                     : 'text-green-600 cursor-not-allowed opacity-60'
                   }`}
                 onClick={isLoggedIn ? handleCartClick : undefined}
+                aria-label="Cart"
               >
                 <div className="relative">
-                  <ShoppingCartIcon className="w-7 h-7 text-black" />
+                  <ShoppingCartIcon className="h-8 w-8 text-black sm:h-7 sm:w-7" />
                   {isLoggedIn && (
-                    <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-green-500 px-1 text-[11px] font-semibold text-white">
                       {cartItemCount > 0 ? cartItemCount : 0}
                     </span>
                   )}
@@ -1074,13 +1075,14 @@ function HeaderContent() {
               </div>
 
               <button
-                className="lg:hidden p-2 hover:bg-green-100 rounded-lg transition-colors"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors hover:bg-green-100 lg:hidden"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMenuOpen ? (
-                  <XMarkIcon className="w-6 h-6 text-black" />
+                  <XMarkIcon className="h-8 w-8 text-black" />
                 ) : (
-                  <Bars3Icon className="w-6 h-6 text-black" />
+                  <Bars3Icon className="h-8 w-8 text-black" />
                 )}
               </button>
             </div>
@@ -1088,10 +1090,10 @@ function HeaderContent() {
         </div>
       </div>
 
-      <div className="lg:hidden px-4 py-3 border-b border-green-200">
+      <div className="border-b border-green-200 px-3 py-3 sm:px-4 lg:hidden">
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <MagnifyingGlassIcon className="w-5 h-5 text-green-400" />
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <MagnifyingGlassIcon className="h-5 w-5 text-green-400" />
           </div>
           <Suspense fallback={<MobileSearchInputFallback />}>
             <MobileSearchInput
@@ -1104,12 +1106,12 @@ function HeaderContent() {
 
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-b border-green-200 shadow-lg">
-          <div className="px-4 py-4 space-y-4">
+          <div className="space-y-4 px-4 py-4">
             {isLoggedIn && (
               <>
                 <div className="flex items-center space-x-3 bg-green-50 border border-green-200 rounded-lg p-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <UserIcon className="w-6 h-6 text-green-600" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-green-100">
+                    <UserIcon className="h-7 w-7 text-green-600" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-green-900">{userName}</p>
@@ -1118,7 +1120,7 @@ function HeaderContent() {
                 </div>
 
                 <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <BanknotesIcon className="w-6 h-6 text-yellow-600" />
+                  <BanknotesIcon className="h-7 w-7 text-yellow-600" />
                   <div>
                     <p className="text-sm font-medium text-green-900">Wallet Balance</p>
                     <p className="text-lg font-bold text-yellow-700">
@@ -1132,64 +1134,64 @@ function HeaderContent() {
             {isLoggedIn ? (
               <>
                 <div
-                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleProfileClick}
                 >
-                  <UserIcon className="w-5 h-5" />
+                  <UserIcon className="h-6 w-6 shrink-0" />
                   <span>My Profile</span>
                 </div>
                 <div
-                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleSavedAddresses}
                 >
-                  <MapIcon className="w-5 h-5" />
+                  <MapIcon className="h-6 w-6 shrink-0" />
                   <span>Saved Addresses</span>
                 </div>
                 <div
-                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleOrdersClick}
                 >
-                  <InboxIcon className="w-5 h-5" />
+                  <InboxIcon className="h-6 w-6 shrink-0" />
                   <span>My Orders</span>
                 </div>
                 <div
-                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleCouponsClick}
                 >
-                  <TicketIcon className="w-5 h-5" />
+                  <TicketIcon className="h-6 w-6 shrink-0" />
                   <span>My Coupons</span>
                 </div>
                 <div
-                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleReferralsClick}
                 >
-                  <UserGroupIcon className="w-5 h-5" />
+                  <UserGroupIcon className="h-6 w-6 shrink-0" />
                   <span>Refer & Earn</span>
                 </div>
                 <div
-                  className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleLogout}
                 >
-                  <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                  <ArrowRightOnRectangleIcon className="h-6 w-6 shrink-0" />
                   <span>Logout</span>
                 </div>
               </>
             ) : (
               <div
-                className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+                className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                 onClick={handleLoginClick}
               >
-                <UserIcon className="w-5 h-5" />
+                <UserIcon className="h-6 w-6 shrink-0" />
                 <span>Login/Signup</span>
               </div>
             )}
 
             {/* Shops link in mobile menu */}
             <div
-              className="flex items-center space-x-2 text-green-700 cursor-pointer hover:text-green-600 transition-colors py-2"
+              className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
               onClick={() => { closeMenu(); router.push('/shops'); }}
             >
-              <BuildingStorefrontIcon className="w-5 h-5" />
+              <BuildingStorefrontIcon className="h-6 w-6 shrink-0" />
               <span>Browse Shops</span>
             </div>
 
@@ -1202,14 +1204,14 @@ function HeaderContent() {
                   categories.map((category, index) => (
                     <div
                       key={index}
-                      className="flex items-center space-x-3 text-green-600 hover:text-green-600 cursor-pointer transition-colors py-2"
+                      className="flex min-h-11 items-center space-x-3 py-2 text-green-600 transition-colors hover:text-green-600 cursor-pointer"
                       onClick={() => handleCategoryClick(category.name)}
                     >
                       {category.image && (
                         <img
                           src={category.image}
                           alt={category.name}
-                          className="w-6 h-6 object-cover rounded"
+                          className="h-8 w-8 shrink-0 rounded object-cover"
                           onError={(e) => {
                             e.target.style.display = 'none';
                           }}

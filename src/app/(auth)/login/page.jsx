@@ -15,7 +15,6 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [referralCode, setReferralCode] = useState('');
   const [phone, setPhone] = useState('');
-  const [name, setName] = useState('');
   const [phoneOtp, setPhoneOtp] = useState('');
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [otpSent, setOtpSent] = useState(false);
@@ -210,8 +209,6 @@ export default function LoginPage() {
         },
         body: JSON.stringify({
           idToken,
-          name: name.trim() || undefined,
-          referralCode: referralCode.trim() || undefined,
           fcmToken,
         }),
       });
@@ -313,15 +310,22 @@ export default function LoginPage() {
         <title>{isLogin ? 'Login' : 'Register'} - Your App</title>
       </Head>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-green-600 py-4 px-6">
-            <h2 className="text-white text-xl font-bold text-center">
+      <main className="mx-auto w-full max-w-lg px-3 py-5 sm:px-4 sm:py-10">
+        <div className="mx-auto w-full max-w-md overflow-hidden rounded-lg border border-gray-100 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.10)] sm:rounded-xl">
+          <div className="px-4 pb-2 pt-6 text-center sm:px-6 sm:pt-7">
+            <h2 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
               {showForgotPassword ? 'Reset Password' : authMethod === 'phone' ? 'Login with Phone OTP' : isLogin ? 'Login to Your Account' : 'Create New Account'}
             </h2>
+            <p className="mt-2 text-xs leading-5 text-gray-500 sm:text-sm">
+              {authMethod === 'phone' && !showForgotPassword
+                ? 'Login quickly and securely with OTP'
+                : showForgotPassword
+                  ? 'We will send a password reset link to your email'
+                  : 'Access your Fast2 account securely'}
+            </p>
           </div>
           
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {!isLogin && !showForgotPassword && authMethod === 'email' && (
               <div className="mb-6 text-center">
                 <p className="text-gray-600 text-sm">
@@ -331,19 +335,28 @@ export default function LoginPage() {
             )}
 
             {!showForgotPassword && (
-              <div className="flex justify-center mb-6 bg-gray-100 rounded-md p-1">
+              <div className="mb-5 grid grid-cols-2 overflow-hidden rounded-lg border border-gray-100 bg-gray-50 sm:mb-6">
                 <button
                   type="button"
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${authMethod === 'phone' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                  className={`flex min-w-0 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-semibold transition-all sm:gap-2 sm:px-4 sm:text-sm ${authMethod === 'phone' ? 'border-green-500 bg-white text-green-600 shadow-sm' : 'border-transparent text-gray-500 hover:bg-white hover:text-gray-800'}`}
                   onClick={switchToPhone}
                 >
-                  Phone OTP
+                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M8 2.75h8A2.25 2.25 0 0 1 18.25 5v14A2.25 2.25 0 0 1 16 21.25H8A2.25 2.25 0 0 1 5.75 19V5A2.25 2.25 0 0 1 8 2.75Z" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="M10.5 18.25h3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                  <span className="sm:hidden">Phone</span>
+                  <span className="hidden sm:inline">Phone Number</span>
                 </button>
                 <button
                   type="button"
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${authMethod === 'email' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                  className={`flex min-w-0 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-semibold transition-all sm:gap-2 sm:px-4 sm:text-sm ${authMethod === 'email' ? 'border-green-500 bg-white text-green-600 shadow-sm' : 'border-transparent text-gray-500 hover:bg-white hover:text-gray-800'}`}
                   onClick={switchToLogin}
                 >
+                  <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4.75 6.75h14.5v10.5H4.75V6.75Z" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="m5.5 7.5 6.5 5 6.5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                   Email
                 </button>
               </div>
@@ -452,12 +465,13 @@ export default function LoginPage() {
 
                 <div id="recaptcha-container" />
 
-                <div className="mb-4">
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="mb-5">
+                  <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-gray-800">
                     Mobile Number
                   </label>
-                  <div className="flex rounded-md shadow-sm">
-                    <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-600">
+                  <p className="mb-3 text-xs text-gray-500">Enter your mobile number to receive OTP</p>
+                  <div className="flex min-w-0 rounded-lg shadow-sm">
+                    <span className="inline-flex shrink-0 items-center rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 px-3 text-sm font-medium text-gray-700 sm:px-4">
                       +91
                     </span>
                     <input
@@ -468,7 +482,7 @@ export default function LoginPage() {
                       maxLength="10"
                       required
                       disabled={otpSent}
-                      className="w-full rounded-r-md border border-gray-300 px-3 py-2 text-black focus:border-green-500 focus:ring-green-500 disabled:bg-gray-50"
+                      className="min-w-0 w-full rounded-r-lg border border-gray-200 px-3 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 disabled:bg-gray-50 sm:px-4"
                       placeholder="9876543210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -478,8 +492,8 @@ export default function LoginPage() {
 
                 {otpSent && (
                   <>
-                    <div className="mb-4">
-                      <label htmlFor="phoneOtp" className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="mb-5">
+                      <label htmlFor="phoneOtp" className="mb-2 block text-sm font-semibold text-gray-800">
                         OTP
                       </label>
                       <input
@@ -489,40 +503,10 @@ export default function LoginPage() {
                         inputMode="numeric"
                         maxLength="6"
                         required
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:border-green-500 focus:ring-green-500"
-                        placeholder="Enter 6-digit OTP"
+                        className="w-full rounded-lg border border-gray-200 px-3 py-3 text-center text-base font-semibold tracking-[0.22em] text-gray-900 outline-none transition placeholder:tracking-normal focus:border-green-500 focus:ring-2 focus:ring-green-100 sm:px-4 sm:text-lg sm:tracking-[0.4em]"
+                        placeholder="6-digit OTP"
                         value={phoneOtp}
                         onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                        Name <span className="text-gray-400 text-sm">(Optional)</span>
-                      </label>
-                      <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:border-green-500 focus:ring-green-500"
-                        placeholder="Customer Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="mb-6">
-                      <label htmlFor="phoneReferralCode" className="block text-sm font-medium text-gray-700 mb-1">
-                        Referral Code <span className="text-gray-400 text-sm">(Optional)</span>
-                      </label>
-                      <input
-                        id="phoneReferralCode"
-                        name="phoneReferralCode"
-                        type="text"
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:border-green-500 focus:ring-green-500"
-                        placeholder="Enter referral code if you have one"
-                        value={referralCode}
-                        onChange={(e) => setReferralCode(e.target.value)}
                       />
                     </div>
                   </>
@@ -543,7 +527,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={otpLoading || !isFirebaseConfigured || !phone || (otpSent && phoneOtp.length !== 6)}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                  className="flex w-full items-center justify-center rounded-lg border border-transparent bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {otpLoading ? (
                     <>
@@ -553,8 +537,25 @@ export default function LoginPage() {
                       </svg>
                       {otpSent ? 'Verifying...' : 'Sending OTP...'}
                     </>
-                  ) : otpSent ? 'Verify and Login' : 'Send OTP'}
+                  ) : otpSent ? 'Verify OTP' : (
+                    <>
+                      Send OTP
+                      <svg className="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m5 12 14-7-4 14-3-6-7-1Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                      </svg>
+                    </>
+                  )}
                 </button>
+
+                {!otpSent && (
+                  <p className="mt-4 flex items-center justify-center gap-2 text-center text-[11px] font-medium leading-5 text-gray-500 sm:text-xs">
+                    <svg className="h-4 w-4 shrink-0 text-green-500" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M12 3.75 18.25 6v5.25c0 4.15-2.65 7.85-6.25 9-3.6-1.15-6.25-4.85-6.25-9V6L12 3.75Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                      <path d="m9.5 12 1.75 1.75L15 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    We will never share your number with anyone
+                  </p>
+                )}
 
                 {otpSent && (
                   <div className="mt-4 text-center">
