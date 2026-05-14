@@ -15,7 +15,6 @@ export default function VerifyPage() {
   const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
-    // Get stored values from localStorage
     const savedOtp = localStorage.getItem('otp');
     const savedPhone = localStorage.getItem('phone');
     
@@ -36,7 +35,7 @@ export default function VerifyPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleOtpChange = (element, index) => {
+  const handleOtpChange = (elementi, index) => {
     if (isNaN(element.value)) return false;
     
     const newOtp = [...otp];
