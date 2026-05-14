@@ -413,8 +413,8 @@ export default function About() {
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">Address</h4>
                                 <p className="mt-1 text-green-50">
-                                  39/C, Indra Nagar, Thatipur, Gwalior,<br />
-                                  Madhya Pradesh, India – 474011
+                                  Indra Nagar near Sain Devin school,<br />
+                                  Thatipur, Gwalior, Madhya Pradesh 474011
                                 </p>
                               </div>
                             </div>

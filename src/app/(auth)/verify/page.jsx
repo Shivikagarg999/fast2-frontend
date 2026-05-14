@@ -255,7 +255,6 @@ export default function VerifyPage() {
           </div>
         </div>
       </main>
-
      <Footer/>
     </div>
   );
