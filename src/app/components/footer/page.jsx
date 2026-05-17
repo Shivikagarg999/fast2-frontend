@@ -27,7 +27,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-green-300 text-gray-800 py-10 px-4 md:px-8">
+    <footer className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-10 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
@@ -42,14 +42,14 @@ export default function Footer() {
                 className="h-16 w-auto object-contain"
               />
             </div>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-white/80 text-sm mb-4">
               Your trusted partner for quick grocery delivery. Fresh products at
               your doorstep in minutes.
             </p>
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -66,7 +66,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -79,7 +79,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-white/80 hover:text-white transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -99,7 +99,7 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-900">Categories</h4>
+            <h4 className="font-semibold mb-4 text-white">Categories</h4>
             {loading ? (
               <div className="animate-pulse">
                 <div className="h-4 bg-gray-300 rounded mb-2"></div>
@@ -108,12 +108,12 @@ export default function Footer() {
                 <div className="h-4 bg-gray-300 rounded"></div>
               </div>
             ) : (
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm text-white/80">
                 {categories.map((category) => (
                   <li key={category._id}>
                     <Link
                       href={`/category/${category._id}`}
-                      className="hover:text-gray-900 transition-colors"
+                      className="hover:text-white transition-colors"
                     >
                       {category.name}
                     </Link>
@@ -125,25 +125,25 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-900">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
+            <ul className="space-y-2 text-sm text-white/80">
               <li>
-                <a href="/about" className="hover:text-gray-900 transition-colors">
+                <a href="/about" className="hover:text-white transition-colors">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="/contact" className="hover:text-gray-900 transition-colors">
+                <a href="/contact" className="hover:text-white transition-colors">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
+                <a href="/terms-conditions" className="hover:text-white transition-colors">
                   Fast2 Policies
                 </a>
               </li>
               <li>
-                <a href="/shops" className="hover:text-gray-900 transition-colors">
+                <a href="/shops" className="hover:text-white transition-colors">
                   Browse Shops
                 </a>
               </li>
@@ -152,7 +152,7 @@ export default function Footer() {
                   href="https://seller.fast2.in/warehouse/login"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Warehouse
                 </a>
@@ -162,7 +162,7 @@ export default function Footer() {
                   href="/deliver"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Deliver
                 </a>
@@ -172,7 +172,7 @@ export default function Footer() {
                   href="https://seller.fast2.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Seller
                 </a>
@@ -182,7 +182,7 @@ export default function Footer() {
                   href="https://promotor.fast2.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Partner
                 </a>
@@ -192,8 +192,8 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-900">Contact Us</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h4 className="font-semibold mb-4 text-white">Contact Us</h4>
+            <ul className="space-y-2 text-sm text-white/80">
               <li className="flex items-start">
                 <svg
                   className="w-4 h-4 mr-2 mt-0.5"
@@ -233,54 +233,14 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* App Download Banner */}
-        <div className="bg-gray-200 rounded-lg p-6 mb-8 flex flex-col md:flex-row items-center justify-between">
-          <div>
-            <h3 className="font-bold text-lg mb-2">Get the app</h3>
-            <p className="text-sm text-gray-600 max-w-md">
-              Order faster and easier with our mobile app. Exclusive offers
-              available only on the app.
-            </p>
-          </div>
-          <div className="flex mt-4 md:mt-0 space-x-4">
-            <button className="bg-gray-900 text-white px-4 py-2 rounded-lg flex items-center">
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 2a8 8 0 100 16 8 8 0 000-16zM8.798 13.743a.75.75 0 01-1.06-.052L5.515 11.5l2.223-2.191a.75.75 0 111.034 1.085L7.28 11.5l1.457 1.435a.75.75 0 01-.052 1.06zm3.404-1.06a.75.75 0 000-1.06L10.72 11.5l1.457-1.435a.75.75 0 10-1.034-1.085L8.485 11.5l2.223 2.191a.75.75 0 001.06.052z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              App Store
-            </button>
-            <button className="bg-gray-900 text-white px-4 py-2 rounded-lg flex items-center">
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 2a8 8 0 100 16 8 8 0 000-16zM7.828 10.414a1 1 0 000 1.414l1.414 1.414a1 1 0 001.414 0l1.414-1.414a1 1 0 000-1.414L10.656 9a1 1 0 00-1.414 0L7.828 10.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Google Play
-            </button>
-          </div>
-        </div>
 
         {/* Copyright and bottom links */}
-        <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-600 mb-4 md:mb-0">
+        <div className="border-t border-white/30 pt-6 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-sm text-white/80 mb-4 md:mb-0">
             © {new Date().getFullYear()} Fast2. All rights reserved.
           </p>
-          <div className="flex space-x-6 text-sm text-gray-600">
-            <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
+          <div className="flex space-x-6 text-sm text-white/80">
+            <a href="/terms-conditions" className="hover:text-white transition-colors">
               Fast2 Policies
             </a>
           </div>

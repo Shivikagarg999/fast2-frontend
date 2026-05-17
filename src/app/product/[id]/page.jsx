@@ -239,7 +239,7 @@ const ProductDetailPage = () => {
     router.push(`/product/${product._id}`);
   };
 
-  const addToCart = async (productId, quantity = 1) => {
+  const addToCart = async (productId, quantity = 1, price) => {
     if (!isLoggedIn) {
       setShowLoginPrompt(true);
       setTimeout(() => setShowLoginPrompt(false), 3000);
@@ -257,7 +257,8 @@ const ProductDetailPage = () => {
         },
         body: JSON.stringify({
           productId,
-          quantity
+          quantity,
+          price
         })
       });
       
@@ -304,7 +305,8 @@ const ProductDetailPage = () => {
 
       const cartData = {
         productId: product._id,
-        quantity: quantity
+        quantity: quantity,
+        price: displayPrice
       };
 
       if (selectedVariant) {
@@ -347,16 +349,18 @@ const ProductDetailPage = () => {
 
   // Calculate discount information
   const calculateDiscount = () => {
-    if (discountInfo && discountInfo.discountPercentage > 0) {
-      const discountedPrice = currentPrice - (currentPrice * discountInfo.discountPercentage / 100);
+    const campaignDiscountPercentage = Number(product?.campaignDiscountPercentage) || 0;
+    const effectivePrice = Number(product?.effectivePrice) || currentPrice;
+
+    if (!selectedVariant && campaignDiscountPercentage > 0) {
       return {
         hasDiscount: true,
-        discountPercent: discountInfo.discountPercentage,
+        discountPercent: campaignDiscountPercentage,
         originalPrice: currentPrice,
-        discountedPrice: discountedPrice,
-        type: 'category',
-        discountName: discountInfo.name,
-        savings: currentPrice - discountedPrice
+        discountedPrice: effectivePrice,
+        type: 'campaign',
+        discountName: null,
+        savings: currentPrice - effectivePrice
       };
     }
     
@@ -378,7 +382,7 @@ const ProductDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
       </div>
     );
   }
@@ -390,7 +394,7 @@ const ProductDetailPage = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Product not found</h2>
           <button 
             onClick={handleBack}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+            className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors font-medium"
           >
             Go Back
           </button>
@@ -403,14 +407,14 @@ const ProductDetailPage = () => {
     <div className="min-h-screen bg-gray-50 pb-20">
       
       {showLoginPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
 
       {cartMessage && (
         <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg z-50 ${
-          cartMessage.includes('success') ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+          cartMessage.includes('success') ? 'bg-purple-600 text-white' : 'bg-red-600 text-white'
         }`}>
           <p className="text-sm font-medium">{cartMessage}</p>
         </div>
@@ -523,7 +527,7 @@ const ProductDetailPage = () => {
                         {discount.discountPercent}% OFF
                       </div>
                       {discount.discountName && (
-                        <div className="px-3 py-1 bg-green-500 text-white text-sm rounded-full font-semibold shadow-lg">
+                        <div className="px-3 py-1 bg-purple-500 text-white text-sm rounded-full font-semibold shadow-lg">
                           {discount.discountName}
                         </div>
                       )}
@@ -539,7 +543,7 @@ const ProductDetailPage = () => {
                         key={index}
                         className={`flex-shrink-0 w-16 h-16 border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
                           selectedImageIndex === index 
-                            ? 'border-green-500 ring-2 ring-green-200' 
+                            ? 'border-purple-500 ring-2 ring-purple-200' 
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                         onClick={() => setSelectedImageIndex(index)}
@@ -569,7 +573,7 @@ const ProductDetailPage = () => {
             {/* Product Info - Right Side */}
             <div className="md:w-3/5 p-8">
               <div className="mb-4">
-                <span className="inline-block bg-green-50 text-green-700 text-sm px-3 py-1 rounded-full font-medium border border-green-200">
+                <span className="inline-block bg-purple-50 text-purple-700 text-sm px-3 py-1 rounded-full font-medium border border-purple-200">
                   {product.category?.name || 'Uncategorized'}
                 </span>
               </div>
@@ -580,16 +584,16 @@ const ProductDetailPage = () => {
 
               {/* Selected Variant Display */}
               {selectedVariant && (
-                <p className="text-green-600 font-medium mb-4">
+                <p className="text-purple-600 font-medium mb-4">
                   Selected: {selectedVariant.value}
                 </p>
               )}
 
               {/* Rating and Delivery Time */}
               <div className="flex items-center space-x-6 mb-6">
-                <div className="flex items-center bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                <div className="flex items-center bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
                   <StarIconSolid className="w-4 h-4 text-yellow-400 mr-1" />
-                  <span className="text-xs font-semibold text-green-800">
+                  <span className="text-xs font-semibold text-purple-800">
                     {product.ratings?.average || 4.5} • {product.ratings?.count || '2.5k'} ratings
                   </span>
                 </div>
@@ -614,7 +618,7 @@ const ProductDetailPage = () => {
                 </div>
                 
                 {discount.hasDiscount && (
-                  <span className="text-green-600 font-semibold text-sm block mt-1">
+                  <span className="text-purple-600 font-semibold text-sm block mt-1">
                     You save {formatPrice(discount.savings)} ({discount.discountPercent}%)
                   </span>
                 )}
@@ -634,7 +638,7 @@ const ProductDetailPage = () => {
                         }}
                         className={`flex flex-col items-center justify-center w-24 px-3 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
                           selectedVariant?.value === option.value
-                            ? 'border-green-500 bg-green-50 text-green-700 shadow-sm'
+                            ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm'
                             : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                         }`}
                       >
@@ -649,11 +653,11 @@ const ProductDetailPage = () => {
               {/* Trust Badges */}
               <div className="grid grid-cols-3 gap-3 mb-6">
                 <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
-                  <ShieldCheckIcon className="w-4 h-4 text-green-600 mr-1" />
+                  <ShieldCheckIcon className="w-4 h-4 text-purple-600 mr-1" />
                   <span>Quality Assured</span>
                 </div>
                 <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
-                  <TruckIcon className="w-4 h-4 text-green-600 mr-1" />
+                  <TruckIcon className="w-4 h-4 text-purple-600 mr-1" />
                   <span>Free Delivery</span>
                 </div>
                 <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
@@ -692,7 +696,7 @@ const ProductDetailPage = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={addingToCart}
-                  className="w-full bg-white text-green-600 py-4 rounded-xl font-semibold text-lg hover:bg-green-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-white text-purple-600 py-4 rounded-xl font-semibold text-lg hover:bg-purple-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {addingToCart ? 'Adding to Cart...' : 'Add to Cart'}
                 </button>
@@ -712,7 +716,7 @@ const ProductDetailPage = () => {
           {product.description && product.description.length > 200 && (
             <button 
               onClick={() => setShowFullDescription(!showFullDescription)}
-              className="mt-4 flex items-center text-green-600 font-medium"
+              className="mt-4 flex items-center text-purple-600 font-medium"
             >
               {showFullDescription ? (
                 <>
@@ -752,7 +756,7 @@ const ProductDetailPage = () => {
               )}
               <div className="flex justify-between py-2 border-b border-gray-100">
                 <span className="text-gray-500">Stock</span>
-                <span className={`font-medium ${product.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${product.quantity > 0 ? 'text-purple-600' : 'text-red-600'}`}>
                   {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
@@ -767,7 +771,7 @@ const ProductDetailPage = () => {
             
             {loadingRelated ? (
               <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">

@@ -119,7 +119,7 @@ const ContactModal = ({ isOpen, onClose }) => {
     `block w-full px-4 py-2.5 rounded-lg border text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors ${
       formErrors[field]
         ? 'border-red-300 focus:border-red-500 focus:ring-red-400'
-        : 'border-gray-300 focus:border-green-500 focus:ring-green-400'
+        : 'border-gray-300 focus:border-purple-500 focus:ring-purple-400'
     }`;
 
   return (
@@ -153,19 +153,19 @@ const ContactModal = ({ isOpen, onClose }) => {
           {status.message && (
             <div className={`mb-5 p-4 rounded-xl flex items-start gap-3 ${
               status.type === 'success'
-                ? 'bg-green-50 border border-green-200'
+                ? 'bg-purple-50 border border-purple-200'
                 : 'bg-red-50 border border-red-200'
             }`}>
               {status.type === 'success'
-                ? <CheckCircleIcon className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                ? <CheckCircleIcon className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" />
                 : <ExclamationCircleIcon className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               }
               <div>
-                <p className={`text-sm font-medium ${status.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
+                <p className={`text-sm font-medium ${status.type === 'success' ? 'text-purple-800' : 'text-red-800'}`}>
                   {status.message}
                 </p>
                 {status.referenceId && (
-                  <p className="text-xs text-green-700 mt-1">
+                  <p className="text-xs text-purple-700 mt-1">
                     Reference ID: <span className="font-semibold">{status.referenceId}</span>
                   </p>
                 )}
@@ -269,7 +269,7 @@ const ContactModal = ({ isOpen, onClose }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 rounded-xl font-semibold text-white bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm shadow-green-200 flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-xl font-semibold text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm shadow-purple-200 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -288,7 +288,7 @@ const ContactModal = ({ isOpen, onClose }) => {
           {status.type === 'success' && (
             <button
               onClick={handleClose}
-              className="mt-2 w-full py-3 px-4 rounded-xl font-semibold text-green-600 border border-green-200 hover:bg-green-50 transition-colors"
+              className="mt-2 w-full py-3 px-4 rounded-xl font-semibold text-purple-600 border border-purple-200 hover:bg-purple-50 transition-colors"
             >
               Close
             </button>

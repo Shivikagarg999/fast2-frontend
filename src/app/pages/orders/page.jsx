@@ -276,9 +276,9 @@ const MyOrdersPage = () => {
       case 'confirmed':
         return {
           icon: CheckCircleIcon,
-          color: 'text-green-600',
-          bgColor: 'bg-green-50',
-          borderColor: 'border-green-200',
+          color: 'text-purple-600',
+          bgColor: 'bg-purple-50',
+          borderColor: 'border-purple-200',
           label: 'Confirmed',
           description: 'Order is being processed',
           progress: 50
@@ -296,9 +296,9 @@ const MyOrdersPage = () => {
       case 'delivered':
         return {
           icon: CheckCircleSolidIcon,
-          color: 'text-green-600',
-          bgColor: 'bg-green-50',
-          borderColor: 'border-green-200',
+          color: 'text-purple-600',
+          bgColor: 'bg-purple-50',
+          borderColor: 'border-purple-200',
           label: 'Delivered',
           description: 'Order delivered successfully',
           progress: 100
@@ -496,17 +496,17 @@ const MyOrdersPage = () => {
               <div className="p-4 border-b border-gray-100 space-y-3">
                 {/* Secret Code */}
                 {order.secretCode && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <KeyIcon className="w-4 h-4 text-green-700" />
-                        <span className="text-sm font-medium text-green-800">Secret Code</span>
+                        <KeyIcon className="w-4 h-4 text-purple-700" />
+                        <span className="text-sm font-medium text-purple-800">Secret Code</span>
                       </div>
-                      <code className="text-lg font-bold text-green-800 bg-green-100 px-2 py-1 rounded">
+                      <code className="text-lg font-bold text-purple-800 bg-purple-100 px-2 py-1 rounded">
                         {order.secretCode}
                       </code>
                     </div>
-                    <p className="text-xs text-green-700 mt-2">
+                    <p className="text-xs text-purple-700 mt-2">
                       Share this code with the delivery executive to verify your order
                     </p>
                   </div>
@@ -514,13 +514,13 @@ const MyOrdersPage = () => {
 
                 {/* Wallet Deduction */}
                 {order.walletDeduction > 0 && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <WalletIcon className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-800">Wallet Used</span>
+                        <WalletIcon className="w-4 h-4 text-purple-600" />
+                        <span className="text-sm font-medium text-purple-800">Wallet Used</span>
                       </div>
-                      <span className="text-lg font-bold text-green-800">
+                      <span className="text-lg font-bold text-purple-800">
                         -₹{order.walletDeduction}
                       </span>
                     </div>
@@ -566,7 +566,7 @@ const MyOrdersPage = () => {
 
               <div className="w-full bg-gray-200 rounded-full h-1.5">
                 <div 
-                  className="bg-green-600 h-1.5 rounded-full transition-all duration-300"
+                  className="bg-purple-600 h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${statusInfo.progress}%` }}
                 ></div>
               </div>
@@ -575,7 +575,7 @@ const MyOrdersPage = () => {
             <div className="p-4 border-b border-gray-100 space-y-4">
               <div>
                 <div className="flex items-center space-x-2 mb-2">
-                  <MapPinIcon className="w-4 h-4 text-green-700" />
+                  <MapPinIcon className="w-4 h-4 text-purple-700" />
                   <h4 className="font-medium text-gray-900 text-sm">Delivery Address</h4>
                 </div>
                 {order.shippingAddress ? (
@@ -599,7 +599,7 @@ const MyOrdersPage = () => {
 
               <div>
                 <div className="flex items-center space-x-2 mb-2">
-                  <CreditCardIcon className="w-4 h-4 text-green-700" />
+                  <CreditCardIcon className="w-4 h-4 text-purple-700" />
                   <h4 className="font-medium text-gray-900 text-sm">Payment</h4>
                 </div>
                 <div className="bg-gray-50 rounded p-3 text-xs border border-gray-200 space-y-2">
@@ -612,7 +612,7 @@ const MyOrdersPage = () => {
                   {order.walletDeduction > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Wallet Used</span>
-                      <span className="font-medium text-green-600">₹{order.walletDeduction}</span>
+                      <span className="font-medium text-purple-600">₹{order.walletDeduction}</span>
                     </div>
                   )}
                   {payableAmount > 0 && (
@@ -624,7 +624,7 @@ const MyOrdersPage = () => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Status</span>
                     <span className={`font-medium ${
-                      order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'
+                      order.paymentStatus === 'paid' ? 'text-purple-600' : 'text-yellow-600'
                     }`}>
                       {order.paymentStatus}
                     </span>
@@ -698,13 +698,13 @@ const MyOrdersPage = () => {
                     </div>
                   )}
                   {order.couponDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-purple-600">
                       <span>Coupon Discount</span>
                       <span>-₹{order.couponDiscount}</span>
                     </div>
                   )}
                   {order.scratchCouponDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-purple-600">
                       <span>Scratch Coupon Discount</span>
                       <span>-₹{order.scratchCouponDiscount}</span>
                     </div>
@@ -716,7 +716,7 @@ const MyOrdersPage = () => {
                     </div>
                   )}
                   {order.walletDeduction > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-purple-600">
                       <span>Wallet Deduction</span>
                       <span>-₹{order.walletDeduction}</span>
                     </div>
@@ -725,7 +725,7 @@ const MyOrdersPage = () => {
                     <span className="text-gray-900">
                       {payableAmount > 0 ? 'Payable Amount' : 'Total'}
                     </span>
-                    <span className={payableAmount > 0 ? 'text-orange-600' : 'text-green-700'}>
+                    <span className={payableAmount > 0 ? 'text-orange-600' : 'text-purple-700'}>
                       ₹{payableAmount > 0 ? payableAmount : order.finalAmount}
                     </span>
                   </div>
@@ -754,7 +754,7 @@ const MyOrdersPage = () => {
                             setCopied(true);
                             setTimeout(() => setCopied(false), 2000);
                           }}
-                          className="text-xs text-green-600 font-semibold hover:text-green-700 transition-colors"
+                          className="text-xs text-purple-600 font-semibold hover:text-purple-700 transition-colors"
                         >
                           {copied ? '✓ Copied!' : 'Copy'}
                         </button>
@@ -789,7 +789,7 @@ const MyOrdersPage = () => {
               <div className="flex space-x-2 mt-4">
                 <button
                   onClick={() => handleReorder(order)}
-                  className="flex-1 bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center text-sm"
+                  className="flex-1 bg-purple-600 text-white py-2.5 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center text-sm"
                 >
                   <ShoppingCartIcon className="w-4 h-4 mr-1.5" />
                   Reorder
@@ -798,14 +798,14 @@ const MyOrdersPage = () => {
                 {/* Invoice Download Button */}
                 <button
                   onClick={() => handleDownloadInvoice(order.orderId || order._id)}
-                  className="flex-1 border border-green-600 text-green-600 py-2.5 rounded-lg font-medium hover:bg-green-50 transition-colors flex items-center justify-center text-sm"
+                  className="flex-1 border border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium hover:bg-purple-50 transition-colors flex items-center justify-center text-sm"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1.5" />
                   Invoice
                 </button>
                 
                 {order.status === 'delivered' && (
-                  <button className="flex-1 border border-green-600 text-green-600 py-2.5 rounded-lg font-medium hover:bg-green-50 transition-colors flex items-center justify-center text-sm">
+                  <button className="flex-1 border border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium hover:bg-purple-50 transition-colors flex items-center justify-center text-sm">
                     <StarIcon className="w-4 h-4 mr-1.5" />
                     Review
                   </button>
@@ -824,8 +824,8 @@ const MyOrdersPage = () => {
       <div className="min-h-screen bg-[#f4f7f4] flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-100 border-t-green-600"></div>
-            <ShoppingBagIcon className="w-7 h-7 text-green-600 absolute inset-0 m-auto" />
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-100 border-t-purple-600"></div>
+            <ShoppingBagIcon className="w-7 h-7 text-purple-600 absolute inset-0 m-auto" />
           </div>
           <h2 className="text-lg font-semibold text-gray-900 mb-1">Loading Your Orders</h2>
           <p className="text-gray-500 text-sm">Fetching your order history...</p>
@@ -847,7 +847,7 @@ const MyOrdersPage = () => {
           <div className="space-y-3">
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+              className="w-full bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors"
             >
               Try Again
             </button>
@@ -868,8 +868,8 @@ const MyOrdersPage = () => {
   const getStatusPill = (status) => {
     switch (status.toLowerCase()) {
       case 'pending':    return { label: 'Order Placed', cls: 'bg-yellow-100 text-yellow-700' };
-      case 'confirmed':  return { label: 'Confirmed', cls: 'bg-green-100 text-green-700' };
-      case 'picked-up':  return { label: 'In Transit', cls: 'bg-green-100 text-green-700' };
+      case 'confirmed':  return { label: 'Confirmed', cls: 'bg-purple-100 text-purple-700' };
+      case 'picked-up':  return { label: 'In Transit', cls: 'bg-purple-100 text-purple-700' };
       case 'delivered':  return { label: 'Delivered', cls: 'bg-gray-100 text-gray-600' };
       case 'cancelled':  return { label: 'Cancelled', cls: 'bg-red-100 text-red-600' };
       default:           return { label: status, cls: 'bg-gray-100 text-gray-600' };
@@ -893,19 +893,19 @@ const MyOrdersPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <p className="text-green-300 text-xs font-semibold uppercase tracking-widest mb-1">Dashboard</p>
+              <p className="text-purple-300 text-xs font-semibold uppercase tracking-widest mb-1">Dashboard</p>
               <h1 className="text-2xl font-bold text-white">My Orders</h1>
-              <p className="text-green-200/70 mt-0.5 text-sm">Track and manage your orders</p>
+              <p className="text-purple-200/70 mt-0.5 text-sm">Track and manage your orders</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative">
-                <MagnifyingGlassIcon className="w-4 h-4 text-green-300 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <MagnifyingGlassIcon className="w-4 h-4 text-purple-300 absolute left-3 top-1/2 transform -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search orders..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-green-200/60 focus:outline-none focus:ring-2 focus:ring-white/30 w-full text-sm"
+                  className="pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-purple-200/60 focus:outline-none focus:ring-2 focus:ring-white/30 w-full text-sm"
                 />
               </div>
               <select
@@ -940,14 +940,14 @@ const MyOrdersPage = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`whitespace-nowrap px-4 py-2.5 font-medium text-sm rounded-xl transition-all flex items-center ${
                   activeTab === tab.id
-                    ? 'bg-green-600 text-white shadow-sm shadow-green-200'
+                    ? 'bg-purple-600 text-white shadow-sm shadow-purple-200'
                     : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 {tab.label}
                 {tab.count > 0 && (
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                    activeTab === tab.id ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500'
+                    activeTab === tab.id ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-500'
                   }`}>
                     {tab.count}
                   </span>
@@ -966,8 +966,8 @@ const MyOrdersPage = () => {
           <div className="flex-1 min-w-0">
             {sortedOrders.length === 0 ? (
               <div className="bg-white rounded-2xl shadow-sm p-10 text-center border border-gray-100">
-                <div className="w-20 h-20 mx-auto bg-green-50 rounded-full flex items-center justify-center mb-4">
-                  <ShoppingBagIcon className="w-10 h-10 text-green-400" />
+                <div className="w-20 h-20 mx-auto bg-purple-50 rounded-full flex items-center justify-center mb-4">
+                  <ShoppingBagIcon className="w-10 h-10 text-purple-400" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 mb-2">
                   {searchTerm ? 'No orders found' : activeTab === 'all' ? 'No orders yet' : `No ${activeTab} orders`}
@@ -981,7 +981,7 @@ const MyOrdersPage = () => {
                 </p>
                 <button
                   onClick={() => router.push('/')}
-                  className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors inline-flex items-center shadow-sm shadow-green-200"
+                  className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors inline-flex items-center shadow-sm shadow-purple-200"
                 >
                   <ShoppingCartIcon className="w-5 h-5 mr-2" />
                   Start Shopping
@@ -1153,7 +1153,7 @@ const MyOrdersPage = () => {
                 <div className="flex items-center justify-between mb-5">
                   <div>
                     <h3 className="font-bold text-base">Active Track</h3>
-                    <p className="text-green-400 text-xs mt-0.5 truncate">Shipment {activeOrder.orderId}</p>
+                    <p className="text-purple-400 text-xs mt-0.5 truncate">Shipment {activeOrder.orderId}</p>
                   </div>
                   <div className="bg-white/10 p-2 rounded-xl">
                     <TruckIcon className="w-5 h-5 text-white" />
@@ -1165,7 +1165,7 @@ const MyOrdersPage = () => {
                   <div className="text-3xl font-bold leading-none">
                     {getStatusInfo(activeOrder.status).label}
                   </div>
-                  <p className="text-green-400 text-[11px] uppercase tracking-widest mt-1.5">
+                  <p className="text-purple-400 text-[11px] uppercase tracking-widest mt-1.5">
                     {activeOrder.shippingAddress?.city
                       ? `DELIVERING TO ${activeOrder.shippingAddress.city.toUpperCase()}`
                       : 'EN ROUTE TO YOU'}
@@ -1176,7 +1176,7 @@ const MyOrdersPage = () => {
                 <div className="mb-5">
                   <div className="relative h-1.5 bg-white/20 rounded-full mb-2">
                     <div
-                      className="absolute left-0 top-0 h-1.5 bg-green-400 rounded-full transition-all duration-500"
+                      className="absolute left-0 top-0 h-1.5 bg-purple-400 rounded-full transition-all duration-500"
                       style={{ width: `${getTrackProgress(activeOrder.status)}%` }}
                     />
                     {/* Dot */}
@@ -1185,7 +1185,7 @@ const MyOrdersPage = () => {
                       style={{ left: `calc(${getTrackProgress(activeOrder.status)}% - 6px)` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[10px] text-green-400/70 uppercase tracking-wider">
+                  <div className="flex justify-between text-[10px] text-purple-400/70 uppercase tracking-wider">
                     <span>Placed</span>
                     <span>In Transit</span>
                     <span>Delivered</span>
@@ -1195,16 +1195,16 @@ const MyOrdersPage = () => {
                 {/* Order summary */}
                 <div className="bg-white/10 rounded-xl p-3 mb-4 text-xs space-y-1.5">
                   <div className="flex justify-between">
-                    <span className="text-green-300/70">Items</span>
+                    <span className="text-purple-300/70">Items</span>
                     <span>{activeOrder.items.length} item{activeOrder.items.length > 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-300/70">Total</span>
+                    <span className="text-purple-300/70">Total</span>
                     <span>₹{activeOrder.total}</span>
                   </div>
                   {activeOrder.secretCode && (
                     <div className="flex justify-between">
-                      <span className="text-green-300/70">Secret Code</span>
+                      <span className="text-purple-300/70">Secret Code</span>
                       <span className="font-bold tracking-widest">{activeOrder.secretCode}</span>
                     </div>
                   )}

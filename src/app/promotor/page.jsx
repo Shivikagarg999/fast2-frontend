@@ -65,10 +65,10 @@ export default function PromoterPartnerPage() {
     <div className="min-h-screen bg-white">
 
       {/* Enhanced Hero Section */}
-      <section className="relative bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 py-24 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-purple-500 via-purple-600 to-emerald-700 py-24 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 left-0 w-72 h-72 bg-green-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-0 left-0 w-72 h-72 bg-purple-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full translate-x-1/3 translate-y-1/3"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,7 +91,7 @@ export default function PromoterPartnerPage() {
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
               Become a <span className="bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">Growth Partner</span>
             </h1>
-            <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join our promoter network and earn lucrative commissions while helping businesses grow.
             </p>
             
@@ -99,7 +99,7 @@ export default function PromoterPartnerPage() {
               <div className="space-y-6">
                 <button
                   onClick={() => setShowRegistration(true)}
-                  className="group bg-white text-green-600 px-14 py-5 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform"
+                  className="group bg-white text-purple-600 px-14 py-5 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform"
                 >
                   <span className="flex items-center justify-center">
                     Apply Now
@@ -108,7 +108,7 @@ export default function PromoterPartnerPage() {
                     </svg>
                   </span>
                 </button>
-                <p className="text-green-200 text-sm font-medium">
+                <p className="text-purple-200 text-sm font-medium">
                   Complete your application in just 2 minutes • High commission structure
                 </p>
               </div>
@@ -140,7 +140,7 @@ export default function PromoterPartnerPage() {
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
                         placeholder="Enter your full name"
                         required
                       />
@@ -153,7 +153,7 @@ export default function PromoterPartnerPage() {
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleChange}
-                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
                         placeholder="+91 98765 43210"
                         required
                       />
@@ -167,7 +167,7 @@ export default function PromoterPartnerPage() {
                           name="city"
                           value={formData.city}
                           onChange={handleChange}
-                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
                           placeholder="Enter your city"
                           required
                         />
@@ -179,7 +179,7 @@ export default function PromoterPartnerPage() {
                           name="state"
                           value={formData.state}
                           onChange={handleChange}
-                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800"
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800"
                           required
                         >
                           <option value="">Select your state</option>
@@ -207,7 +207,7 @@ export default function PromoterPartnerPage() {
                           name="experience"
                           value={formData.experience}
                           onChange={handleChange}
-                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800"
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800"
                           required
                         >
                           <option value="">Select experience</option>
@@ -225,7 +225,7 @@ export default function PromoterPartnerPage() {
                           name="businessType"
                           value={formData.businessType}
                           onChange={handleChange}
-                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800"
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800"
                           required
                         >
                           <option value="">Select business type</option>
@@ -241,7 +241,7 @@ export default function PromoterPartnerPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold py-4 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center">

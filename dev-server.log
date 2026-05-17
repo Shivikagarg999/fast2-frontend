@@ -1,0 +1,15 @@
+
+> fast2frontend@0.1.0 dev
+> next dev -p 3000
+
+   ▲ Next.js 15.4.8
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.6:3000
+   - Environments: .env.development.local, .env.local
+   - Experiments (use with caution):
+     · esmExternals: "loose"
+
+ ✓ Starting...
+ ⚠ The "experimental.esmExternals" option has been modified. experimental.esmExternals is not recommended to be modified as it may disrupt module resolution. It should be removed from your next.config.mjs.
+ ✓ Ready in 5s
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: Unable to snapshot resolve dependencies

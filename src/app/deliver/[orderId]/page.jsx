@@ -15,7 +15,7 @@ const STATUS_LABEL = {
 const STATUS_COLOR = {
   accepted: 'bg-blue-100 text-blue-700',
   'picked-up': 'bg-orange-100 text-orange-700',
-  delivered: 'bg-green-100 text-green-700',
+  delivered: 'bg-purple-100 text-purple-700',
 };
 
 export default function TrackOrderPage() {
@@ -179,7 +179,7 @@ export default function TrackOrderPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-3">
-        <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
         <p className="text-gray-500 text-sm">Loading tracking...</p>
       </div>
     );
@@ -193,7 +193,7 @@ export default function TrackOrderPage() {
         <p className="text-gray-500 text-sm">{error}</p>
         <button
           onClick={() => router.push('/pages/orders')}
-          className="mt-2 px-5 py-2.5 bg-green-500 text-white rounded-xl font-semibold text-sm"
+          className="mt-2 px-5 py-2.5 bg-purple-500 text-white rounded-xl font-semibold text-sm"
         >
           View Orders
         </button>
@@ -224,7 +224,7 @@ export default function TrackOrderPage() {
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          <span className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+          <span className={`w-2 h-2 rounded-full ${connected ? 'bg-purple-500' : 'bg-gray-300'}`} />
           <span className="text-xs text-gray-400">{connected ? 'Live' : 'Connecting…'}</span>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function TrackOrderPage() {
       <div className="bg-white border-t shadow-lg px-4 py-4 z-10">
         {tracking?.driver && (
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg flex-shrink-0">
+            <div className="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg flex-shrink-0">
               {tracking.driver.name?.[0]?.toUpperCase() || 'D'}
             </div>
             <div className="flex-1 min-w-0">

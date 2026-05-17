@@ -339,7 +339,7 @@ export default function LoginPage() {
               <div className="mb-5 grid grid-cols-2 overflow-hidden rounded-lg border border-gray-100 bg-gray-50 sm:mb-6">
                 <button
                   type="button"
-                  className={`flex min-w-0 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-semibold transition-all sm:gap-2 sm:px-4 sm:text-sm ${authMethod === 'phone' ? 'border-green-500 bg-white text-green-600 shadow-sm' : 'border-transparent text-gray-500 hover:bg-white hover:text-gray-800'}`}
+                  className={`flex min-w-0 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-semibold transition-all sm:gap-2 sm:px-4 sm:text-sm ${authMethod === 'phone' ? 'border-purple-500 bg-white text-purple-600 shadow-sm' : 'border-transparent text-gray-500 hover:bg-white hover:text-gray-800'}`}
                   onClick={switchToPhone}
                 >
                   <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -351,7 +351,7 @@ export default function LoginPage() {
                 </button>
                 <button
                   type="button"
-                  className={`flex min-w-0 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-semibold transition-all sm:gap-2 sm:px-4 sm:text-sm ${authMethod === 'email' ? 'border-green-500 bg-white text-green-600 shadow-sm' : 'border-transparent text-gray-500 hover:bg-white hover:text-gray-800'}`}
+                  className={`flex min-w-0 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-semibold transition-all sm:gap-2 sm:px-4 sm:text-sm ${authMethod === 'email' ? 'border-purple-500 bg-white text-purple-600 shadow-sm' : 'border-transparent text-gray-500 hover:bg-white hover:text-gray-800'}`}
                   onClick={switchToLogin}
                 >
                   <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -367,14 +367,14 @@ export default function LoginPage() {
               <div className="flex justify-center mb-6 bg-gray-100 rounded-md p-1">
                 <button
                   type="button"
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${!isLogin ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${!isLogin ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
                   onClick={switchToRegister}
                 >
                   Register
                 </button>
                 <button
                   type="button"
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${isLogin ? 'bg-white text-green-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${isLogin ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
                   onClick={switchToLogin}
                 >
                   Login
@@ -398,7 +398,7 @@ export default function LoginPage() {
                     name="forgotEmail"
                     type="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-black"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -412,8 +412,8 @@ export default function LoginPage() {
                 )}
                 
                 {success && (
-                  <div className="mb-4 rounded-md bg-green-50 p-4">
-                    <div className="text-sm text-green-700">{success}</div>
+                  <div className="mb-4 rounded-md bg-purple-50 p-4">
+                    <div className="text-sm text-purple-700">{success}</div>
                   </div>
                 )}
 
@@ -422,7 +422,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={handleForgotPassword}
                     disabled={forgotLoading || !email}
-                    className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                    className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                   >
                     {forgotLoading ? (
                       <>
@@ -438,7 +438,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={toggleForgotPassword}
-                    className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
+                    className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all"
                   >
                     Cancel
                   </button>
@@ -448,7 +448,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={switchToLogin}
-                    className="text-sm text-green-600 hover:text-green-800 font-medium"
+                    className="text-sm text-purple-600 hover:text-purple-800 font-medium"
                   >
                     ← Back to Login
                   </button>
@@ -483,7 +483,7 @@ export default function LoginPage() {
                       maxLength="10"
                       required
                       disabled={otpSent}
-                      className="min-w-0 w-full rounded-r-lg border border-gray-200 px-3 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 disabled:bg-gray-50 sm:px-4"
+                      className="min-w-0 w-full rounded-r-lg border border-gray-200 px-3 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-100 disabled:bg-gray-50 sm:px-4"
                       placeholder="9876543210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
@@ -504,7 +504,7 @@ export default function LoginPage() {
                         inputMode="numeric"
                         maxLength="6"
                         required
-                        className="w-full rounded-lg border border-gray-200 px-3 py-3 text-center text-base font-semibold tracking-[0.22em] text-gray-900 outline-none transition placeholder:tracking-normal focus:border-green-500 focus:ring-2 focus:ring-green-100 sm:px-4 sm:text-lg sm:tracking-[0.4em]"
+                        className="w-full rounded-lg border border-gray-200 px-3 py-3 text-center text-base font-semibold tracking-[0.22em] text-gray-900 outline-none transition placeholder:tracking-normal focus:border-purple-500 focus:ring-2 focus:ring-purple-100 sm:px-4 sm:text-lg sm:tracking-[0.4em]"
                         placeholder="6-digit OTP"
                         value={phoneOtp}
                         onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -520,15 +520,15 @@ export default function LoginPage() {
                 )}
                 
                 {success && (
-                  <div className="mb-4 rounded-md bg-green-50 p-4">
-                    <div className="text-sm text-green-700">{success}</div>
+                  <div className="mb-4 rounded-md bg-purple-50 p-4">
+                    <div className="text-sm text-purple-700">{success}</div>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={otpLoading || !isFirebaseConfigured || !phone || (otpSent && phoneOtp.length !== 6)}
-                  className="flex w-full items-center justify-center rounded-lg border border-transparent bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="flex w-full items-center justify-center rounded-lg border border-transparent bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   {otpLoading ? (
                     <>
@@ -550,7 +550,7 @@ export default function LoginPage() {
 
                 {!otpSent && (
                   <p className="mt-4 flex items-center justify-center gap-2 text-center text-[11px] font-medium leading-5 text-gray-500 sm:text-xs">
-                    <svg className="h-4 w-4 shrink-0 text-green-500" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <svg className="h-4 w-4 shrink-0 text-purple-500" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path d="M12 3.75 18.25 6v5.25c0 4.15-2.65 7.85-6.25 9-3.6-1.15-6.25-4.85-6.25-9V6L12 3.75Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
                       <path d="m9.5 12 1.75 1.75L15 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -570,7 +570,7 @@ export default function LoginPage() {
                         setSuccess('');
                         resetRecaptcha();
                       }}
-                      className="text-sm font-medium text-green-600 hover:text-green-800"
+                      className="text-sm font-medium text-purple-600 hover:text-purple-800"
                     >
                       Change number
                     </button>
@@ -589,7 +589,7 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-black"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -605,7 +605,7 @@ export default function LoginPage() {
                     name="password"
                     type="password"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-black"
                     placeholder={isLogin ? "Enter your password" : "Create a password (min 6 characters)"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -628,7 +628,7 @@ export default function LoginPage() {
                         name="confirmPassword"
                         type="password"
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-black"
                         placeholder="Confirm your password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -643,13 +643,13 @@ export default function LoginPage() {
                         id="referralCode"
                         name="referralCode"
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-black"
                         placeholder="Enter referral code if you have one"
                         value={referralCode}
                         onChange={(e) => setReferralCode(e.target.value)}
                       />
                       {referralCode && (
-                        <p className="mt-1 text-xs text-green-600">
+                        <p className="mt-1 text-xs text-purple-600">
                           You'll receive bonus rewards for using a referral code!
                         </p>
                       )}
@@ -662,7 +662,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={toggleForgotPassword}
-                      className="text-sm text-green-600 hover:text-green-800 font-medium"
+                      className="text-sm text-purple-600 hover:text-purple-800 font-medium"
                     >
                       Forgot Password?
                     </button>
@@ -676,15 +676,15 @@ export default function LoginPage() {
                 )}
                 
                 {success && (
-                  <div className="mb-4 rounded-md bg-green-50 p-4">
-                    <div className="text-sm text-green-700">{success}</div>
+                  <div className="mb-4 rounded-md bg-purple-50 p-4">
+                    <div className="text-sm text-purple-700">{success}</div>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading || !email || !password || (!isLogin && password !== confirmPassword)}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                 >
                   {loading ? (
                     <>
@@ -706,7 +706,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={switchToLogin}
-                    className="text-green-600 hover:text-green-800 font-medium"
+                    className="text-purple-600 hover:text-purple-800 font-medium"
                   >
                     Login here
                   </button>
@@ -721,7 +721,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={switchToRegister}
-                    className="text-green-600 hover:text-green-800 font-medium"
+                    className="text-purple-600 hover:text-purple-800 font-medium"
                   >
                     Register here
                   </button>
@@ -732,11 +732,11 @@ export default function LoginPage() {
             {!showForgotPassword && (
               <p className="mt-6 text-center text-xs text-gray-500">
                 By continuing, you agree to our{' '}
-                <Link href="/terms" className="text-green-600 hover:underline">
+                <Link href="/terms" className="text-purple-600 hover:underline">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-green-600 hover:underline">
+                <Link href="/privacy" className="text-purple-600 hover:underline">
                   Privacy Policy
                 </Link>
               </p>
@@ -751,19 +751,19 @@ export default function LoginPage() {
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Why Register?</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-purple-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-sm text-gray-600">Get ₹20 welcome bonus in your wallet</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-purple-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-sm text-gray-600">Earn ₹200 for each successful referral</span>
                 </li>
                 <li className="flex items-start">
-                  <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-purple-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-sm text-gray-600">Access exclusive features and rewards</span>

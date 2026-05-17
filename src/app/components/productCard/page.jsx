@@ -13,13 +13,29 @@ const ProductCard = ({
   onAddToCart = () => { },
   onUpdateQuantity = () => { },
   isAddingToCart = false,
-  isLoggedIn = false,
-  discountInfo = null
+  isLoggedIn = false
 }) => {
+  const getNumber = (value, fallback = 0) => {
+    const numericValue = Number(value);
+    return Number.isFinite(numericValue) ? numericValue : fallback;
+  };
+
+  const originalPrice = getNumber(product?.price);
+  const effectivePrice = getNumber(product?.effectivePrice, originalPrice);
+  const discountPercent = getNumber(product?.campaignDiscountPercentage);
+  const hasDiscount = discountPercent > 0;
+  const displayPrice = hasDiscount ? effectivePrice : originalPrice;
+  const savings = Math.max(originalPrice - effectivePrice, 0);
+
+  const formatDisplayPrice = (price) => {
+    const roundedPrice = Math.round(getNumber(price));
+    return formatPrice ? formatPrice(roundedPrice) : `\u20B9${roundedPrice}`;
+  };
+
   const handleAdd = async (e) => {
     e.stopPropagation();
     if (product?._id) {
-      await onAddToCart(product._id, 1);
+      await onAddToCart(product._id, 1, effectivePrice, product);
     }
   };
 
@@ -63,65 +79,17 @@ const ProductCard = ({
 
   const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
 
-  const calculateDiscountInfo = () => {
-    // Check if product has an explicit oldPrice (higher than current price)
-    if (product.oldPrice && product.oldPrice > product.price) {
-      const savings = product.oldPrice - product.price;
-      const discountPercent = Math.round((savings / product.oldPrice) * 100);
-      return {
-        hasDiscount: true,
-        discountPercent: discountPercent,
-        originalPrice: product.oldPrice,
-        discountedPrice: product.price,
-        type: 'product',
-        discountName: null,
-        savings: savings
-      };
-    }
-    
-    // Check if there's a category-based discount
-    if (discountInfo && discountInfo.discountPercentage > 0) {
-      const discountedPrice = product.price - (product.price * discountInfo.discountPercentage / 100);
-      return {
-        hasDiscount: true,
-        discountPercent: discountInfo.discountPercentage,
-        originalPrice: product.price,
-        discountedPrice: discountedPrice,
-        type: 'category',
-        discountName: discountInfo.name,
-        savings: product.price - discountedPrice
-      };
-    }
-
-    return {
-      hasDiscount: false,
-      discountPercent: 0,
-      originalPrice: product.price,
-      discountedPrice: product.price,
-      type: null,
-      savings: 0
-    };
-  };
-
-  const discount = calculateDiscountInfo();
-  const displayPrice = discount.hasDiscount ? discount.discountedPrice : product.price;
-
   return (
     <div
       className="bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md flex flex-col h-full cursor-pointer border border-gray-100 hover:border-gray-200 relative"
       onClick={handleCardClick}
     >
-      {/* Discount Badge - ONLY show if there's an APPLIED discount */}
-      {discount.hasDiscount && (
+      {/* Discount Badge */}
+      {hasDiscount && (
         <div className="absolute top-2 left-2 z-10">
           <div className="px-2 py-1 rounded-full text-xs font-bold text-white shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
-            {discount.discountPercent}% OFF
+            {Math.round(discountPercent)}% OFF
           </div>
-          {discount.discountName && (
-            <div className="mt-1 px-2 py-1 bg-green-700 text-white text-xs rounded-full">
-              {discount.discountName}
-            </div>
-          )}
         </div>
       )}
 
@@ -160,7 +128,7 @@ const ProductCard = ({
                   Delivery: ₹{product.delivery.deliveryCharges}
                 </span>
               ) : (
-                <span className="text-xs text-green-600 font-medium">Free Delivery</span>
+                <span className="text-xs text-purple-600 font-medium">Free Delivery</span>
               )}
             </div>
           </div>
@@ -183,22 +151,22 @@ const ProductCard = ({
           <div className="flex items-center space-x-2 mb-1">
             {/* DISCOUNTED PRICE as main price */}
             <span className="text-sm font-bold text-gray-900">
-              ₹{Math.round(displayPrice)}
+              {formatDisplayPrice(displayPrice)}
             </span>
 
             {/* Show ORIGINAL price crossed out if there's discount */}
-            {discount.hasDiscount && (
+            {hasDiscount && (
               <span className="text-xs text-gray-400 line-through">
-                ₹{Math.round(discount.originalPrice)}
+                {formatDisplayPrice(originalPrice)}
               </span>
             )}
           </div>
 
           {/* Show savings if there's discount */}
-          {discount.hasDiscount && (
+          {hasDiscount && savings > 0 && (
             <div className="flex items-center space-x-1">
-              <span className="text-xs text-green-600 font-semibold">
-                Save ₹{Math.round(discount.savings)}
+              <span className="text-xs text-purple-600 font-semibold">
+                Save {formatDisplayPrice(savings)}
               </span>
             </div>
           )}
@@ -215,14 +183,14 @@ const ProductCard = ({
             </button>
           ) : cartQuantity === 0 ? (
             <button
-              className={`w-full bg-green-50 border border-green-600 text-green-700 hover:bg-green-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-full bg-purple-50 border border-purple-600 text-purple-700 hover:bg-purple-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
             >
               {isAddingToCart ? (
                 <span className="flex items-center justify-center">
-                  <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin mr-2"></span>
+                  <span className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mr-2"></span>
                   ADDING
                 </span>
               ) : (
@@ -230,9 +198,9 @@ const ProductCard = ({
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-green-600 text-white rounded-lg shadow-md h-9">
+            <div className="flex items-center justify-between bg-purple-600 text-white rounded-lg shadow-md h-9">
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-l-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-purple-700 rounded-l-lg transition-colors"
                 onClick={handleRemove}
               >
                 <MinusIcon className="w-4 h-4 font-bold" />
@@ -243,7 +211,7 @@ const ProductCard = ({
               </span>
 
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-r-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-purple-700 rounded-r-lg transition-colors"
                 onClick={handleIncrement}
               >
                 <PlusIcon className="w-4 h-4 font-bold" />

@@ -54,7 +54,7 @@ const MyCouponsPage = () => {
     return (
       <div className="min-h-screen bg-[#f4f7f4] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-100 border-t-green-600 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-100 border-t-purple-600 mx-auto mb-4" />
           <p className="text-gray-500 text-sm">Loading your coupons...</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ const MyCouponsPage = () => {
           <p className="text-gray-500 text-sm mb-5">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-green-700 transition-colors"
+            className="bg-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-purple-700 transition-colors"
           >
             Try Again
           </button>
@@ -92,14 +92,14 @@ const MyCouponsPage = () => {
         <div className="max-w-2xl mx-auto px-4 py-7">
           <button
             onClick={() => router.back()}
-            className="flex items-center text-green-300 text-sm mb-4 hover:text-white transition-colors"
+            className="flex items-center text-purple-300 text-sm mb-4 hover:text-white transition-colors"
           >
             <ArrowLeftIcon className="w-4 h-4 mr-1" />
             Back
           </button>
-          <p className="text-green-300 text-xs font-semibold uppercase tracking-widest mb-1">Rewards</p>
+          <p className="text-purple-300 text-xs font-semibold uppercase tracking-widest mb-1">Rewards</p>
           <h1 className="text-2xl font-bold text-white">My Scratch Coupons</h1>
-          <p className="text-green-200/70 mt-0.5 text-sm">
+          <p className="text-purple-200/70 mt-0.5 text-sm">
             {coupons.length === 0
               ? 'Place an order above ₹200 to earn scratch cards'
               : `${available.length} available · ${unscratched.length} unscratched · ${redeemed.length} used`}
@@ -120,7 +120,7 @@ const MyCouponsPage = () => {
             </p>
             <button
               onClick={() => router.push('/')}
-              className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors inline-flex items-center text-sm shadow-sm shadow-green-200"
+              className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors inline-flex items-center text-sm shadow-sm shadow-purple-200"
             >
               <ShoppingBagIcon className="w-4 h-4 mr-2" />
               Start Shopping
@@ -190,7 +190,7 @@ const MyCouponsPage = () => {
 
 const CouponCard = ({ coupon, onCopy, copied, onUseNow }) => {
   const statusConfig = {
-    scratched: { label: 'Available', cls: 'bg-green-100 text-green-700' },
+    scratched: { label: 'Available', cls: 'bg-purple-100 text-purple-700' },
     redeemed: { label: 'Used', cls: 'bg-gray-100 text-gray-500' },
     unscratched: { label: 'Unscratched', cls: 'bg-yellow-100 text-yellow-700' },
   }[coupon.status] || { label: coupon.status, cls: 'bg-gray-100 text-gray-500' };
@@ -268,7 +268,7 @@ const CouponCard = ({ coupon, onCopy, copied, onUseNow }) => {
                   <>
                     <button
                       onClick={() => onCopy(coupon.couponCode)}
-                      className="flex items-center gap-1 text-xs font-semibold text-green-600 hover:text-green-700 transition-colors"
+                      className="flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors"
                     >
                       {copied ? (
                         <>
@@ -285,7 +285,7 @@ const CouponCard = ({ coupon, onCopy, copied, onUseNow }) => {
                     {onUseNow && (
                       <button
                         onClick={onUseNow}
-                        className="text-xs font-semibold text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg transition-colors"
+                        className="text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded-lg transition-colors"
                       >
                         Use Now
                       </button>

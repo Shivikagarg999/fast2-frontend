@@ -77,9 +77,9 @@ const Banner = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="relative bg-white w-full px-4 py-4">
-        <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-gray-200 animate-pulse">
-          <div className="flex items-center h-full px-6 md:px-8 lg:px-12">
+      <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
+        <div className="relative mx-auto h-44 w-full max-w-7xl overflow-hidden rounded-lg bg-gray-200 shadow-sm animate-pulse sm:h-52 md:h-60 lg:h-72">
+          <div className="flex h-full items-center px-5 md:px-8 lg:px-10">
             <div className="flex-1 space-y-4">
               <div className="h-8 bg-gray-300 rounded w-3/4"></div>
               <div className="h-6 bg-gray-300 rounded w-1/2"></div>
@@ -90,15 +90,15 @@ const Banner = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="relative bg-white w-full px-4 py-4">
-        <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-red-50 border border-red-200">
+      <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
+        <div className="relative mx-auto h-44 w-full max-w-7xl overflow-hidden rounded-lg border border-red-200 bg-red-50 shadow-sm sm:h-52 md:h-60 lg:h-72">
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <p className="text-red-600 text-lg font-semibold">Failed to load banners</p>
@@ -112,26 +112,26 @@ const Banner = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   // No banners state
   if (bannerData.length === 0) {
     return (
-      <div className="relative bg-white w-full px-4 py-4">
-        <div className="relative w-full h-44 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-gray-100 border border-gray-200">
+      <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
+        <div className="relative mx-auto h-44 w-full max-w-7xl overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm sm:h-52 md:h-60 lg:h-72">
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500 text-lg">No banners available</p>
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="relative bg-white w-full mt-12 px-4 py-4">
-      <div className="relative w-full h-64 sm:h-52 md:h-60 lg:h-72 overflow-hidden rounded-2xl bg-white">
+    <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
+      <div className="relative mx-auto h-[190px] w-full max-w-7xl overflow-hidden rounded-lg bg-[#dfe7ee] shadow-sm sm:h-[230px] md:h-[270px] lg:h-[310px]">
         {bannerData.map((slide, index) => (
           <div
             key={slide._id || slide.id}
@@ -144,36 +144,36 @@ const Banner = () => {
               backgroundColor: !slide.gradient ? (slide.accentColor || '#f3f4f6') : undefined
             }}
           >
-            <div className="flex items-center h-full px-6 md:px-8 lg:px-12 relative overflow-hidden">
+            <div className="relative flex h-full items-center overflow-hidden px-5 sm:px-7 md:px-9 lg:px-12">
               {/* Content Section */}
-              <div className="flex-1 max-w-[60%] z-20 space-y-2 md:space-y-3">
+              <div className="z-20 w-[54%] max-w-xl space-y-2 md:space-y-3">
                 <div className="space-y-1">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-black leading-tight">
+                  <h1 className="text-lg font-semibold leading-tight text-gray-950 sm:text-2xl md:text-3xl lg:text-4xl">
                     {slide.title}
                   </h1>
                   <h2
-                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-black leading-tight"
+                    className="text-base font-bold leading-tight text-gray-950 sm:text-xl md:text-2xl lg:text-3xl"
                   >
                     {slide.subtitle}
                   </h2>
                 </div>
-                <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed max-w-md">
+                <p className="max-w-md text-[11px] leading-relaxed text-gray-700 sm:text-sm md:text-base">
                   {slide.description}
                 </p>
                 {/* Button removed as requested */}
               </div>
 
               {/* Image Section */}
-              <div className="flex-1 max-w-[80%] h-full relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full h-[80%] max-w-md">
+              <div className="absolute inset-y-0 right-0 w-[52%]">
+                <div className="absolute inset-0 flex items-center justify-end pr-3 sm:pr-5 md:pr-8">
+                  <div className="relative h-[88%] w-full max-w-xl">
                     <Image
                       src={getSafeImageUrl(slide.image)}
                       alt={slide.title || 'Banner image'}
                       fill
-                      className="object-contain drop-shadow-2xl"
+                      className="object-contain object-right drop-shadow-xl"
                       priority={index === 0}
-                      sizes="(max-width: 868px) 40vw, (max-width: 1300px) 30vw, 25vw"
+                      sizes="(max-width: 768px) 52vw, (max-width: 1300px) 44vw, 600px"
                       onError={(e) => {
                         if (slide.fallbackImage) {
                           e.target.src = slide.fallbackImage;
@@ -182,10 +182,6 @@ const Banner = () => {
                     />
                   </div>
                 </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-4 right-4 w-20 h-20 bg-white/20 rounded-full blur-xl"></div>
-                <div className="absolute bottom-6 right-8 w-16 h-16 bg-white/15 rounded-full blur-lg"></div>
               </div>
             </div>
           </div>
@@ -235,7 +231,7 @@ const Banner = () => {
         )}
       </div>
 
-    </div>
+    </section>
   );
 };
 

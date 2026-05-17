@@ -133,7 +133,7 @@ function ShopsContent() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-green-600 via-purple-600 to-pink-500 text-white">
+            <div className="bg-gradient-to-br from-purple-600 via-purple-600 to-pink-500 text-white">
                 <div className="max-w-7xl mx-auto px-4 py-10 md:py-16">
                     <div className="text-center">
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
@@ -173,7 +173,7 @@ function ShopsContent() {
                                 )}
                                 <button
                                     type="submit"
-                                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3.5 font-semibold text-sm transition-colors"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3.5 font-semibold text-sm transition-colors"
                                 >
                                     Search
                                 </button>
@@ -192,7 +192,7 @@ function ShopsContent() {
                             <select
                                 value={sortBy}
                                 onChange={(e) => handleSort(e.target.value)}
-                                className="appearance-none bg-white border border-gray-200 rounded-full px-4 py-2 pr-8 text-sm text-gray-700 cursor-pointer hover:border-green-300 focus:outline-none focus:border-green-400"
+                                className="appearance-none bg-white border border-gray-200 rounded-full px-4 py-2 pr-8 text-sm text-gray-700 cursor-pointer hover:border-purple-300 focus:outline-none focus:border-purple-400"
                             >
                                 <option value="rating">Top Rated</option>
                                 <option value="orders">Most Orders</option>
@@ -209,7 +209,7 @@ function ShopsContent() {
                                     key={r}
                                     onClick={() => setMinRating(minRating === r.toString() ? '' : r.toString())}
                                     className={`flex items-center gap-1 px-3 py-2 rounded-full text-xs font-medium border transition-colors ${minRating === r.toString()
-                                        ? 'bg-green-50 border-green-300 text-green-700'
+                                        ? 'bg-purple-50 border-purple-300 text-purple-700'
                                         : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
                                         }`}
                                 >
@@ -223,7 +223,7 @@ function ShopsContent() {
                         <button
                             onClick={() => setVerified(verified === 'true' ? '' : 'true')}
                             className={`px-3 py-2 rounded-full text-xs font-medium border transition-colors ${verified === 'true'
-                                ? 'bg-green-50 border-green-300 text-green-700'
+                                ? 'bg-purple-50 border-purple-300 text-purple-700'
                                 : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
                                 }`}
                         >
@@ -237,7 +237,7 @@ function ShopsContent() {
                                 placeholder="Filter by city..."
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
-                                className="bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-700 w-36 focus:outline-none focus:border-green-400 placeholder:text-gray-400"
+                                className="bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-700 w-36 focus:outline-none focus:border-purple-400 placeholder:text-gray-400"
                             />
                         </div>
 
@@ -248,7 +248,7 @@ function ShopsContent() {
                                 placeholder="Pincode..."
                                 value={pincode}
                                 onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                className="bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-700 w-28 focus:outline-none focus:border-green-400 placeholder:text-gray-400"
+                                className="bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-700 w-28 focus:outline-none focus:border-purple-400 placeholder:text-gray-400"
                             />
                         </div>
                     </div>
@@ -257,7 +257,7 @@ function ShopsContent() {
                     {hasActiveFilters && (
                         <button
                             onClick={clearFilters}
-                            className="text-sm text-green-600 hover:text-green-800 font-medium flex items-center gap-1"
+                            className="text-sm text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1"
                         >
                             <XMarkIcon className="w-4 h-4" />
                             Clear all
@@ -307,7 +307,7 @@ function ShopsContent() {
                         </div>
                         <button
                             onClick={clearFilters}
-                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-medium transition-colors"
+                            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full font-medium transition-colors"
                         >
                             Clear Filters
                         </button>
@@ -354,7 +354,7 @@ export default function ShopsPage() {
         <Suspense
             fallback={
                 <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600" />
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
                 </div>
             }
         >
