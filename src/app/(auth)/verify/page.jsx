@@ -42,7 +42,6 @@ export default function VerifyPage() {
     newOtp[index] = element.value;
     setOtp(newOtp);
     
-    // Focus next input
     if (element.value && element.nextSibling) {
       element.nextSibling.focus();
     }
@@ -54,18 +53,11 @@ export default function VerifyPage() {
     }
   };
 
-  // Helper function to handle login success
   const handleLoginSuccess = (token) => {
     console.log('Login successful, storing token:', token);
-    
-    // Store the token
     localStorage.setItem('token', token);
-    
-    // Clean up temporary data
     localStorage.removeItem('otp');
     localStorage.removeItem('phone');
-    
-    // Notify all components about auth change
     window.dispatchEvent(new Event('authChange'));
     window.dispatchEvent(new Event('userLoggedIn'));
     window.dispatchEvent(new Event('storage'));
@@ -99,11 +91,8 @@ export default function VerifyPage() {
 
       if (response.ok) {
         setSuccess('OTP verified successfully!');
-        
-        // Store the token and notify components
         handleLoginSuccess(data.token);
         
-        // Redirect to home page after successful verification
         setTimeout(() => {
           window.location.href = '/';
         }, 1500);
@@ -178,9 +167,7 @@ export default function VerifyPage() {
           <div className="p-6">
             <p className="text-gray-600 mb-2">Enter the 6-digit code sent to</p>
             <p className="font-medium text-gray-900 mb-6">+91 {phone}</p>
-
-            {/* Testing Note - Show OTP for development */}
-            <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
               <p className="text-xs text-yellow-800 text-center">
                 <span className="font-semibold">Testing Mode:</span> Your OTP is {storedOtp}
               </p>
