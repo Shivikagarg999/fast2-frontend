@@ -27,7 +27,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-green-300 text-gray-800 py-10 px-4 md:px-8">
+    <footer className="bg-green-300 text-black py-10 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
@@ -42,14 +42,14 @@ export default function Footer() {
                 className="h-16 w-auto object-contain"
               />
             </div>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-black text-sm mb-4">
               Your trusted partner for quick grocery delivery. Fresh products at
               your doorstep in minutes.
             </p>
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-black hover:text-black transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -66,7 +66,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-black hover:text-black transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -79,7 +79,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-black hover:text-black transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -99,7 +99,7 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-900">Categories</h4>
+            <h4 className="font-semibold mb-4 text-black">Categories</h4>
             {loading ? (
               <div className="animate-pulse">
                 <div className="h-4 bg-gray-300 rounded mb-2"></div>
@@ -108,12 +108,12 @@ export default function Footer() {
                 <div className="h-4 bg-gray-300 rounded"></div>
               </div>
             ) : (
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm text-black">
                 {categories.map((category) => (
                   <li key={category._id}>
                     <Link
                       href={`/category/${category._id}`}
-                      className="hover:text-gray-900 transition-colors"
+                      className="hover:text-black transition-colors"
                     >
                       {category.name}
                     </Link>
@@ -126,25 +126,25 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-900">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h4 className="font-semibold mb-4 text-black">Quick Links</h4>
+            <ul className="space-y-2 text-sm text-black">
               <li>
-                <a href="/about" className="hover:text-gray-900 transition-colors">
+                <a href="/about" className="hover:text-black transition-colors">
                   About Us
                 </a>
               </li>
               <li>
-                <a href="/contact" className="hover:text-gray-900 transition-colors">
+                <a href="/contact" className="hover:text-black transition-colors">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
+                <a href="/terms-conditions" className="hover:text-black transition-colors">
                   Fast2 Policies
                 </a>
               </li>
               <li>
-                <a href="/shops" className="hover:text-gray-900 transition-colors">
+                <a href="/shops" className="hover:text-black transition-colors">
                   Browse Shops
                 </a>
               </li>
@@ -153,7 +153,7 @@ export default function Footer() {
                   href="https://seller.fast2.in/warehouse/login"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-black transition-colors"
                 >
                   Warehouse
                 </a>
@@ -163,7 +163,7 @@ export default function Footer() {
                   href="/deliver"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-black transition-colors"
                 >
                   Deliver
                 </a>
@@ -173,7 +173,7 @@ export default function Footer() {
                   href="https://seller.fast2.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-black transition-colors"
                 >
                   Seller
                 </a>
@@ -183,7 +183,7 @@ export default function Footer() {
                   href="https://promotor.fast2.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-gray-900 transition-colors"
+                  className="hover:text-black transition-colors"
                 >
                   Partner
                 </a>
@@ -193,8 +193,8 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-semibold mb-4 text-gray-900">Contact Us</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <h4 className="font-semibold mb-4 text-black">Contact Us</h4>
+            <ul className="space-y-2 text-sm text-black">
               <li className="flex items-start">
                 <svg
                   className="w-4 h-4 mr-2 mt-0.5"
@@ -237,11 +237,11 @@ export default function Footer() {
 
         {/* Copyright and bottom links */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-600 mb-4 md:mb-0">
+          <p className="text-sm text-black mb-4 md:mb-0">
             © {new Date().getFullYear()} Fast2. All rights reserved.
           </p>
-          <div className="flex space-x-6 text-sm text-gray-600">
-            <a href="/terms-conditions" className="hover:text-gray-900 transition-colors">
+          <div className="flex space-x-6 text-sm text-black">
+            <a href="/terms-conditions" className="hover:text-black transition-colors">
               Fast2 Policies
             </a>
           </div>
