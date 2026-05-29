@@ -75,8 +75,8 @@ export default function TermsAndConditionsPage() {
 
   const getPolicyColor = (policyType) => {
     switch(policyType) {
-      case 'terms': return 'from-purple-600 to-purple-700';
-      case 'return': return 'from-purple-600 to-purple-700';
+      case 'terms': return 'from-green-600 to-green-700';
+      case 'return': return 'from-green-600 to-green-700';
       case 'cancellation': return 'from-red-600 to-red-700';
       case 'refund': return 'from-amber-600 to-amber-700';
       default: return 'from-gray-600 to-gray-700';
@@ -96,7 +96,7 @@ export default function TermsAndConditionsPage() {
     <div className="min-h-screen bg-white">
      
       {/* Main Content */}
-      <section className="py-12 bg-gradient-to-b from-purple-50 to-white">
+      <section className="py-12 bg-gradient-to-b from-green-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -111,7 +111,7 @@ export default function TermsAndConditionsPage() {
           {/* Loading State */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
               <p className="text-gray-600">Loading policies...</p>
             </div>
           )}
@@ -128,7 +128,7 @@ export default function TermsAndConditionsPage() {
               <p className="text-gray-600 mb-4">{error}</p>
               <button
                 onClick={fetchAllPolicies}
-                className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
               >
                 Try Again
               </button>
@@ -156,7 +156,7 @@ export default function TermsAndConditionsPage() {
                         <span>{tab.label}</span>
                         {policies[tab.id]?.isActive && (
                           <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
-                            activeTab === tab.id ? 'bg-white/20' : 'bg-purple-100 text-purple-800'
+                            activeTab === tab.id ? 'bg-white/20' : 'bg-green-100 text-green-800'
                           }`}>
                             ✓ Active
                           </span>
@@ -194,8 +194,8 @@ export default function TermsAndConditionsPage() {
                               Version {currentPolicy.version}
                             </span>
                             {currentPolicy.isActive && (
-                              <span className="bg-purple-500/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                                <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                              <span className="bg-green-500/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                                <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
                                 Currently Active
                               </span>
                             )}
@@ -212,8 +212,8 @@ export default function TermsAndConditionsPage() {
                     {currentPolicy.metadata && (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                         {currentPolicy.metadata.returnPeriod && (
-                          <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
-                            <p className="text-sm text-purple-600 font-medium mb-1">Return Period</p>
+                          <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                            <p className="text-sm text-green-600 font-medium mb-1">Return Period</p>
                             <p className="text-lg font-semibold text-gray-900">{currentPolicy.metadata.returnPeriod} days</p>
                           </div>
                         )}
@@ -230,8 +230,8 @@ export default function TermsAndConditionsPage() {
                           </div>
                         )}
                         {currentPolicy.metadata.contactEmail && (
-                          <div className="bg-purple-50 border border-purple-100 rounded-xl p-4">
-                            <p className="text-sm text-purple-600 font-medium mb-1">Contact Email</p>
+                          <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                            <p className="text-sm text-green-600 font-medium mb-1">Contact Email</p>
                             <p className="text-lg font-semibold text-gray-900">{currentPolicy.metadata.contactEmail}</p>
                           </div>
                         )}
@@ -273,7 +273,7 @@ export default function TermsAndConditionsPage() {
                           }
                         </p>
                         <div className="flex items-center space-x-3 text-gray-700">
-                          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
                           <span>This document is legally binding</span>
@@ -282,7 +282,7 @@ export default function TermsAndConditionsPage() {
                     </div>
 
                     {/* Contact Information */}
-                    <div className="mt-8 bg-gradient-to-r from-gray-50 to-purple-50 rounded-2xl p-6">
+                    <div className="mt-8 bg-gradient-to-r from-gray-50 to-green-50 rounded-2xl p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Questions About This Policy?</h3>
                       <p className="text-gray-600 mb-4">
                         If you have any questions regarding our {getPolicyTitle(activeTab).toLowerCase()}, please contact us:
@@ -340,7 +340,7 @@ export default function TermsAndConditionsPage() {
                           </div>
                           <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
                             policy.isActive 
-                              ? 'bg-purple-100 text-purple-800' 
+                              ? 'bg-green-100 text-green-800' 
                               : 'bg-gray-100 text-gray-800'
                           }`}>
                             {policy.isActive ? '✓ Active' : 'Inactive'}

@@ -322,8 +322,8 @@ const ProfilePage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <UserIcon className="w-12 h-12 text-purple-600" />
+          <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <UserIcon className="w-12 h-12 text-green-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Please log in to view your profile</h2>
           <p className="text-gray-600 mb-6">Access your orders, addresses, and account settings</p>
@@ -375,7 +375,7 @@ const ProfilePage = () => {
           <div className="bg-white rounded-2xl shadow-lg p-6 text-gray-800">
             <div className="flex items-center space-x-4 mb-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-purple-100 overflow-hidden flex items-center justify-center border-4 border-white shadow-md">
+                <div className="w-20 h-20 rounded-full bg-green-100 overflow-hidden flex items-center justify-center border-4 border-white shadow-md">
                   {avatarPreview ? (
                     <img 
                       src={avatarPreview} 
@@ -383,7 +383,7 @@ const ProfilePage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <UserIcon className="w-10 h-10 text-purple-600" />
+                    <UserIcon className="w-10 h-10 text-green-600" />
                   )}
                 </div>
                 
@@ -435,12 +435,12 @@ const ProfilePage = () => {
           </div>
         )}
         {success && (
-          <div className="bg-purple-50 border border-purple-200 text-purple-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
             <div className="flex justify-between items-center">
               <span>{success}</span>
               <button 
                 onClick={() => setSuccess('')}
-                className="text-purple-800 font-bold text-lg"
+                className="text-green-800 font-bold text-lg"
               >
                 ×
               </button>

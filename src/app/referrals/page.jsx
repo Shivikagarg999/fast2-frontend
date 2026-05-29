@@ -136,7 +136,7 @@ const ReferralPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
   }
@@ -167,15 +167,15 @@ const ReferralPage = () => {
         )}
 
         {success && (
-          <div className="bg-purple-50 border-l-4 border-purple-400 p-4 mb-6 rounded-lg">
+          <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6 rounded-lg">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-purple-700">{success}</p>
+                <p className="text-sm text-green-700">{success}</p>
               </div>
             </div>
           </div>
@@ -185,8 +185,8 @@ const ReferralPage = () => {
           {/* Stats Cards */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <UserGroupIcon className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <UserGroupIcon className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Referrals</p>
@@ -199,8 +199,8 @@ const ReferralPage = () => {
 
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <CurrencyRupeeIcon className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <CurrencyRupeeIcon className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Earnings</p>
@@ -213,8 +213,8 @@ const ReferralPage = () => {
 
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <GiftIcon className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-green-100 rounded-lg">
+                <GiftIcon className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Current Wallet</p>
@@ -238,7 +238,7 @@ const ReferralPage = () => {
                 </span>
                 <button
                   onClick={() => copyToClipboard(referralStats?.yourReferralCode)}
-                  className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
                   {copied ? (
                     <>
@@ -256,7 +256,7 @@ const ReferralPage = () => {
 
               <button
                 onClick={shareReferral}
-                className="w-full flex items-center justify-center space-x-2 bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
                 <ShareIcon className="w-5 h-5" />
                 <span>Share Referral</span>
@@ -282,8 +282,8 @@ const ReferralPage = () => {
             
             {referralStats?.referredBy ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -309,7 +309,7 @@ const ReferralPage = () => {
                     value={referralCode}
                     onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                     placeholder="Enter friend's referral code"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
                     maxLength={10}
                   />
                 </div>
@@ -317,7 +317,7 @@ const ReferralPage = () => {
                 <button
                   type="submit"
                   disabled={applying || !referralCode.trim()}
-                  className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {applying ? (
                     <div className="flex items-center justify-center">
@@ -336,15 +336,15 @@ const ReferralPage = () => {
               <h3 className="font-semibold text-gray-900 mb-3">How it works:</h3>
               <ul className="space-y-2 text-sm text-gray-600">
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">1</span>
+                  <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">1</span>
                   Share your referral code with friends
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">2</span>
+                  <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">2</span>
                   Friend signs up using your code
                 </li>
                 <li className="flex items-start">
-                  <span className="w-5 h-5 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
+                  <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
                   Both get ₹50 bonus in wallet
                 </li>
               </ul>
@@ -353,10 +353,10 @@ const ReferralPage = () => {
         </div>
 
         {/* Referral Benefits Section */}
-        <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-sm p-8 mt-8 text-white">
+        <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl shadow-sm p-8 mt-8 text-white">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold mb-2">Earn More With Every Referral</h2>
-            <p className="text-purple-100">Unlock amazing rewards as you refer more friends</p>
+            <p className="text-green-100">Unlock amazing rewards as you refer more friends</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -365,7 +365,7 @@ const ReferralPage = () => {
                 <UserGroupIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Refer Friends</h3>
-              <p className="text-purple-100 text-sm">Share your code with friends and family</p>
+              <p className="text-green-100 text-sm">Share your code with friends and family</p>
             </div>
 
             <div className="text-center">
@@ -373,7 +373,7 @@ const ReferralPage = () => {
                 <GiftIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Earn ₹50 Each</h3>
-              <p className="text-purple-100 text-sm">Both you and your friend get ₹50 bonus</p>
+              <p className="text-green-100 text-sm">Both you and your friend get ₹50 bonus</p>
             </div>
 
             <div className="text-center">
@@ -381,7 +381,7 @@ const ReferralPage = () => {
                 <CurrencyRupeeIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Use Wallet Money</h3>
-              <p className="text-purple-100 text-sm">Use your earnings for shopping on Fast2</p>
+              <p className="text-green-100 text-sm">Use your earnings for shopping on Fast2</p>
             </div>
           </div>
         </div>

@@ -31,16 +31,16 @@ const ContactPage = () => {
       description: 'support@fast2.in',
       href: 'mailto:support@fast2.in',
       icon: EnvelopeIcon,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
     },
     {
       title: 'Phone Number',
       description: '+91 9981306588',
       href: 'tel:+919981306588',
       icon: PhoneIcon,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
     },
     {
       title: 'Business Address',
@@ -55,8 +55,8 @@ const ContactPage = () => {
       description: 'www.fast2.in',
       href: 'https://www.fast2.in',
       icon: GlobeAltIcon,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
     },
     {
       title: 'Business Hours',
@@ -173,8 +173,8 @@ const handleSubmit = async (e) => {
 };
 
 {status.type === 'success' && status.referenceId && (
-  <div className="mt-4 p-4 bg-purple-50 rounded-lg">
-    <p className="text-sm text-purple-800">
+  <div className="mt-4 p-4 bg-green-50 rounded-lg">
+    <p className="text-sm text-green-800">
       <strong>Reference ID:</strong> {status.referenceId}<br />
       Please keep this reference for future correspondence.
     </p>
@@ -201,18 +201,18 @@ const handleSubmit = async (e) => {
       <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-600 to-purple-800">
+      <div className="bg-gradient-to-r from-green-600 to-green-800">
         <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
               Contact Us
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-xl text-purple-100">
+            <p className="mt-6 max-w-2xl mx-auto text-xl text-green-100">
               Get in touch with our team. We're here to help with any questions or concerns.
             </p>
             <button
               onClick={() => setContactModalOpen(true)}
-              className="mt-8 inline-flex items-center px-8 py-3 rounded-xl bg-white text-purple-700 font-semibold shadow-lg hover:bg-purple-50 transition-colors"
+              className="mt-8 inline-flex items-center px-8 py-3 rounded-xl bg-white text-green-700 font-semibold shadow-lg hover:bg-green-50 transition-colors"
             >
               Send us a Message
             </button>
@@ -223,14 +223,14 @@ const handleSubmit = async (e) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Status Messages */}
         {status.message && (
-          <div className={`mb-8 p-4 rounded-lg ${status.type === 'success' ? 'bg-purple-50 border border-purple-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className={`mb-8 p-4 rounded-lg ${status.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-center">
               {status.type === 'success' ? (
-                <CheckCircleIcon className="h-5 w-5 text-purple-400 mr-3" />
+                <CheckCircleIcon className="h-5 w-5 text-green-400 mr-3" />
               ) : (
                 <ExclamationCircleIcon className="h-5 w-5 text-red-400 mr-3" />
               )}
-              <p className={`text-sm ${status.type === 'success' ? 'text-purple-800' : 'text-red-800'}`}>
+              <p className={`text-sm ${status.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
                 {status.message}
               </p>
             </div>
@@ -259,7 +259,7 @@ const handleSubmit = async (e) => {
                         href={info.href} 
                         target={info.title === 'Website' ? '_blank' : '_self'}
                         rel={info.title === 'Website' ? 'noopener noreferrer' : ''}
-                        className="text-gray-600 hover:text-purple-600 transition-colors"
+                        className="text-gray-600 hover:text-green-600 transition-colors"
                       >
                         {info.description}
                       </a>
@@ -307,7 +307,7 @@ const handleSubmit = async (e) => {
                   value={formData.name}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
+                    formErrors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="Enter your full name"
                 />
@@ -328,7 +328,7 @@ const handleSubmit = async (e) => {
                   value={formData.email}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
+                    formErrors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="your@email.com"
                 />
@@ -349,7 +349,7 @@ const handleSubmit = async (e) => {
                   value={formData.phone}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
+                    formErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="10-digit mobile number"
                 />
@@ -369,7 +369,7 @@ const handleSubmit = async (e) => {
                   value={formData.subject}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.subject ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
+                    formErrors.subject ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                 >
                   <option value="">Select a subject</option>
@@ -396,7 +396,7 @@ const handleSubmit = async (e) => {
                   value={formData.message}
                   onChange={handleChange}
                   className={`block w-full px-4 py-3 rounded-lg border ${
-                    formErrors.message ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-purple-500 focus:ring-purple-500'
+                    formErrors.message ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
                   } shadow-sm focus:ring-2 focus:ring-opacity-50 transition-colors`}
                   placeholder="How can we help you?"
                 />
@@ -412,9 +412,9 @@ const handleSubmit = async (e) => {
                   disabled={loading}
                   className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-300 ${
                     loading
-                      ? 'bg-purple-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800'
-                  } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2`}
+                      ? 'bg-green-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800'
+                  } focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">
@@ -432,8 +432,8 @@ const handleSubmit = async (e) => {
             </form>
 
             {/* Form Note */}
-            <div className="mt-8 p-4 bg-purple-50 rounded-lg">
-              <p className="text-sm text-purple-800">
+            <div className="mt-8 p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-green-800">
                 <strong>Note:</strong> We typically respond within 2-4 hours during business hours. 
                 For urgent matters, please call our support number.
               </p>

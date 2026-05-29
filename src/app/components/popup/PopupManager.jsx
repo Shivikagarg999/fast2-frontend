@@ -76,18 +76,18 @@ const PopupManager = () => {
 
     const colors = {
       'info': {
-        border: 'border-purple-200',
-        bg: 'bg-purple-50',
-        titleColor: 'text-purple-800',
-        buttonBg: 'bg-purple-600',
-        buttonHover: 'hover:bg-purple-700'
+        border: 'border-green-200',
+        bg: 'bg-green-50',
+        titleColor: 'text-green-800',
+        buttonBg: 'bg-green-600',
+        buttonHover: 'hover:bg-green-700'
       },
       'success': {
-        border: 'border-purple-200',
-        bg: 'bg-purple-50',
-        titleColor: 'text-purple-800',
-        buttonBg: 'bg-purple-600',
-        buttonHover: 'hover:bg-purple-700'
+        border: 'border-green-200',
+        bg: 'bg-green-50',
+        titleColor: 'text-green-800',
+        buttonBg: 'bg-green-600',
+        buttonHover: 'hover:bg-green-700'
       },
       'warning': {
         border: 'border-yellow-200',

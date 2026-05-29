@@ -41,7 +41,7 @@ function SearchInput({ productSearchQuery, setProductSearchQuery }) {
     <input
       type="text"
       placeholder="Search any product..."
-      className="w-full pl-10 pr-4 text-black py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+      className="w-full pl-10 pr-4 text-black py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
       value={productSearchQuery}
       onChange={handleProductSearchChange}
     />
@@ -68,7 +68,7 @@ function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
     <input
       type="text"
       placeholder="Search for products..."
-      className="w-full pl-10 pr-4 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+      className="w-full pl-10 pr-4 py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
       value={productSearchQuery}
       onChange={handleProductSearchChange}
     />
@@ -79,7 +79,7 @@ const SearchInputFallback = () => (
   <input
     type="text"
     placeholder="Search any product..."
-    className="w-full pl-10 pr-4 text-black py-2 border border-purple-300 rounded-lg"
+    className="w-full pl-10 pr-4 text-black py-2 border border-green-300 rounded-lg"
     disabled
   />
 );
@@ -88,7 +88,7 @@ const MobileSearchInputFallback = () => (
   <input
     type="text"
     placeholder="Search for products..."
-    className="w-full pl-10 pr-4 py-2 border border-purple-300 rounded-lg"
+    className="w-full pl-10 pr-4 py-2 border border-green-300 rounded-lg"
     disabled
   />
 );
@@ -429,61 +429,61 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
         onClick={() => !isGettingLocation && setShowLocationDropdown(!showLocationDropdown)}
       >
         <div className={`
-          flex items-center space-x-2 bg-white/20 hover:bg-white/30 px-2.5 py-2.5 rounded-lg sm:px-3 sm:py-2
-          transition-colors duration-200 border border-white/30 w-full
+          flex items-center space-x-2 bg-green-50 hover:bg-green-100 px-2.5 py-2.5 rounded-lg sm:px-3 sm:py-2
+          transition-colors duration-200 border border-green-200 w-full
           ${isMobile ? 'min-w-0' : ''}
           ${isGettingLocation ? 'opacity-75' : ''}
         `}>
           {isGettingLocation ? (
-            <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-white border-t-transparent sm:h-4 sm:w-4"></div>
+            <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-green-600 border-t-transparent sm:h-4 sm:w-4"></div>
           ) : (
             <MapPinIcon className="h-6 w-6 flex-shrink-0 text-red-500 sm:h-4 sm:w-4" />
           )}
           <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-[11px] text-white/80 whitespace-nowrap sm:text-xs">Delivery to</span>
-            <span className="max-w-[120px] truncate text-sm font-semibold text-white sm:max-w-[180px] sm:font-medium">
+            <span className="text-[11px] text-green-700 whitespace-nowrap sm:text-xs">Delivery to</span>
+            <span className="max-w-[120px] truncate text-sm font-semibold text-green-900 sm:max-w-[180px] sm:font-medium">
               {displayLocation}
             </span>
             {pincode && !isGettingLocation && (
-              <span className="text-xs text-white/80">Pincode: {pincode}</span>
+              <span className="text-xs text-green-700">Pincode: {pincode}</span>
             )}
           </div>
-          <ChevronDownIcon className={`h-5 w-5 flex-shrink-0 text-white transition-transform duration-200 sm:h-4 sm:w-4 ${showLocationDropdown ? 'rotate-180' : ''
+          <ChevronDownIcon className={`h-5 w-5 flex-shrink-0 text-green-700 transition-transform duration-200 sm:h-4 sm:w-4 ${showLocationDropdown ? 'rotate-180' : ''
             }`} />
         </div>
       </div>
 
       {showLocationDropdown && (
         <div className={`
-          absolute top-full left-0 mt-2 bg-white border border-purple-200 rounded-lg shadow-lg z-50 overflow-hidden
+          absolute top-full left-0 mt-2 bg-white border border-green-200 rounded-lg shadow-lg z-50 overflow-hidden
           ${isMobile ? 'left-0 right-0 w-[calc(100vw-1.5rem)] max-w-sm' : 'w-96'}
         `}>
-          <div className="p-4 border-b border-purple-100">
-            <h3 className="font-medium text-purple-900 mb-3">Set Delivery Location</h3>
+          <div className="p-4 border-b border-green-100">
+            <h3 className="font-medium text-green-900 mb-3">Set Delivery Location</h3>
 
             <div className="space-y-3 mb-4">
               <div>
-                <label className="block text-sm font-medium text-purple-800 mb-1">
+                <label className="block text-sm font-medium text-green-800 mb-1">
                   Street Address
                 </label>
                 <input
                   type="text"
                   placeholder="Enter your street address..."
-                  className="w-full rounded-lg border border-purple-300 bg-white px-3 py-2 text-sm text-gray-900 caret-purple-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                  className="w-full rounded-lg border border-green-300 bg-white px-3 py-2 text-sm text-gray-900 caret-green-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-green-500"
                   value={streetAddress}
                   onChange={(e) => setStreetAddress(e.target.value)}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-800 mb-1">
+                <label className="block text-sm font-medium text-green-800 mb-1">
                   Pincode
                 </label>
                 <input
                   type="text"
                   placeholder="Enter 6-digit pincode"
                   maxLength={6}
-                  className="w-full rounded-lg border border-purple-300 bg-white px-3 py-2 text-sm text-gray-900 caret-purple-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                  className="w-full rounded-lg border border-green-300 bg-white px-3 py-2 text-sm text-gray-900 caret-green-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-green-500"
                   value={pincode}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, '');
@@ -497,7 +497,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
               <button
                 onClick={handleSaveLocation}
                 disabled={!pincode || !streetAddress || pincode.length !== 6}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 bg-green-700 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-800 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors"
               >
                 Save Location
               </button>
@@ -505,7 +505,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
               <button
                 onClick={autoDetectLocation}
                 disabled={isGettingLocation}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
                 title="Auto-detect my location"
               >
                 {isGettingLocation ? (
@@ -529,39 +529,39 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
             )}
 
             {locationAccuracy && (
-              <div className="mb-3 p-2 bg-purple-50 border border-purple-200 rounded-lg">
-                <p className="text-xs text-purple-700">
+              <div className="mb-3 p-2 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-xs text-green-700">
                   Location detected with {Math.round(locationAccuracy)}m accuracy
                 </p>
               </div>
             )}
 
             <div className="flex items-center my-4">
-              <div className="flex-1 border-t border-purple-200"></div>
-              <span className="px-2 text-xs text-purple-700">OR SEARCH</span>
-              <div className="flex-1 border-t border-purple-200"></div>
+              <div className="flex-1 border-t border-green-200"></div>
+              <span className="px-2 text-xs text-green-700">OR SEARCH</span>
+              <div className="flex-1 border-t border-green-200"></div>
             </div>
 
             <div className="relative mb-3">
               <input
                 type="text"
                 placeholder="Search for area, street name..."
-                className="w-full rounded-lg border border-purple-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-900 caret-purple-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-lg border border-green-300 bg-white py-2 pl-9 pr-4 text-sm text-gray-900 caret-green-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-green-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <MagnifyingGlassIcon className="w-4 h-4 text-purple-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              <MagnifyingGlassIcon className="w-4 h-4 text-green-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
 
               {isSearching && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               )}
             </div>
 
             {searchResults.length > 0 && (
               <div className="mb-3 max-h-40 overflow-y-auto">
-                <h4 className="text-xs font-medium text-purple-500 uppercase tracking-wide mb-2">
+                <h4 className="text-xs font-medium text-green-500 uppercase tracking-wide mb-2">
                   Search Results
                 </h4>
                 <div className="space-y-1">
@@ -573,16 +573,16 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                         <div
                           key={location.id || index}
                           onClick={() => handleLocationSelect(location)}
-                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-purple-50 cursor-pointer transition-colors duration-150"
+                          className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-green-50 cursor-pointer transition-colors duration-150"
                         >
                           <div className="flex items-center space-x-3">
-                            <MapPinIcon className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                            <span className="text-sm text-purple-700">
+                            <MapPinIcon className="w-4 h-4 text-green-400 flex-shrink-0" />
+                            <span className="text-sm text-green-700">
                               {locationName}
                             </span>
                           </div>
                           {locationPincode && (
-                            <span className="text-xs text-purple-500 bg-purple-100 px-2 py-1 rounded">
+                            <span className="text-xs text-green-500 bg-green-100 px-2 py-1 rounded">
                               {locationPincode}
                             </span>
                           )}
@@ -597,8 +597,8 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
           </div>
 
-          <div className="bg-purple-50 px-4 py-3 border-t border-purple-100">
-            <p className="text-xs text-purple-500 text-center">
+          <div className="bg-green-50 px-4 py-3 border-t border-green-100">
+            <p className="text-xs text-green-500 text-center">
               Products will be filtered based on your pincode
             </p>
           </div>
@@ -895,8 +895,8 @@ function HeaderContent() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold fixed top-0 left-0 right-0 w-full z-50">
-      <div className="border-b border-white/20">
+    <header className="bg-white text-black font-bold fixed top-0 left-0 right-0 w-full z-50">
+      <div className="border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-3 py-2.5 sm:px-4 sm:py-3">
           <div className="flex items-center justify-between gap-2">
 
@@ -926,7 +926,7 @@ function HeaderContent() {
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="w-5 h-5 text-white/60" />
+                  <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
                 </div>
                 <Suspense fallback={<SearchInputFallback />}>
                   <SearchInput
@@ -939,11 +939,11 @@ function HeaderContent() {
 
             {/* Shops Link */}
             <div
-              className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/20"
+              className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-black transition-colors px-3 py-2 rounded-lg hover:bg-green-50"
               onClick={() => router.push('/shops')}
             >
-              <BuildingStorefrontIcon className="w-5 h-5 text-white" />
-              <span className="text-sm font-medium text-white">Shops</span>
+              <BuildingStorefrontIcon className="w-5 h-5 text-black" />
+              <span className="text-sm font-medium text-black">Shops</span>
             </div>
 
             <div className="flex shrink-0 items-center gap-2 sm:gap-4">
@@ -957,64 +957,64 @@ function HeaderContent() {
                   </div>
 
                   <div
-                    className="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors p-2 rounded-lg hover:bg-white/20"
+                    className="flex items-center space-x-2 cursor-pointer hover:text-black transition-colors p-2 rounded-lg hover:bg-green-50"
                     onClick={toggleProfileDropdown}
                   >
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <UserIcon className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <UserIcon className="w-5 h-5 text-green-600" />
                     </div>
-                    <span className="text-sm font-medium text-white">{userName}</span>
-                    <ChevronDownIcon className={`w-4 h-4 text-white transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''
+                    <span className="text-sm font-medium text-black">{userName}</span>
+                    <ChevronDownIcon className={`w-4 h-4 text-black transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''
                       }`} />
                   </div>
 
                   {isProfileDropdownOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-purple-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                    <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-green-200 rounded-lg shadow-lg z-50 overflow-hidden">
                       <div className="py-1">
                         <div
-                          className="flex items-center px-4 py-3 text-sm text-purple-700 hover:bg-purple-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleProfileClick}
                         >
-                          <Cog6ToothIcon className="w-5 h-5 mr-3 text-purple-400" />
+                          <Cog6ToothIcon className="w-5 h-5 mr-3 text-green-400" />
                           <span>My Profile</span>
                         </div>
 
                         <div
-                          className="flex items-center px-4 py-3 text-sm text-purple-700 hover:bg-purple-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleSavedAddresses}
                         >
-                          <MapIcon className="w-5 h-5 mr-3 text-purple-400" />
+                          <MapIcon className="w-5 h-5 mr-3 text-green-400" />
                           <span>Saved Addresses</span>
                         </div>
 
                         <div
-                          className="flex items-center px-4 py-3 text-sm text-purple-700 hover:bg-purple-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleOrdersClick}
                         >
-                          <InboxIcon className="w-5 h-5 mr-3 text-purple-400" />
+                          <InboxIcon className="w-5 h-5 mr-3 text-green-400" />
                           <span>My Orders</span>
                         </div>
 
                         <div
-                          className="flex items-center px-4 py-3 text-sm text-purple-700 hover:bg-purple-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleCouponsClick}
                         >
-                          <TicketIcon className="w-5 h-5 mr-3 text-purple-400" />
+                          <TicketIcon className="w-5 h-5 mr-3 text-green-400" />
                           <span>My Coupons</span>
                         </div>
 
                         <div
-                          className="flex items-center px-4 py-3 text-sm text-purple-700 hover:bg-purple-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleReferralsClick}
                         >
-                          <UserGroupIcon className="w-5 h-5 mr-3 text-purple-400" />
+                          <UserGroupIcon className="w-5 h-5 mr-3 text-green-400" />
                           <span>Refer & Earn</span>
                         </div>
 
-                        <div className="border-t border-purple-100 my-1"></div>
+                        <div className="border-t border-green-100 my-1"></div>
 
                         <div
-                          className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-purple-50 cursor-pointer transition-colors"
+                          className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-green-50 cursor-pointer transition-colors"
                           onClick={handleLogout}
                         >
                           <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
@@ -1026,41 +1026,41 @@ function HeaderContent() {
                 </div>
               ) : (
                 <div
-                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-white transition-colors"
+                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-black transition-colors"
                   onClick={handleLoginClick}
                 >
-                  <UserIcon className="w-6 h-6 text-white" />
-                  <span className="text-sm font-medium text-white">Login/Signup</span>
+                  <UserIcon className="w-6 h-6 text-black" />
+                  <span className="text-sm font-medium text-black">Login/Signup</span>
                 </div>
               )}
               <div
                 className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors sm:space-x-1 ${isLoggedIn
-                    ? 'text-white cursor-pointer hover:text-white hover:bg-white/20'
-                    : 'text-purple-600 cursor-not-allowed opacity-60'
+                    ? 'text-black cursor-pointer hover:text-black hover:bg-green-50'
+                    : 'text-green-600 cursor-not-allowed opacity-60'
                   }`}
                 onClick={isLoggedIn ? handleCartClick : undefined}
                 aria-label="Cart"
               >
                 <div className="relative">
-                  <ShoppingCartIcon className="h-8 w-8 text-white sm:h-7 sm:w-7" />
+                  <ShoppingCartIcon className="h-8 w-8 text-black sm:h-7 sm:w-7" />
                   {isLoggedIn && (
-                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-1 text-[11px] font-semibold text-white">
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-green-500 px-1 text-[11px] font-semibold text-white">
                       {cartItemCount > 0 ? cartItemCount : 0}
                     </span>
                   )}
                 </div>
-                <span className="hidden sm:block text-sm font-medium text-white">Cart</span>
+                <span className="hidden sm:block text-sm font-medium text-black">Cart</span>
               </div>
 
               <button
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors hover:bg-white/20 lg:hidden"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors hover:bg-green-50 lg:hidden"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMenuOpen ? (
-                  <XMarkIcon className="h-8 w-8 text-white" />
+                  <XMarkIcon className="h-8 w-8 text-black" />
                 ) : (
-                  <Bars3Icon className="h-8 w-8 text-white" />
+                  <Bars3Icon className="h-8 w-8 text-black" />
                 )}
               </button>
             </div>
@@ -1068,10 +1068,10 @@ function HeaderContent() {
         </div>
       </div>
 
-      <div className="border-b border-white/20 px-3 py-3 sm:px-4 lg:hidden">
+      <div className="border-b border-gray-200 px-3 py-3 sm:px-4 lg:hidden">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <MagnifyingGlassIcon className="h-5 w-5 text-white/60" />
+            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
           </div>
           <Suspense fallback={<MobileSearchInputFallback />}>
             <MobileSearchInput
@@ -1087,20 +1087,20 @@ function HeaderContent() {
           <div className="space-y-4 px-4 py-4">
             {isLoggedIn && (
               <>
-                <div className="flex items-center space-x-3 bg-purple-50 border border-purple-200 rounded-lg p-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-100">
-                    <UserIcon className="h-7 w-7 text-purple-600" />
+                <div className="flex items-center space-x-3 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-green-100">
+                    <UserIcon className="h-7 w-7 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-purple-900">{userName}</p>
-                    <p className="text-xs text-purple-500">Welcome back!</p>
+                    <p className="text-sm font-medium text-green-900">{userName}</p>
+                    <p className="text-xs text-green-500">Welcome back!</p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                   <BanknotesIcon className="h-7 w-7 text-yellow-600" />
                   <div>
-                    <p className="text-sm font-medium text-purple-900">Wallet Balance</p>
+                    <p className="text-sm font-medium text-green-900">Wallet Balance</p>
                     <p className="text-lg font-bold text-yellow-700">
                       ₹{formatWalletBalance(walletBalance)}
                     </p>
@@ -1112,42 +1112,42 @@ function HeaderContent() {
             {isLoggedIn ? (
               <>
                 <div
-                  className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleProfileClick}
                 >
                   <UserIcon className="h-6 w-6 shrink-0" />
                   <span>My Profile</span>
                 </div>
                 <div
-                  className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleSavedAddresses}
                 >
                   <MapIcon className="h-6 w-6 shrink-0" />
                   <span>Saved Addresses</span>
                 </div>
                 <div
-                  className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleOrdersClick}
                 >
                   <InboxIcon className="h-6 w-6 shrink-0" />
                   <span>My Orders</span>
                 </div>
                 <div
-                  className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleCouponsClick}
                 >
                   <TicketIcon className="h-6 w-6 shrink-0" />
                   <span>My Coupons</span>
                 </div>
                 <div
-                  className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleReferralsClick}
                 >
                   <UserGroupIcon className="h-6 w-6 shrink-0" />
                   <span>Refer & Earn</span>
                 </div>
                 <div
-                  className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                  className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                   onClick={handleLogout}
                 >
                   <ArrowRightOnRectangleIcon className="h-6 w-6 shrink-0" />
@@ -1156,7 +1156,7 @@ function HeaderContent() {
               </>
             ) : (
               <div
-                className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+                className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
                 onClick={handleLoginClick}
               >
                 <UserIcon className="h-6 w-6 shrink-0" />
@@ -1166,23 +1166,23 @@ function HeaderContent() {
 
             {/* Shops link in mobile menu */}
             <div
-              className="flex min-h-11 items-center space-x-3 py-2 text-purple-700 transition-colors hover:text-purple-600 cursor-pointer"
+              className="flex min-h-11 items-center space-x-3 py-2 text-green-700 transition-colors hover:text-green-600 cursor-pointer"
               onClick={() => { closeMenu(); router.push('/shops'); }}
             >
               <BuildingStorefrontIcon className="h-6 w-6 shrink-0" />
               <span>Browse Shops</span>
             </div>
 
-            <div className="pt-4 border-t border-purple-200">
+            <div className="pt-4 border-t border-green-200">
               <h4 className="font-medium mb-2">Categories</h4>
               <div className="space-y-2">
                 {loadingCategories ? (
-                  <div className="text-purple-500 py-1">Loading categories...</div>
+                  <div className="text-green-500 py-1">Loading categories...</div>
                 ) : (
                   categories.map((category, index) => (
                     <div
                       key={index}
-                      className="flex min-h-11 items-center space-x-3 py-2 text-purple-600 transition-colors hover:text-purple-600 cursor-pointer"
+                      className="flex min-h-11 items-center space-x-3 py-2 text-green-600 transition-colors hover:text-green-600 cursor-pointer"
                       onClick={() => handleCategoryClick(category.name)}
                     >
                       {category.image && (

@@ -308,7 +308,7 @@ const CategoryProductsComponent = () => {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading products...</p>
         </div>
       </div>
@@ -323,7 +323,7 @@ const CategoryProductsComponent = () => {
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => router.push("/category")}
-            className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg"
+            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
           >
             Return to Categories
           </button>
@@ -336,7 +336,7 @@ const CategoryProductsComponent = () => {
     <>
       <div className="bg-white">
         {showLoginPrompt && (
-          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-6 py-3 rounded-lg z-50">
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg z-50">
             <p className="text-sm font-medium">Please login to add items to cart</p>
           </div>
         )}
@@ -348,7 +348,7 @@ const CategoryProductsComponent = () => {
               <li>
                 <Link
                   href="/"
-                  className="text-purple-600 hover:text-purple-800 font-medium transition-colors"
+                  className="text-green-600 hover:text-green-800 font-medium transition-colors"
                 >
                   Home
                 </Link>
@@ -369,7 +369,7 @@ const CategoryProductsComponent = () => {
               <li>
                 <Link
                   href="/category"
-                  className="text-purple-600 hover:text-purple-800 font-medium transition-colors"
+                  className="text-green-600 hover:text-green-800 font-medium transition-colors"
                 >
                   Categories
                 </Link>
@@ -476,7 +476,7 @@ const CategoryProductsComponent = () => {
                 </p>
                 <Link
                   href="/category"
-                  className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
                 >
                   Back to Categories
                 </Link>
@@ -496,7 +496,7 @@ const CategoryProductsPage = () => {
   const fallback = (
     <div className="bg-white min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
         <p className="mt-4 text-gray-600">Loading products...</p>
       </div>
     </div>

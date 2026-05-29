@@ -117,7 +117,7 @@ export default function DeliveryPartnerPage() {
                 />
               </div>
             </div>
-            <button className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-2.5 rounded-xl font-semibold hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+            <button className="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-2.5 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
               Partner Login
             </button>
           </div>
@@ -125,10 +125,10 @@ export default function DeliveryPartnerPage() {
       </nav>
 
       {/* Enhanced Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-700 py-24 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-green-500 via-green-600 to-indigo-700 py-24 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 left-0 w-72 h-72 bg-purple-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-0 left-0 w-72 h-72 bg-green-400/20 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-400/20 rounded-full translate-x-1/3 translate-y-1/3"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -152,7 +152,7 @@ export default function DeliveryPartnerPage() {
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
               Start <span className="bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">Earning</span> with Fast2
             </h1>
-            <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join India's newest and most innovative delivery partner network. Earn competitive pay with complete flexibility and weekly settlements.
             </p>
             
@@ -160,7 +160,7 @@ export default function DeliveryPartnerPage() {
             <div className="grid grid-cols-1 gap-6 mb-12 max-w-md mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
                 <div className="text-2xl font-bold text-white mb-2">₹1,200-1,800</div>
-                <div className="text-purple-100 text-sm">Potential Daily Earnings</div>
+                <div className="text-green-100 text-sm">Potential Daily Earnings</div>
               </div>
             </div>
             
@@ -168,7 +168,7 @@ export default function DeliveryPartnerPage() {
               <div className="space-y-6">
                 <button
                   onClick={() => setShowRegistration(true)}
-                  className="group bg-white text-purple-600 px-14 py-5 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform"
+                  className="group bg-white text-green-600 px-14 py-5 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform"
                 >
                   <span className="flex items-center justify-center">
                     Start Registration
@@ -177,7 +177,7 @@ export default function DeliveryPartnerPage() {
                     </svg>
                   </span>
                 </button>
-                <p className="text-purple-200 text-sm font-medium">
+                <p className="text-green-200 text-sm font-medium">
                   Complete your application in just 2 minutes • No upfront costs
                 </p>
               </div>
@@ -209,7 +209,7 @@ export default function DeliveryPartnerPage() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
                         placeholder="Enter your full name"
                         required
                       />
@@ -222,7 +222,7 @@ export default function DeliveryPartnerPage() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
                         placeholder="your@email.com"
                         required
                       />
@@ -235,7 +235,7 @@ export default function DeliveryPartnerPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
+                        className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
                         placeholder="+91 98765 43210"
                         required
                       />
@@ -249,7 +249,7 @@ export default function DeliveryPartnerPage() {
                           name="password"
                           value={formData.password}
                           onChange={handleChange}
-                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all text-gray-800 placeholder-gray-500"
+                          className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
                           placeholder="Create a strong password"
                           required
                         />
@@ -276,7 +276,7 @@ export default function DeliveryPartnerPage() {
                       ].map((doc, index) => (
                         <div key={index}>
                           <label className="block text-gray-700 font-semibold mb-3">{doc.label} *</label>
-                          <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-4 hover:border-purple-500 transition-all cursor-pointer h-32 group">
+                          <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-4 hover:border-green-500 transition-all cursor-pointer h-32 group">
                             <input
                               type="file"
                               accept="image/*"
@@ -288,8 +288,8 @@ export default function DeliveryPartnerPage() {
                               <img src={previews[doc.field]} alt={doc.label} className="w-full h-full object-cover rounded-lg" />
                             ) : (
                               <div className="text-center h-full flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
-                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-2 group-hover:bg-purple-200 transition-colors">
-                                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-2 group-hover:bg-green-200 transition-colors">
+                                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                   </svg>
                                 </div>
@@ -305,7 +305,7 @@ export default function DeliveryPartnerPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold py-4 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center">
@@ -331,16 +331,16 @@ export default function DeliveryPartnerPage() {
       </section>
 
       {/* Enhanced Benefits Section */}
-      <section className="relative py-24 bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-100 overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-slate-50 via-green-50 to-indigo-100 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-50">
-          <div className="absolute top-10 right-10 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 right-10 w-64 h-64 bg-green-200/30 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-80 h-80 bg-indigo-200/30 rounded-full blur-3xl"></div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <div className="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-3 border border-purple-200/50 mb-8">
+            <div className="inline-flex items-center bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-3 border border-green-200/50 mb-8">
               <div className="rounded-lg flex items-center justify-center mr-3">
                 <Image 
                   src={Logo} 
@@ -349,10 +349,10 @@ export default function DeliveryPartnerPage() {
                   height={100}
                 />
               </div>
-              <span className="text-purple-600 font-semibold">Why Choose Fast2?</span>
+              <span className="text-green-600 font-semibold">Why Choose Fast2?</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Be Among Our <span className="bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">First Partners</span>
+              Be Among Our <span className="bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">First Partners</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Join our launch team and enjoy exclusive benefits as we build India's next-generation delivery network together
@@ -370,8 +370,8 @@ export default function DeliveryPartnerPage() {
                 title: "Maximum Earnings",
                 description: "Competitive daily earnings with special launch bonuses and incentive programs for our first partners",
                 highlight: "Launch special bonuses",
-                gradient: "from-purple-500 to-emerald-600",
-                bgColor: "bg-gradient-to-br from-purple-500 to-emerald-600"
+                gradient: "from-green-500 to-emerald-600",
+                bgColor: "bg-gradient-to-br from-green-500 to-emerald-600"
               },
               {
                 icon: (
@@ -382,8 +382,8 @@ export default function DeliveryPartnerPage() {
                 title: "Complete Flexibility",
                 description: "Work whenever you want - full time, part time, or weekends. Perfect for students and earners",
                 highlight: "24/7 availability",
-                gradient: "from-purple-500 to-purple-600",
-                bgColor: "bg-gradient-to-br from-purple-500 to-purple-600"
+                gradient: "from-green-500 to-green-600",
+                bgColor: "bg-gradient-to-br from-green-500 to-green-600"
               },
               {
                 icon: (
@@ -394,8 +394,8 @@ export default function DeliveryPartnerPage() {
                 title: "Weekly Payments",
                 description: "Get paid every week without delays. Direct bank transfers processed every Monday morning",
                 highlight: "No payment delays",
-                gradient: "from-purple-500 to-purple-600",
-                bgColor: "bg-gradient-to-br from-purple-500 to-purple-600"
+                gradient: "from-green-500 to-green-600",
+                bgColor: "bg-gradient-to-br from-green-500 to-green-600"
               },
               {
                 icon: (
@@ -410,7 +410,7 @@ export default function DeliveryPartnerPage() {
                 bgColor: "bg-gradient-to-br from-orange-500 to-red-500"
               }
             ].map((benefit, index) => (
-              <div key={index} className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-purple-200 transform hover:scale-[1.02]">
+              <div key={index} className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-200 transform hover:scale-[1.02]">
                 <div className={`w-16 h-16 ${benefit.bgColor} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   {benefit.icon}
                 </div>
@@ -426,23 +426,23 @@ export default function DeliveryPartnerPage() {
           </div>
 
           {/* Launch Benefits */}
-          <div className="mt-20 bg-gradient-to-r from-purple-600 to-purple-700 rounded-3xl p-12 text-center text-white max-w-4xl mx-auto">
+          <div className="mt-20 bg-gradient-to-r from-green-600 to-green-700 rounded-3xl p-12 text-center text-white max-w-4xl mx-auto">
             <h3 className="text-3xl font-bold mb-4">Launch Partner Benefits</h3>
-            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
               Be among the first to join and enjoy exclusive launch benefits
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-2xl font-bold mb-2">Higher Commissions</div>
-                <div className="text-purple-200">Special rates for our first 100 partners</div>
+                <div className="text-green-200">Special rates for our first 100 partners</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold mb-2">Priority Zones</div>
-                <div className="text-purple-200">Access to premium delivery areas</div>
+                <div className="text-green-200">Access to premium delivery areas</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold mb-2">Growth Opportunities</div>
-                <div className="text-purple-200">Be part of our expansion story</div>
+                <div className="text-green-200">Be part of our expansion story</div>
               </div>
             </div>
           </div>
@@ -462,8 +462,8 @@ export default function DeliveryPartnerPage() {
                 
                 <div className="space-y-8">
                   <div className="flex items-start space-x-5">
-                    <div className="flex-shrink-0 w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex-shrink-0 w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                      <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                       </svg>
                     </div>
@@ -474,8 +474,8 @@ export default function DeliveryPartnerPage() {
                   </div>
 
                   <div className="flex items-start space-x-5">
-                    <div className="flex-shrink-0 w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex-shrink-0 w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                      <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                       </svg>
                     </div>
@@ -486,8 +486,8 @@ export default function DeliveryPartnerPage() {
                   </div>
 
                   <div className="flex items-start space-x-5">
-                    <div className="flex-shrink-0 w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex-shrink-0 w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                      <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                       </svg>
                     </div>
@@ -522,7 +522,7 @@ export default function DeliveryPartnerPage() {
                 <div className="w-80 h-[600px] bg-gray-900 rounded-[48px] p-4 shadow-2xl">
                   <div className="w-full h-full bg-white rounded-[40px] overflow-hidden border-8 border-gray-900">
                     {/* App Header */}
-                    <div className="bg-gradient-to-r from-purple-600 to-purple-700 p-6 text-white">
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 p-6 text-white">
                       <div className="flex items-center justify-between mb-4">
                         <div className="font-bold text-lg flex items-center">
                           <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center mr-2">
@@ -536,17 +536,17 @@ export default function DeliveryPartnerPage() {
                           </div>
                           Fast2 Partner
                         </div>
-                        <div className="bg-purple-500 text-white text-xs px-2 py-1 rounded-full">Online</div>
+                        <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">Online</div>
                       </div>
                       <div className="text-3xl font-bold">₹1,240 earned</div>
-                      <div className="text-purple-100">Today • 12 deliveries</div>
+                      <div className="text-green-100">Today • 12 deliveries</div>
                     </div>
 
                     {/* Current Delivery */}
                     <div className="p-6 border-b border-gray-200">
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-gray-600 font-medium">Active delivery</span>
-                        <span className="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full font-medium">In progress</span>
+                        <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full font-medium">In progress</span>
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">

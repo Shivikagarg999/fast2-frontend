@@ -178,7 +178,7 @@ const PopupAdmin = ({ adminToken }) => {
             resetForm();
             setShowForm(true);
           }}
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
         >
           Create New Popup
         </button>
@@ -212,7 +212,7 @@ const PopupAdmin = ({ adminToken }) => {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     maxLength={100}
                     required
                   />
@@ -225,7 +225,7 @@ const PopupAdmin = ({ adminToken }) => {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   >
                     <option value="info">Info</option>
                     <option value="success">Success</option>
@@ -242,7 +242,7 @@ const PopupAdmin = ({ adminToken }) => {
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   rows={3}
                   maxLength={500}
                   required
@@ -257,7 +257,7 @@ const PopupAdmin = ({ adminToken }) => {
                   type="url"
                   value={formData.imageUrl}
                   onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
@@ -271,7 +271,7 @@ const PopupAdmin = ({ adminToken }) => {
                     type="datetime-local"
                     value={formData.startTime}
                     onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     required
                   />
                 </div>
@@ -284,7 +284,7 @@ const PopupAdmin = ({ adminToken }) => {
                     type="datetime-local"
                     value={formData.endTime}
                     onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     required
                   />
                 </div>
@@ -298,7 +298,7 @@ const PopupAdmin = ({ adminToken }) => {
                   <select
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   >
                     <option value="top-left">Top Left</option>
                     <option value="top-center">Top Center</option>
@@ -319,7 +319,7 @@ const PopupAdmin = ({ adminToken }) => {
                     max="10"
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
 
@@ -333,7 +333,7 @@ const PopupAdmin = ({ adminToken }) => {
                     max="300"
                     value={formData.autoCloseAfter}
                     onChange={(e) => setFormData({ ...formData, autoCloseAfter: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="Leave empty for manual close"
                   />
                 </div>
@@ -348,7 +348,7 @@ const PopupAdmin = ({ adminToken }) => {
                     type="text"
                     value={formData.targetPages}
                     onChange={(e) => setFormData({ ...formData, targetPages: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="/home, /products, /about"
                   />
                 </div>
@@ -361,7 +361,7 @@ const PopupAdmin = ({ adminToken }) => {
                     type="text"
                     value={formData.targetUsers}
                     onChange={(e) => setFormData({ ...formData, targetUsers: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="premium, new, vip"
                   />
                 </div>
@@ -399,7 +399,7 @@ const PopupAdmin = ({ adminToken }) => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                   {editingPopup ? 'Update Popup' : 'Create Popup'}
                 </button>
@@ -450,8 +450,8 @@ const PopupAdmin = ({ adminToken }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      popup.type === 'info' ? 'bg-purple-100 text-purple-800' :
-                      popup.type === 'success' ? 'bg-purple-100 text-purple-800' :
+                      popup.type === 'info' ? 'bg-green-100 text-green-800' :
+                      popup.type === 'success' ? 'bg-green-100 text-green-800' :
                       popup.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     }`}>
@@ -464,7 +464,7 @@ const PopupAdmin = ({ adminToken }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      isPopupActive(popup) ? 'bg-purple-100 text-purple-800' :
+                      isPopupActive(popup) ? 'bg-green-100 text-green-800' :
                       popup.isActive ? 'bg-yellow-100 text-yellow-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
@@ -479,7 +479,7 @@ const PopupAdmin = ({ adminToken }) => {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEdit(popup)}
-                        className="text-purple-600 hover:text-purple-900"
+                        className="text-green-600 hover:text-green-900"
                       >
                         Edit
                       </button>

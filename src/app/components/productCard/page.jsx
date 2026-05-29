@@ -128,7 +128,7 @@ const ProductCard = ({
                   Delivery: ₹{product.delivery.deliveryCharges}
                 </span>
               ) : (
-                <span className="text-xs text-purple-600 font-medium">Free Delivery</span>
+                <span className="text-xs text-green-600 font-medium">Free Delivery</span>
               )}
             </div>
           </div>
@@ -165,7 +165,7 @@ const ProductCard = ({
           {/* Show savings if there's discount */}
           {hasDiscount && savings > 0 && (
             <div className="flex items-center space-x-1">
-              <span className="text-xs text-purple-600 font-semibold">
+              <span className="text-xs text-green-600 font-semibold">
                 Save {formatDisplayPrice(savings)}
               </span>
             </div>
@@ -183,14 +183,14 @@ const ProductCard = ({
             </button>
           ) : cartQuantity === 0 ? (
             <button
-              className={`w-full bg-purple-50 border border-purple-600 text-purple-700 hover:bg-purple-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-full bg-green-50 border border-green-600 text-green-700 hover:bg-green-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
             >
               {isAddingToCart ? (
                 <span className="flex items-center justify-center">
-                  <span className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mr-2"></span>
+                  <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin mr-2"></span>
                   ADDING
                 </span>
               ) : (
@@ -198,9 +198,9 @@ const ProductCard = ({
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-purple-600 text-white rounded-lg shadow-md h-9">
+            <div className="flex items-center justify-between bg-green-600 text-white rounded-lg shadow-md h-9">
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-purple-700 rounded-l-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-l-lg transition-colors"
                 onClick={handleRemove}
               >
                 <MinusIcon className="w-4 h-4 font-bold" />
@@ -211,7 +211,7 @@ const ProductCard = ({
               </span>
 
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-purple-700 rounded-r-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-r-lg transition-colors"
                 onClick={handleIncrement}
               >
                 <PlusIcon className="w-4 h-4 font-bold" />
