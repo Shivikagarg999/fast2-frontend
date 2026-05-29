@@ -71,60 +71,22 @@ const PopupManager = () => {
     };
   };
 
-  const getPopupColors = () => {
-    if (!popup) return {};
-
-    const colors = {
-      'info': {
-        border: 'border-green-200',
-        bg: 'bg-green-50',
-        titleColor: 'text-green-800',
-        buttonBg: 'bg-green-600',
-        buttonHover: 'hover:bg-green-700'
-      },
-      'success': {
-        border: 'border-green-200',
-        bg: 'bg-green-50',
-        titleColor: 'text-green-800',
-        buttonBg: 'bg-green-600',
-        buttonHover: 'hover:bg-green-700'
-      },
-      'warning': {
-        border: 'border-yellow-200',
-        bg: 'bg-yellow-50',
-        titleColor: 'text-yellow-800',
-        buttonBg: 'bg-yellow-600',
-        buttonHover: 'hover:bg-yellow-700'
-      },
-      'error': {
-        border: 'border-red-200',
-        bg: 'bg-red-50',
-        titleColor: 'text-red-800',
-        buttonBg: 'bg-red-600',
-        buttonHover: 'hover:bg-red-700'
-      }
-    };
-    
-    return colors[popup.type] || colors['info'];
-  };
-
-  if (!popup || !isVisible) return null;
-
-  const colors = getPopupColors();
+  if (!popup) return null;
 
   return (
     <>
       {/* Blurred Backdrop */}
       <div
-        className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity duration-300"
-        style={{ opacity: isVisible ? 1 : 0 }}
+        className={`fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+          isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={closePopup}
       />
 
       {/* Centered Popup */}
       <div
         className={`fixed z-[9999] max-w-2xl w-11/12 rounded-lg shadow-2xl transition-all duration-300 transform ${
-          isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+          isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
         }`}
         style={getPopupStyle()}
       >
