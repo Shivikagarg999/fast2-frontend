@@ -1364,77 +1364,62 @@ const CheckoutPage = () => {
 
     {/* Order Confirmed Popup */}
     {step === 2 && (
-      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[80px] lg:pt-[80px] px-4 pb-4 overflow-y-auto">
         {/* Backdrop */}
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
         {/* Modal Card */}
-        <div className="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center overflow-hidden">
-
-          {/* Decorative background blobs */}
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-100 rounded-full opacity-60"></div>
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-100 rounded-full opacity-50"></div>
-
-          {/* Confetti dots */}
-          <div className="absolute top-6 right-12 w-2.5 h-2.5 bg-yellow-400 rounded-full"></div>
-          <div className="absolute top-10 right-8 w-2 h-2 bg-pink-400 rounded-full"></div>
-          <div className="absolute top-5 left-10 w-2 h-2 bg-green-400 rounded-full"></div>
-          <div className="absolute top-9 left-6 w-2.5 h-2.5 bg-orange-400 rounded-full"></div>
-          <div className="absolute bottom-20 right-6 w-2 h-2 bg-green-400 rounded-full"></div>
+        <div className="relative bg-white rounded-2xl shadow-2xl max-w-xs w-full p-5 text-center">
 
           {/* Success Icon */}
-          <div className="relative w-24 h-24 mx-auto mb-5">
-            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-300">
-                <svg className="w-9 h-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
+          <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
             </div>
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 mb-1 relative">
+          <h2 className="text-lg font-bold text-gray-900 mb-0.5">
             {paymentMethod === 'online' ? 'Payment Successful!' : 'Order Confirmed!'}
           </h2>
-          <p className="text-gray-400 text-sm mb-6 relative">
-            {paymentMethod === 'online'
-              ? 'Your payment was processed successfully.'
-              : 'Thank you! Your order has been placed.'}
+          <p className="text-gray-400 text-xs mb-4">
+            {paymentMethod === 'online' ? 'Payment processed successfully.' : 'Your order has been placed.'}
           </p>
 
-          {/* Order ID */}
-          {orderId && orderId !== 'N/A' && (
-            <div className="relative bg-gray-50 rounded-2xl px-5 py-3 mb-3 border border-gray-100">
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-0.5">Order ID</p>
-              <p className="text-base font-bold text-gray-800">#{orderId}</p>
+          {/* Order ID + Payment Info row */}
+          <div className="flex gap-2 mb-4">
+            {orderId && orderId !== 'N/A' && (
+              <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2 border border-gray-100 text-left">
+                <p className="text-[9px] text-gray-400 uppercase tracking-widest font-semibold">Order ID</p>
+                <p className="text-sm font-bold text-gray-800">#{orderId}</p>
+              </div>
+            )}
+            <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-2 text-left">
+              <p className="text-[9px] text-green-600 uppercase tracking-widest font-semibold">
+                {paymentMethod === 'online' ? 'Payment' : 'Method'}
+              </p>
+              <p className="text-xs text-green-700 font-medium leading-tight">
+                {paymentMethod === 'online'
+                  ? useWallet
+                    ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} online`
+                    : `₹${displayPayableAmount} online`
+                  : useWallet
+                    ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} COD`
+                    : 'Cash on Delivery'}
+              </p>
             </div>
-          )}
-
-          {/* Payment Info */}
-          <div className="relative bg-green-50 border border-green-100 rounded-2xl px-5 py-3 mb-6">
-            <p className="text-[10px] text-green-600 uppercase tracking-widest font-semibold mb-0.5">
-              {paymentMethod === 'online' ? 'Online Payment' : useWallet ? 'Wallet + Cash on Delivery' : 'Cash on Delivery'}
-            </p>
-            <p className="text-sm text-green-700 font-medium">
-              {paymentMethod === 'online'
-                ? useWallet
-                  ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} online`
-                  : `₹${displayPayableAmount} paid online`
-                : useWallet
-                  ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} on delivery`
-                  : 'Keep cash ready when your order arrives'}
-            </p>
           </div>
 
           {/* Scratch Card */}
           {scratchCard?.isEligible && (
-            <div className="relative mb-5">
+            <div className="mb-4">
               {(scratchCard.isScratched || scratchRevealed) ? (
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-4 text-center">
-                  <p className="text-xs font-semibold text-yellow-900 mb-2">🎉 Your Scratch Card Reward</p>
-                  <div className="bg-white rounded-xl px-4 py-2.5 inline-flex items-center gap-3 shadow-sm">
-                    <code className="text-base font-bold text-gray-900 tracking-widest">{scratchCard.couponCode}</code>
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-3 text-center">
+                  <p className="text-xs font-semibold text-yellow-900 mb-1.5">🎉 Scratch Card Reward</p>
+                  <div className="bg-white rounded-lg px-3 py-2 inline-flex items-center gap-2 shadow-sm">
+                    <code className="text-sm font-bold text-gray-900 tracking-widest">{scratchCard.couponCode}</code>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(scratchCard.couponCode);
@@ -1446,52 +1431,41 @@ const CheckoutPage = () => {
                       {scratchCopied ? '✓ Copied!' : 'Copy'}
                     </button>
                   </div>
-                  <p className="text-xs text-yellow-900/80 mt-2">Use this on your next order at checkout</p>
                 </div>
               ) : (
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-300 via-amber-300 to-orange-300 p-5 text-center">
-                  <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.1)_10px,rgba(255,255,255,0.1)_20px)]" />
-                  <p className="relative text-yellow-900 font-bold text-sm mb-1">🎟️ You earned a Scratch Card!</p>
-                  <p className="relative text-yellow-800/80 text-xs mb-3">Your order total exceeded ₹200 — reveal your reward</p>
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-300 via-amber-300 to-orange-300 p-4 text-center">
+                  <p className="text-yellow-900 font-bold text-xs mb-1">🎟️ You earned a Scratch Card!</p>
                   <button
                     onClick={handleScratch}
                     disabled={scratching}
-                    className="relative bg-white text-amber-700 font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-amber-50 active:scale-95 transition-all shadow-md disabled:opacity-70"
+                    className="bg-white text-amber-700 font-bold text-xs px-5 py-2 rounded-lg hover:bg-amber-50 active:scale-95 transition-all shadow-md disabled:opacity-70"
                   >
                     {scratching ? (
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-1.5">
                         <span className="animate-spin inline-block w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full" />
                         Scratching...
                       </span>
                     ) : '✨ Scratch to Reveal'}
                   </button>
                   {scratchError && (
-                    <p className="text-red-700 text-xs mt-2 relative bg-white/60 rounded px-2 py-1">{scratchError}</p>
+                    <p className="text-red-700 text-xs mt-1.5 bg-white/60 rounded px-2 py-0.5">{scratchError}</p>
                   )}
                 </div>
               )}
             </div>
           )}
 
-          {/* Estimated Delivery */}
-          <div className="relative flex items-center justify-center gap-2 mb-6 text-sm text-gray-500">
-            <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-            </svg>
-            <span>Estimated delivery in <strong className="text-gray-800">30–45 mins</strong></span>
-          </div>
-
           {/* Action Buttons */}
-          <div className="relative flex gap-3">
+          <div className="flex gap-2">
             <button
               onClick={() => router.push('/pages/orders')}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl font-semibold text-sm transition-colors"
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2.5 rounded-xl font-semibold text-sm transition-colors"
             >
               View Orders
             </button>
             <button
               onClick={() => router.push('/')}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-semibold text-sm transition-colors shadow-lg shadow-green-200"
+              className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors"
             >
               Shop More
             </button>
