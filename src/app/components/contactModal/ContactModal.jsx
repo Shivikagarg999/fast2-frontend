@@ -77,7 +77,7 @@ const ContactModal = ({ isOpen, onClose }) => {
     setStatus({ type: '', message: '', referenceId: '' });
 
     try {
-      const response = await fetch('https://www.fast2.in/proxy/api/contact/submit', {
+      const response = await fetch('/proxy/api/contact/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

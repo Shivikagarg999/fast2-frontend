@@ -5,7 +5,7 @@ import Footer from '@/app/components/footer/page';
 import Link from 'next/link';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { firebaseAuth, isFirebaseConfigured, missingFirebaseConfigKeys } from '@/app/lib/firebase';
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://www.fast2.in/proxy";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/proxy";
 
 export default function LoginPage() {
   const [authMethod, setAuthMethod] = useState('phone');

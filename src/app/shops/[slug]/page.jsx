@@ -30,7 +30,7 @@ import {
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import Footer from '../../components/footer/page';
 
-const API_BASE = 'https://www.fast2.in/proxy';
+const API_BASE = '/proxy';
 
 export default function ShopDetailPage() {
     const router = useRouter();

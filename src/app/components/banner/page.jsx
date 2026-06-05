@@ -14,7 +14,7 @@ const Banner = () => {
     const fetchBanners = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://www.fast2.in/proxy/api/admin/banners/getall');
+        const response = await fetch('/proxy/api/admin/banners/getall');
 
         if (!response.ok) {
           throw new Error(`Failed to fetch banners: ${response.status}`);

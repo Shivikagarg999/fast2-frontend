@@ -1,6 +1,6 @@
 // Popup service for handling popup-related API calls
 
-const API_BASE_URL = 'https://www.fast2.in/proxy/api/popups';
+const API_BASE_URL = '/proxy/api/popups';
 
 class PopupService {
   // Get active popup

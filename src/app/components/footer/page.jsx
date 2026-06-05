@@ -12,7 +12,7 @@ export default function Footer() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "https://www.fast2.in/proxy/api/category/getall"
+          "/proxy/api/category/getall"
         );
         const data = await response.json();
         setCategories(data);

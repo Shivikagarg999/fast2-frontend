@@ -79,7 +79,7 @@ const ProfilePage = () => {
         return;
       }
 
-      const response = await fetch('https://www.fast2.in/proxy/api/user/profile/', {
+      const response = await fetch('/proxy/api/user/profile/', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -132,7 +132,7 @@ const ProfilePage = () => {
       setSuccess('');
       
       const token = getToken();
-      const response = await fetch('https://www.fast2.in/proxy/api/user/profile', {
+      const response = await fetch('/proxy/api/user/profile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -181,7 +181,7 @@ const ProfilePage = () => {
       const formData = new FormData();
       formData.append('avatar', avatarFile);
 
-      const response = await fetch('https://www.fast2.in/proxy/api/user/profile/avatar', {
+      const response = await fetch('/proxy/api/user/profile/avatar', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -226,7 +226,7 @@ const ProfilePage = () => {
       setDeleting(true);
       setDeleteError('');
       const token = getToken();
-      const response = await fetch('https://www.fast2.in/proxy/api/user/delete-account', {
+      const response = await fetch('/proxy/api/user/delete-account', {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

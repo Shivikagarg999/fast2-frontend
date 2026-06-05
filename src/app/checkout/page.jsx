@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import MapboxGeocoderComponent from '../components/mapbox/mapboxGeocoder';
 import {
   ArrowLeftIcon,
   CheckBadgeIcon,
@@ -63,7 +64,10 @@ const CheckoutPage = () => {
     firstName: '',
     lastName: '',
     email: '',
-    addressType: 'home'
+    addressType: 'home',
+    lat: null,
+    lng: null,
+    locationSelected: false,
   });
 
   useEffect(() => {
@@ -98,7 +102,7 @@ const CheckoutPage = () => {
       try {
         setLoading(true);
 
-        const cartResponse = await fetch('https://www.fast2.in/proxy/api/cart/', {
+        const cartResponse = await fetch('/proxy/api/cart/', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -114,7 +118,7 @@ const CheckoutPage = () => {
           setCartItems([]);
         }
 
-        const addressesResponse = await fetch('https://www.fast2.in/proxy/api/user/addresses/get', {
+        const addressesResponse = await fetch('/proxy/api/user/addresses/get', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -130,7 +134,7 @@ const CheckoutPage = () => {
           }
         }
 
-        const walletResponse = await fetch('https://www.fast2.in/proxy/api/user/wallet', {
+        const walletResponse = await fetch('/proxy/api/user/wallet', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -328,6 +332,29 @@ const CheckoutPage = () => {
     setShippingInfo(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleMapSelect = (result) => {
+    const [lng, lat] = result.center;
+    const ctx = result.context || [];
+    const get = (prefix) => ctx.find(c => c.id.startsWith(prefix))?.text || '';
+    setShippingInfo(prev => ({
+      ...prev,
+      city: get('place') || get('locality') || get('neighborhood'),
+      state: get('region'),
+      pinCode: get('postcode'),
+      lat,
+      lng,
+      locationSelected: true,
+    }));
+  };
+
+  const handleResetLocation = () => {
+    setShippingInfo(prev => ({
+      ...prev,
+      city: '', state: '', pinCode: '',
+      lat: null, lng: null, locationSelected: false,
+    }));
+  };
+
   const validateShipping = () => {
     const requiredFields = ['firstName', 'lastName', 'phone', 'addressLine', 'city', 'state', 'pinCode'];
     for (const field of requiredFields) {
@@ -363,7 +390,7 @@ const CheckoutPage = () => {
         handler: async function (response) {
           try {
             const token = localStorage.getItem('token');
-            const verifyResponse = await fetch('https://www.fast2.in/proxy/api/order/verify-payment', {
+            const verifyResponse = await fetch('/proxy/api/order/verify-payment', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -512,7 +539,9 @@ const CheckoutPage = () => {
           state: shippingInfo.state,
           pinCode: shippingInfo.pinCode,
           country: shippingInfo.country,
-          phone: shippingInfo.phone
+          phone: shippingInfo.phone,
+          lat: shippingInfo.lat || 0,
+          lng: shippingInfo.lng || 0,
         },
         paymentMethod: paymentMethod,
         useWallet: useWallet
@@ -543,7 +572,7 @@ const CheckoutPage = () => {
 
       console.log('Sending order data via FormData');
 
-      const response = await fetch('https://www.fast2.in/proxy/api/order/create', {
+      const response = await fetch('/proxy/api/order/create', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -623,7 +652,7 @@ const CheckoutPage = () => {
       const token = localStorage.getItem('token');
       const breakdown = getAmountBreakdown();
       const orderAmount = breakdown.total + breakdown.gst;
-      const res = await fetch('https://www.fast2.in/proxy/api/order/redeem-scratch-coupon', {
+      const res = await fetch('/proxy/api/order/redeem-scratch-coupon', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -650,7 +679,7 @@ const CheckoutPage = () => {
     setScratchError('');
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`https://www.fast2.in/proxy/api/order/${orderId}/scratch-coupon`, {
+      const res = await fetch(`/proxy/api/order/${orderId}/scratch-coupon`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -673,7 +702,7 @@ const CheckoutPage = () => {
 
   const clearCart = async (token) => {
     try {
-      await fetch('https://www.fast2.in/proxy/api/cart/clear', {
+      await fetch('/proxy/api/cart/clear', {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -951,19 +980,29 @@ const CheckoutPage = () => {
                           </div>
                         </div>
 
+                        {/* Map location picker */}
                         <div>
-                          <label className="block text-sm font-semibold text-gray-900 mb-2">Complete Address *</label>
-                          <textarea
-                            name="addressLine"
-                            value={shippingInfo.addressLine}
-                            onChange={handleShippingChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
-                            rows="3"
-                            placeholder="House no., Building, Street, Area, Landmark..."
-                            required
-                          />
+                          <label className="block text-sm font-semibold text-gray-900 mb-2">Search Location on Map *</label>
+                          {!shippingInfo.locationSelected ? (
+                            <MapboxGeocoderComponent
+                              key="checkout-geocoder"
+                              onSelectLocation={handleMapSelect}
+                              placeholder="Search area, street, locality..."
+                            />
+                          ) : (
+                            <div className="flex items-center justify-between px-4 py-3 bg-green-50 border border-green-300 rounded-lg">
+                              <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
+                                <MapPinIcon className="w-4 h-4" />
+                                {shippingInfo.city}{shippingInfo.state ? `, ${shippingInfo.state}` : ''} - {shippingInfo.pinCode}
+                              </div>
+                              <button type="button" onClick={handleResetLocation} className="text-xs text-red-500 hover:text-red-700 font-medium">
+                                Change
+                              </button>
+                            </div>
+                          )}
                         </div>
 
+                        {/* Auto-filled from map */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-sm font-semibold text-gray-900 mb-2">City *</label>
@@ -972,7 +1011,8 @@ const CheckoutPage = () => {
                               name="city"
                               value={shippingInfo.city}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              readOnly={shippingInfo.locationSelected}
+                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'}`}
                               required
                             />
                           </div>
@@ -983,7 +1023,8 @@ const CheckoutPage = () => {
                               name="state"
                               value={shippingInfo.state}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              readOnly={shippingInfo.locationSelected}
+                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'}`}
                               required
                             />
                           </div>
@@ -994,11 +1035,27 @@ const CheckoutPage = () => {
                               name="pinCode"
                               value={shippingInfo.pinCode}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              readOnly={shippingInfo.locationSelected}
+                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'}`}
                               required
                               maxLength="6"
                             />
                           </div>
+                        </div>
+
+                        {/* Manual: house no. + landmark only */}
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-900 mb-2">House No. / Flat / Landmark *</label>
+                          <textarea
+                            name="addressLine"
+                            value={shippingInfo.addressLine}
+                            onChange={handleShippingChange}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                            rows="2"
+                            placeholder="e.g. Flat 12B, Green Apartments, Near City Hospital"
+                            required
+                          />
+                          <p className="text-xs text-gray-400 mt-1">This helps the driver find your exact location.</p>
                         </div>
                       </div>
                     </div>

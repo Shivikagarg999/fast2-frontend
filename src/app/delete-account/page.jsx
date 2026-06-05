@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-const BASE_URL = 'https://www.fast2.in/proxy';
+const BASE_URL = '/proxy';
 
 export default function DeleteAccountPage() {
   const [step, setStep] = useState('form'); // 'form' | 'confirm' | 'success'

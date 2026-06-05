@@ -689,7 +689,7 @@ function HeaderContent() {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://www.fast2.in/proxy/api/user/me', {
+        const response = await fetch('/proxy/api/user/me', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -717,7 +717,7 @@ function HeaderContent() {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://www.fast2.in/proxy/api/cart/', {
+        const response = await fetch('/proxy/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -752,7 +752,7 @@ function HeaderContent() {
 
         try {
           const token = localStorage.getItem('token');
-          const response = await fetch('https://www.fast2.in/proxy/api/cart/', {
+          const response = await fetch('/proxy/api/cart/', {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -787,7 +787,7 @@ function HeaderContent() {
     const fetchCategories = async () => {
       setLoadingCategories(true);
       try {
-        const response = await fetch('https://www.fast2.in/proxy/api/category/getall');
+        const response = await fetch('/proxy/api/category/getall');
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
