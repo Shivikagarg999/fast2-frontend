@@ -40,8 +40,8 @@ function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   return (
     <input
       type="text"
-      placeholder="Search any product..."
-      className="w-full pl-10 pr-4 text-black py-2 border border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+      placeholder="Search for products, categories..."
+      className="w-full pl-10 pr-12 text-black py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
       value={productSearchQuery}
       onChange={handleProductSearchChange}
     />
@@ -923,8 +923,9 @@ function HeaderContent() {
               </div>
             </div>
 
+            {/* Desktop Search */}
             <div className="hidden lg:flex flex-1 max-w-2xl mx-8">
-              <div className="relative w-full">
+              <div className="relative w-full flex items-center">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
                 </div>
@@ -934,126 +935,118 @@ function HeaderContent() {
                     setProductSearchQuery={setProductSearchQuery}
                   />
                 </Suspense>
+                <button
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 transition-colors"
+                  onClick={() => router.push(productSearchQuery ? `/?search=${encodeURIComponent(productSearchQuery)}` : '/')}
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4 text-white" />
+                </button>
               </div>
             </div>
 
-            {/* Shops Link */}
-            <div
-              className="hidden lg:flex items-center space-x-1 cursor-pointer hover:text-black transition-colors px-3 py-2 rounded-lg hover:bg-green-50"
-              onClick={() => router.push('/shops')}
-            >
-              <BuildingStorefrontIcon className="w-5 h-5 text-black" />
-              <span className="text-sm font-medium text-black">Shops</span>
-            </div>
+            {/* Desktop right icons: Shops | Account | Cart */}
+            <div className="hidden lg:flex items-center gap-1">
 
-            <div className="flex shrink-0 items-center gap-2 sm:gap-4">
-              {isLoggedIn ? (
-                <div className="hidden md:flex items-center space-x-3 relative" ref={profileDropdownRef}>
-                  <div className="flex items-center space-x-1 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-1.5">
-                    <BanknotesIcon className="w-5 h-5 text-yellow-600" />
-                    <span className="text-sm font-medium text-yellow-700">
-                      ₹{formatWalletBalance(walletBalance)}
-                    </span>
-                  </div>
+              {/* Shops */}
+              <button
+                onClick={() => router.push('/shops')}
+                className="flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <BuildingStorefrontIcon className="w-6 h-6 text-gray-700" />
+                <span className="text-xs text-gray-700 font-medium">Shops</span>
+              </button>
 
-                  <div
-                    className="flex items-center space-x-2 cursor-pointer hover:text-black transition-colors p-2 rounded-lg hover:bg-green-50"
-                    onClick={toggleProfileDropdown}
-                  >
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <UserIcon className="w-5 h-5 text-green-600" />
+              {/* Account */}
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  onClick={isLoggedIn ? toggleProfileDropdown : handleLoginClick}
+                  className="flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  <UserIcon className="w-6 h-6 text-gray-700" />
+                  <span className="text-xs text-gray-700 font-medium">{isLoggedIn ? userName.split(' ')[0] : 'Account'}</span>
+                </button>
+
+                {isProfileDropdownOpen && isLoggedIn && (
+                  <div className="absolute top-full right-0 mt-2 w-60 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+                    {/* Wallet balance at top */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-yellow-50 border-b border-yellow-100">
+                      <div className="flex items-center gap-2">
+                        <BanknotesIcon className="w-5 h-5 text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-800">Wallet</span>
+                      </div>
+                      <span className="text-sm font-bold text-yellow-700">₹{formatWalletBalance(walletBalance)}</span>
                     </div>
-                    <span className="text-sm font-medium text-black">{userName}</span>
-                    <ChevronDownIcon className={`w-4 h-4 text-black transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''
-                      }`} />
-                  </div>
 
-                  {isProfileDropdownOpen && (
-                    <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-green-200 rounded-lg shadow-lg z-50 overflow-hidden">
-                      <div className="py-1">
-                        <div
-                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
-                          onClick={handleProfileClick}
-                        >
-                          <Cog6ToothIcon className="w-5 h-5 mr-3 text-green-400" />
-                          <span>My Profile</span>
-                        </div>
-
-                        <div
-                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
-                          onClick={handleSavedAddresses}
-                        >
-                          <MapIcon className="w-5 h-5 mr-3 text-green-400" />
-                          <span>Saved Addresses</span>
-                        </div>
-
-                        <div
-                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
-                          onClick={handleOrdersClick}
-                        >
-                          <InboxIcon className="w-5 h-5 mr-3 text-green-400" />
-                          <span>My Orders</span>
-                        </div>
-
-                        <div
-                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
-                          onClick={handleCouponsClick}
-                        >
-                          <TicketIcon className="w-5 h-5 mr-3 text-green-400" />
-                          <span>My Coupons</span>
-                        </div>
-
-                        <div
-                          className="flex items-center px-4 py-3 text-sm text-green-700 hover:bg-green-50 cursor-pointer transition-colors"
-                          onClick={handleReferralsClick}
-                        >
-                          <UserGroupIcon className="w-5 h-5 mr-3 text-green-400" />
-                          <span>Refer & Earn</span>
-                        </div>
-
-                        <div className="border-t border-green-100 my-1"></div>
-
-                        <div
-                          className="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-green-50 cursor-pointer transition-colors"
-                          onClick={handleLogout}
-                        >
-                          <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
-                          <span>Log Out</span>
-                        </div>
+                    <div className="py-1">
+                      <div className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleProfileClick}>
+                        <Cog6ToothIcon className="w-5 h-5 mr-3 text-gray-400" />
+                        <span>My Profile</span>
+                      </div>
+                      <div className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleSavedAddresses}>
+                        <MapIcon className="w-5 h-5 mr-3 text-gray-400" />
+                        <span>Saved Addresses</span>
+                      </div>
+                      <div className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleOrdersClick}>
+                        <InboxIcon className="w-5 h-5 mr-3 text-gray-400" />
+                        <span>My Orders</span>
+                      </div>
+                      <div className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleWalletClick}>
+                        <BanknotesIcon className="w-5 h-5 mr-3 text-gray-400" />
+                        <span>My Wallet</span>
+                      </div>
+                      <div className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleCouponsClick}>
+                        <TicketIcon className="w-5 h-5 mr-3 text-gray-400" />
+                        <span>My Coupons</span>
+                      </div>
+                      <div className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleReferralsClick}>
+                        <UserGroupIcon className="w-5 h-5 mr-3 text-gray-400" />
+                        <span>Refer & Earn</span>
+                      </div>
+                      <div className="border-t border-gray-100 my-1" />
+                      <div className="flex items-center px-4 py-3 text-sm text-red-500 hover:bg-gray-50 cursor-pointer transition-colors" onClick={handleLogout}>
+                        <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+                        <span>Log Out</span>
                       </div>
                     </div>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className="hidden md:flex items-center space-x-2 cursor-pointer hover:text-black transition-colors"
-                  onClick={handleLoginClick}
-                >
-                  <UserIcon className="w-6 h-6 text-black" />
-                  <span className="text-sm font-medium text-black">Login/Signup</span>
-                </div>
-              )}
-              <div
-                className={`flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors sm:space-x-1 ${isLoggedIn
-                    ? 'text-black cursor-pointer hover:text-black hover:bg-green-50'
-                    : 'text-green-600 cursor-not-allowed opacity-60'
-                  }`}
+                  </div>
+                )}
+              </div>
+
+              {/* Cart */}
+              <button
                 onClick={isLoggedIn ? handleCartClick : undefined}
-                aria-label="Cart"
+                disabled={!isLoggedIn}
+                className={`flex flex-col items-center gap-0.5 px-4 py-2 rounded-xl transition-colors ${isLoggedIn ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
               >
                 <div className="relative">
-                  <ShoppingCartIcon className="h-8 w-8 text-black sm:h-7 sm:w-7" />
-                  {isLoggedIn && (
-                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-green-500 px-1 text-[11px] font-semibold text-white">
-                      {cartItemCount > 0 ? cartItemCount : 0}
+                  <ShoppingCartIcon className="w-6 h-6 text-gray-700" />
+                  {isLoggedIn && cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-green-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {cartItemCount}
                     </span>
                   )}
                 </div>
-                <span className="hidden sm:block text-sm font-medium text-black">Cart</span>
-              </div>
+                <span className="text-xs text-gray-700 font-medium">Cart</span>
+              </button>
+            </div>
 
+            {/* Mobile: cart + hamburger */}
+            <div className="flex lg:hidden shrink-0 items-center gap-1">
+              <div
+                className={`flex items-center justify-center rounded-lg p-2 transition-colors ${isLoggedIn ? 'cursor-pointer hover:bg-green-50' : 'opacity-50 cursor-not-allowed'}`}
+                onClick={isLoggedIn ? handleCartClick : undefined}
+              >
+                <div className="relative">
+                  <ShoppingCartIcon className="h-7 w-7 text-black" />
+                  {isLoggedIn && cartItemCount > 0 && (
+                    <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-green-500 px-1 text-[11px] font-semibold text-white">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </div>
+              </div>
               <button
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors hover:bg-green-50 lg:hidden"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 transition-colors hover:bg-green-50"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
