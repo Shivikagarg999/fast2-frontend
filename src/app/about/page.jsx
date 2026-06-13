@@ -438,6 +438,14 @@ export default function About() {
                                 </a>
                               </div>
                             </div>
+
+                            <div className="flex items-start">
+                              <ShieldCheckIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
+                              <div className="ml-4">
+                                <h4 className="font-semibold text-green-100">GST Number</h4>
+                                <p className="mt-1 text-green-50 font-mono tracking-wide">CX029528377IN</p>
+                              </div>
+                            </div>
                           </div>
 
                           <div className="mt-12 pt-8 border-t border-green-500/30">

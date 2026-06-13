@@ -237,9 +237,10 @@ export default function Footer() {
 
         {/* Copyright and bottom links */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-black mb-4 md:mb-0">
+          <p className="text-sm text-black mb-2 md:mb-0">
             © {new Date().getFullYear()} Fast2. All rights reserved.
           </p>
+          <p className="text-xs text-black mb-4 md:mb-0 font-mono">GSTIN: CX029528377IN</p>
           <div className="flex space-x-6 text-sm text-black">
             <a href="/terms-conditions" className="hover:text-black transition-colors">
               Fast2 Policies
