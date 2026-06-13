@@ -2,16 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&q=80';
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [bannerData, setBannerData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
   useEffect(() => {
     const fetchBanners = async () => {
       try {
@@ -122,42 +118,6 @@ const Banner = () => {
               {slide.description || 'Farm fresh fruits, vegetables, dairy and daily essentials delivered to your doorstep in minutes.'}
             </p>
 
-            {/* CTA Buttons */}
-            <div className="flex gap-2 sm:gap-3 flex-wrap">
-              <button
-                onClick={() => router.push('/')}
-                className="flex items-center gap-2 font-bold text-sm text-white px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95"
-                style={{ background: 'linear-gradient(90deg, #16a34a, #15803d)', boxShadow: '0 4px 15px rgba(22,163,74,0.4)' }}
-              >
-                Shop Now
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-              <button
-                onClick={() => document.getElementById('categories-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="font-bold text-sm text-white px-5 py-2.5 rounded-full border transition-all hover:bg-white/10 active:scale-95"
-                style={{ borderColor: 'rgba(255,255,255,0.5)' }}
-              >
-                Browse Categories
-              </button>
-            </div>
-
-            {/* Promo pills */}
-            <div className="flex gap-2 flex-wrap">
-              <span className="text-[11px] font-bold px-3 py-1.5 rounded-full"
-                style={{ background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.4)', color: '#fde047' }}>
-                50% OFF First Order
-              </span>
-              <span className="text-[11px] font-bold px-3 py-1.5 rounded-full"
-                style={{ background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#86efac' }}>
-                BUY 1 GET 1
-              </span>
-              <span className="text-[11px] font-bold px-3 py-1.5 rounded-full"
-                style={{ background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.4)', color: '#93c5fd' }}>
-                FRESH TODAY
-              </span>
-            </div>
           </div>
         </div>
 
