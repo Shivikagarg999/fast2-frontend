@@ -57,7 +57,6 @@ const Banner = () => {
   }
 
   const slide = bannerData[currentSlide] || {};
-  const imageUrl = getSafeImageUrl(slide.image);
 
   return (
     <section className="w-full px-3 py-3 sm:px-4 md:py-4">
@@ -93,42 +92,10 @@ const Banner = () => {
         />
 
         {/* Content layer */}
-        <div className="absolute inset-0 z-20 flex items-center justify-between px-6 sm:px-10 lg:px-14">
-
-          {/* LEFT — Floating glass card */}
-          <div
-            className="hidden lg:flex flex-col gap-4 p-5 rounded-2xl"
-            style={{
-              background: 'rgba(255,255,255,0.12)',
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255,255,255,0.25)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-              minWidth: '210px'
-            }}
-          >
-            {[
-              { emoji: '⚡', text: '10 Minute Delivery' },
-              { emoji: '🌱', text: 'Farm Fresh Everyday' },
-              { emoji: '⭐', text: 'Premium Quality Products' },
-            ].map(item => (
-              <div key={item.text} className="flex items-center gap-3">
-                <div
-                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-                  style={{ background: 'rgba(255,255,255,0.18)' }}
-                >
-                  {item.emoji}
-                </div>
-                <span className="text-white font-semibold text-sm leading-tight">{item.text}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Spacer */}
-          <div className="flex-1" />
+        <div className="absolute inset-0 z-20 flex items-center justify-end px-6 sm:px-10 lg:px-14">
 
           {/* RIGHT — Main hero content */}
-          <div className="flex flex-col items-start gap-3 sm:gap-4 max-w-[340px] sm:max-w-[400px] lg:max-w-[420px]">
+          <div className="flex flex-col items-start gap-3 sm:gap-4 max-w-[280px] sm:max-w-[340px] lg:max-w-[380px]">
 
             {/* Badge */}
             <div
@@ -141,10 +108,10 @@ const Banner = () => {
 
             {/* Headline */}
             <div className="space-y-0.5">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-white leading-tight">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-black text-white leading-tight">
                 {slide.title || 'Fresh Groceries'}
               </h1>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black leading-tight"
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-black leading-tight"
                 style={{ color: '#4ade80' }}>
                 {slide.subtitle || 'Delivered Fast'}
               </h1>
