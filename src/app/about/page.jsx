@@ -443,7 +443,7 @@ export default function About() {
                               <ShieldCheckIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">GST Number</h4>
-                                <p className="mt-1 text-green-50 font-mono tracking-wide">CX029528377IN</p>
+                                <p className="mt-1 text-green-50 font-mono tracking-wide">23LQZPK8550M1ZO</p>
                               </div>
                             </div>
                           </div>

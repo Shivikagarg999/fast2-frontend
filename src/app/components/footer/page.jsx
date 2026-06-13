@@ -240,7 +240,7 @@ export default function Footer() {
           <p className="text-sm text-black mb-2 md:mb-0">
             © {new Date().getFullYear()} Fast2. All rights reserved.
           </p>
-          <p className="text-xs text-black mb-4 md:mb-0 font-mono">GSTIN: CX029528377IN</p>
+          <p className="text-xs text-black mb-4 md:mb-0 font-mono">GSTIN: 23LQZPK8550M1ZO</p>
           <div className="flex space-x-6 text-sm text-black">
             <a href="/terms-conditions" className="hover:text-black transition-colors">
               Fast2 Policies
