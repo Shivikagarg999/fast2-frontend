@@ -428,28 +428,23 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
           }`}
         onClick={() => !isGettingLocation && setShowLocationDropdown(!showLocationDropdown)}
       >
-        <div className={`
-          flex items-center space-x-2 bg-green-50 hover:bg-green-100 px-2.5 py-2.5 rounded-lg sm:px-3 sm:py-2
-          transition-colors duration-200 border border-green-200 w-full
-          ${isMobile ? 'min-w-0' : ''}
-          ${isGettingLocation ? 'opacity-75' : ''}
-        `}>
+        <div className={`flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors w-full ${isGettingLocation ? 'opacity-75' : ''}`}>
           {isGettingLocation ? (
-            <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-green-600 border-t-transparent sm:h-4 sm:w-4"></div>
+            <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-green-600 border-t-transparent" />
           ) : (
-            <MapPinIcon className="h-6 w-6 flex-shrink-0 text-red-500 sm:h-4 sm:w-4" />
+            <MapPinIcon className="h-5 w-5 flex-shrink-0 text-green-600" />
           )}
-          <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-[11px] text-green-700 whitespace-nowrap sm:text-xs">Delivery to</span>
-            <span className="max-w-[120px] truncate text-sm font-semibold text-green-900 sm:max-w-[180px] sm:font-medium">
-              {displayLocation}
+          <div className="flex flex-col min-w-0 leading-tight">
+            <span className="text-[11px] text-green-600 font-medium">Deliver to</span>
+            <span className="text-sm font-bold text-gray-900 truncate max-w-[160px]">
+              {isGettingLocation
+                ? 'Detecting...'
+                : pincode
+                  ? `${displayLocation}, ${pincode}`
+                  : displayLocation}
             </span>
-            {pincode && !isGettingLocation && (
-              <span className="text-xs text-green-700">Pincode: {pincode}</span>
-            )}
           </div>
-          <ChevronDownIcon className={`h-5 w-5 flex-shrink-0 text-green-700 transition-transform duration-200 sm:h-4 sm:w-4 ${showLocationDropdown ? 'rotate-180' : ''
-            }`} />
+          <ChevronDownIcon className={`h-4 w-4 flex-shrink-0 text-green-600 transition-transform duration-200 ${showLocationDropdown ? 'rotate-180' : ''}`} />
         </div>
       </div>
 

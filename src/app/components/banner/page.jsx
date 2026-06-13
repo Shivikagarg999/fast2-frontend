@@ -2,235 +2,241 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1400&q=80';
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [bannerData, setBannerData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const router = useRouter();
 
-  // Fetch banners from API
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        setLoading(true);
         const response = await fetch('/proxy/api/admin/banners/getall');
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch banners: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error('Failed to fetch banners');
         const result = await response.json();
-
-        if (result.success) {
+        if (result.success && result.data?.length > 0) {
           setBannerData(result.data);
         } else {
-          throw new Error(result.message || 'Failed to fetch banners');
+          setBannerData([{}]);
         }
-      } catch (err) {
-        console.error('Error fetching banners:', err);
-        setError(err.message);
-        setBannerData([]);
+      } catch {
+        setBannerData([{}]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchBanners();
   }, []);
 
-  // Auto-rotate slides every 4 seconds
   useEffect(() => {
-    if (bannerData.length === 0) return;
-
+    if (bannerData.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % bannerData.length);
-    }, 4000);
-
+      setCurrentSlide(prev => (prev + 1) % bannerData.length);
+    }, 4500);
     return () => clearInterval(interval);
   }, [bannerData.length]);
 
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
-
-  const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + bannerData.length) % bannerData.length);
-  };
-
-  const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % bannerData.length);
-  };
-
-  // Safe image URL handling
   const getSafeImageUrl = (url) => {
-    if (!url) return '/fallback-banner.jpg';
-
-    try {
-      new URL(url);
-      return url;
-    } catch {
-      return '/fallback-banner.jpg';
-    }
+    if (!url) return FALLBACK_IMAGE;
+    try { new URL(url); return url; } catch { return FALLBACK_IMAGE; }
   };
 
-  // Loading state
   if (loading) {
     return (
-      <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
-        <div className="relative mx-auto h-44 w-full max-w-7xl overflow-hidden rounded-lg bg-gray-200 shadow-sm animate-pulse sm:h-52 md:h-60 lg:h-72">
-          <div className="flex h-full items-center px-5 md:px-8 lg:px-10">
-            <div className="flex-1 space-y-4">
-              <div className="h-8 bg-gray-300 rounded w-3/4"></div>
-              <div className="h-6 bg-gray-300 rounded w-1/2"></div>
-              <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-            </div>
-            <div className="flex-1">
-              <div className="w-full h-32 bg-gray-300 rounded"></div>
-            </div>
-          </div>
+      <section className="w-full px-3 py-3 sm:px-4 md:py-4">
+        <div className="relative mx-auto w-full max-w-7xl overflow-hidden rounded-3xl bg-gray-200 animate-pulse"
+          style={{ height: '420px' }}>
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 animate-pulse" />
         </div>
       </section>
     );
   }
 
-  // Error state
-  if (error) {
-    return (
-      <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
-        <div className="relative mx-auto h-44 w-full max-w-7xl overflow-hidden rounded-lg border border-red-200 bg-red-50 shadow-sm sm:h-52 md:h-60 lg:h-72">
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <p className="text-red-600 text-lg font-semibold">Failed to load banners</p>
-              <p className="text-red-500 text-sm mt-2">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // No banners state
-  if (bannerData.length === 0) {
-    return (
-      <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
-        <div className="relative mx-auto h-44 w-full max-w-7xl overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm sm:h-52 md:h-60 lg:h-72">
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500 text-lg">No banners available</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const slide = bannerData[currentSlide] || {};
+  const imageUrl = getSafeImageUrl(slide.image);
 
   return (
-    <section className="relative w-full bg-[#eef2f5] px-3 py-3 sm:px-4 md:py-4">
-      <div className="relative mx-auto h-[190px] w-full max-w-7xl overflow-hidden rounded-lg bg-[#dfe7ee] shadow-sm sm:h-[230px] md:h-[270px] lg:h-[310px]">
-        {bannerData.map((slide, index) => (
+    <section className="w-full px-3 py-3 sm:px-4 md:py-4">
+      <div
+        className="relative mx-auto w-full max-w-7xl overflow-hidden"
+        style={{ borderRadius: '24px', height: 'clamp(280px, 42vw, 480px)', boxShadow: '0 20px 60px rgba(0,0,0,0.25)' }}
+      >
+        {/* Background images */}
+        {bannerData.map((s, i) => (
           <div
-            key={slide._id || slide.id}
-            className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-              index === currentSlide
-                ? 'opacity-100 translate-x-0 scale-100'
-                : 'opacity-0 translate-x-full scale-95'
-            } ${slide.gradient ? `bg-gradient-to-r ${slide.gradient}` : ''}`}
-            style={{
-              backgroundColor: !slide.gradient ? (slide.accentColor || '#f3f4f6') : undefined
-            }}
+            key={s._id || i}
+            className="absolute inset-0 transition-opacity duration-700"
+            style={{ opacity: i === currentSlide ? 1 : 0 }}
           >
-            <div className="relative flex h-full items-center overflow-hidden px-5 sm:px-7 md:px-9 lg:px-12">
-              {/* Content Section */}
-              <div className="z-20 w-[54%] max-w-xl space-y-2 md:space-y-3">
-                <div className="space-y-1">
-                  <h1 className="text-lg font-semibold leading-tight text-gray-950 sm:text-2xl md:text-3xl lg:text-4xl">
-                    {slide.title}
-                  </h1>
-                  <h2
-                    className="text-base font-bold leading-tight text-gray-950 sm:text-xl md:text-2xl lg:text-3xl"
-                  >
-                    {slide.subtitle}
-                  </h2>
-                </div>
-                <p className="max-w-md text-[11px] leading-relaxed text-gray-700 sm:text-sm md:text-base">
-                  {slide.description}
-                </p>
-                {/* Button removed as requested */}
-              </div>
-
-              {/* Image Section */}
-              <div className="absolute inset-y-0 right-0 w-[52%]">
-                <div className="absolute inset-0 flex items-center justify-end pr-3 sm:pr-5 md:pr-8">
-                  <div className="relative h-[88%] w-full max-w-xl">
-                    <Image
-                      src={getSafeImageUrl(slide.image)}
-                      alt={slide.title || 'Banner image'}
-                      fill
-                      className="object-contain object-right drop-shadow-xl"
-                      priority={index === 0}
-                      sizes="(max-width: 768px) 52vw, (max-width: 1300px) 44vw, 600px"
-                      onError={(e) => {
-                        if (slide.fallbackImage) {
-                          e.target.src = slide.fallbackImage;
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Image
+              src={getSafeImageUrl(s.image)}
+              alt={s.title || 'Fast2 Grocery Delivery'}
+              fill
+              className="object-cover object-center"
+              priority={i === 0}
+              sizes="(max-width: 768px) 100vw, 1400px"
+              onError={(e) => { e.target.src = FALLBACK_IMAGE; }}
+            />
           </div>
         ))}
 
-        {/* Navigation Arrows */}
+        {/* Gradient overlay — dark on right, transparent on left */}
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background: 'linear-gradient(270deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.52) 38%, rgba(0,0,0,0.12) 68%, transparent 100%)'
+          }}
+        />
+
+        {/* Content layer */}
+        <div className="absolute inset-0 z-20 flex items-center justify-between px-6 sm:px-10 lg:px-14">
+
+          {/* LEFT — Floating glass card */}
+          <div
+            className="hidden lg:flex flex-col gap-4 p-5 rounded-2xl"
+            style={{
+              background: 'rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              minWidth: '210px'
+            }}
+          >
+            {[
+              { emoji: '⚡', text: '10 Minute Delivery' },
+              { emoji: '🌱', text: 'Farm Fresh Everyday' },
+              { emoji: '⭐', text: 'Premium Quality Products' },
+            ].map(item => (
+              <div key={item.text} className="flex items-center gap-3">
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
+                  style={{ background: 'rgba(255,255,255,0.18)' }}
+                >
+                  {item.emoji}
+                </div>
+                <span className="text-white font-semibold text-sm leading-tight">{item.text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* RIGHT — Main hero content */}
+          <div className="flex flex-col items-start gap-3 sm:gap-4 max-w-[340px] sm:max-w-[400px] lg:max-w-[420px]">
+
+            {/* Badge */}
+            <div
+              className="flex items-center gap-1.5 text-white text-xs font-bold px-3 py-1.5 rounded-full"
+              style={{ background: 'linear-gradient(90deg, #f59e0b, #d97706)' }}
+            >
+              <span>⚡</span>
+              <span>10 MINUTE DELIVERY</span>
+            </div>
+
+            {/* Headline */}
+            <div className="space-y-0.5">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-white leading-tight">
+                {slide.title || 'Fresh Groceries'}
+              </h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black leading-tight"
+                style={{ color: '#4ade80' }}>
+                {slide.subtitle || 'Delivered Fast'}
+              </h1>
+            </div>
+
+            {/* Subheading */}
+            <p className="text-white/80 text-xs sm:text-sm leading-relaxed max-w-xs">
+              {slide.description || 'Farm fresh fruits, vegetables, dairy and daily essentials delivered to your doorstep in minutes.'}
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
+              <button
+                onClick={() => router.push('/')}
+                className="flex items-center gap-2 font-bold text-sm text-white px-5 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95"
+                style={{ background: 'linear-gradient(90deg, #16a34a, #15803d)', boxShadow: '0 4px 15px rgba(22,163,74,0.4)' }}
+              >
+                Shop Now
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <button
+                onClick={() => document.getElementById('categories-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="font-bold text-sm text-white px-5 py-2.5 rounded-full border transition-all hover:bg-white/10 active:scale-95"
+                style={{ borderColor: 'rgba(255,255,255,0.5)' }}
+              >
+                Browse Categories
+              </button>
+            </div>
+
+            {/* Promo pills */}
+            <div className="flex gap-2 flex-wrap">
+              <span className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                style={{ background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.4)', color: '#fde047' }}>
+                50% OFF First Order
+              </span>
+              <span className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                style={{ background: 'rgba(34,197,94,0.2)', border: '1px solid rgba(34,197,94,0.4)', color: '#86efac' }}>
+                BUY 1 GET 1
+              </span>
+              <span className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                style={{ background: 'rgba(59,130,246,0.2)', border: '1px solid rgba(59,130,246,0.4)', color: '#93c5fd' }}>
+                FRESH TODAY
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide dots */}
+        {bannerData.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-30">
+            {bannerData.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                className="transition-all duration-300 rounded-full"
+                style={{
+                  width: i === currentSlide ? '28px' : '8px',
+                  height: '8px',
+                  background: i === currentSlide ? '#fff' : 'rgba(255,255,255,0.45)',
+                }}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Nav arrows */}
         {bannerData.length > 1 && (
           <>
             <button
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
-              onClick={goToPrevSlide}
-              aria-label="Previous slide"
+              onClick={() => setCurrentSlide(p => (p - 1 + bannerData.length) % bannerData.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.25)' }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-gray-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-
             <button
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 z-30 group"
-              onClick={goToNextSlide}
-              aria-label="Next slide"
+              onClick={() => setCurrentSlide(p => (p + 1) % bannerData.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.25)' }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-gray-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </>
         )}
-
-        {/* Progress Dots */}
-        {bannerData.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
-            {bannerData.map((_, index) => (
-              <button
-                key={index}
-                className={`transition-all duration-300 rounded-full ${
-                  index === currentSlide
-                    ? 'w-8 h-3 bg-white shadow-md'
-                    : 'w-3 h-3 bg-white/60 hover:bg-white/80'
-                }`}
-                onClick={() => goToSlide(index)}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
-
     </section>
   );
 };
