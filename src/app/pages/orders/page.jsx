@@ -10,12 +10,10 @@ import {
   XCircleIcon,
   ShoppingBagIcon,
   MapPinIcon,
-  ShoppingCartIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
   FunnelIcon,
   KeyIcon,
-  WalletIcon,
   DocumentArrowDownIcon,
   EllipsisVerticalIcon,
   CalendarDaysIcon,
@@ -37,7 +35,6 @@ const MyOrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'detail'
   const [searchTerm, setSearchTerm] = useState('');
-  const [scratchingOrderId, setScratchingOrderId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const router = useRouter();
 
@@ -154,20 +151,6 @@ const MyOrdersPage = () => {
     return { success: false, message: lastErrorMessage };
   };
 
-  const handleReorder = async (order) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/proxy/api/cart/reorder', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: order._id })
-      });
-      if (response.ok) router.push('/cart');
-      else throw new Error('Failed to reorder');
-    } catch {
-      alert('Failed to add items to cart. Please try again.');
-    }
-  };
 
   const copyToClipboard = (text, key) => {
     navigator.clipboard.writeText(String(text));
@@ -591,16 +574,6 @@ const MyOrdersPage = () => {
           </div>
         </div>
 
-        {/* Reorder (for delivered) */}
-        {order.status === 'delivered' && (
-          <button
-            onClick={() => handleReorder(order)}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 rounded-xl text-sm font-semibold text-white hover:bg-green-700 transition-colors"
-          >
-            <ShoppingCartIcon className="w-4 h-4" />
-            Reorder
-          </button>
-        )}
 
         {/* Need Help card */}
         <div className="bg-green-50 rounded-xl border border-green-100 p-4 flex items-center gap-4">
