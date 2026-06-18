@@ -5,28 +5,35 @@ import Image from 'next/image';
 import Logo from '@/assets/images/logo.png';
 import Footer from '../components/footer/page';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/proxy';
+const PLAY_STORE_URL = '#';
+const initialFormData = {
+  name: '',
+  email: '',
+  phone: '',
+  password: '',
+  aadharFront: null,
+  aadharBack: null,
+  panCard: null
+};
+const initialPreviews = {
+  aadharFront: null,
+  aadharBack: null,
+  panCard: null
+};
+
 export default function DeliveryPartnerPage() {
   const [showRegistration, setShowRegistration] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    aadharFront: null,
-    aadharBack: null,
-    panCard: null
-  });
+  const [formData, setFormData] = useState(initialFormData);
   
-  const [previews, setPreviews] = useState({
-    aadharFront: null,
-    aadharBack: null,
-    panCard: null
-  });
+  const [previews, setPreviews] = useState(initialPreviews);
   
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [statusMessage, setStatusMessage] = useState({ type: '', text: '' });
 
   const handleChange = (e) => {
+    setStatusMessage({ type: '', text: '' });
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -36,6 +43,7 @@ export default function DeliveryPartnerPage() {
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
+      setStatusMessage({ type: '', text: '' });
       setFormData({
         ...formData,
         [field]: file
@@ -54,47 +62,60 @@ export default function DeliveryPartnerPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatusMessage({ type: '', text: '' });
+
+    if (!formData.aadharFront || !formData.aadharBack || !formData.panCard) {
+      setStatusMessage({
+        type: 'error',
+        text: 'Please upload Aadhaar front, Aadhaar back, and PAN card images.'
+      });
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setStatusMessage({
+        type: 'error',
+        text: 'Password must be at least 6 characters long.'
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('email', formData.email.trim().toLowerCase());
+      formDataToSend.append('phone', formData.phone.trim());
       formDataToSend.append('password', formData.password);
       formDataToSend.append('aadharFront', formData.aadharFront);
       formDataToSend.append('aadharBack', formData.aadharBack);
       formDataToSend.append('panCard', formData.panCard);
 
-      const response = await fetch('/proxy/api/driver/register', {
+      const response = await fetch(`${API_BASE_URL}/api/driver/register`, {
         method: 'POST',
         body: formDataToSend,
       });
 
       const data = await response.json();
 
-      if (data.success) {
-        alert('Registration successful! Please check your email for further instructions.');
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          password: '',
-          aadharFront: null,
-          aadharBack: null,
-          panCard: null
-        });
-        setPreviews({
-          aadharFront: null,
-          aadharBack: null,
-          panCard: null
-        });
-      } else {
-        alert(data.message || 'Registration failed. Please try again.');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Registration failed. Please try again.');
       }
+
+      setStatusMessage({
+        type: 'success',
+        text: 'Registration successful. Download the Fast2 Partner app from Google Play to continue.'
+      });
+      setFormData(initialFormData);
+      setPreviews(initialPreviews);
+      e.currentTarget.reset();
     } catch (error) {
       console.error('Registration error:', error);
-      alert('An error occurred. Please try again later.');
+      setStatusMessage({
+        type: 'error',
+        text: error.message || 'An error occurred. Please try again later.'
+      });
     } finally {
       setLoading(false);
     }
@@ -117,9 +138,15 @@ export default function DeliveryPartnerPage() {
                 />
               </div>
             </div>
-            <button className="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-2.5 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
-              Partner Login
-            </button>
+            <a
+              href={PLAY_STORE_URL}
+              className="inline-flex items-center bg-gray-900 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+              </svg>
+              Download App
+            </a>
           </div>
         </div>
       </nav>
@@ -251,6 +278,7 @@ export default function DeliveryPartnerPage() {
                           onChange={handleChange}
                           className="w-full px-4 py-3.5 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all text-gray-800 placeholder-gray-500"
                           placeholder="Create a strong password"
+                          minLength={6}
                           required
                         />
                         <button
@@ -301,6 +329,16 @@ export default function DeliveryPartnerPage() {
                       ))}
                     </div>
                   </div>
+
+                  {statusMessage.text && (
+                    <div className={`mb-6 rounded-xl px-4 py-3 text-sm font-medium ${
+                      statusMessage.type === 'success'
+                        ? 'bg-green-50 text-green-700 border border-green-200'
+                        : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}>
+                      {statusMessage.text}
+                    </div>
+                  )}
 
                   <button
                     type="submit"
@@ -500,9 +538,9 @@ export default function DeliveryPartnerPage() {
 
                 {/* Download Buttons */}
                 <div className="mt-12">
-                  <p className="text-gray-600 text-lg mb-6">Download the partner app to get started</p>
+                  <p className="text-gray-600 text-lg mb-6">Drivers can log in and manage deliveries from the Fast2 Partner app on Google Play</p>
                   <div className="flex flex-wrap gap-4">
-                    <a href="#" className="inline-flex items-center bg-gray-900 text-white px-8 py-4 rounded-xl hover:bg-gray-800 transition-colors">
+                    <a href={PLAY_STORE_URL} className="inline-flex items-center bg-gray-900 text-white px-8 py-4 rounded-xl hover:bg-gray-800 transition-colors">
                       <svg className="w-7 h-7 mr-4" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
                       </svg>
