@@ -135,23 +135,24 @@ export default function DeliveryPartnerPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="border-b bg-white border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-2 min-h-16">
-            <div className="flex items-center space-x-3">
-              <div className="rounded-xl flex items-center justify-center">
+      <nav className="h-16 border-b bg-white border-gray-200 sticky top-0 z-50 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-full flex justify-between items-center">
+            <div className="flex h-full items-center">
+              <div className="h-10 w-28 flex items-center">
                 <Image 
                   src={Logo} 
                   alt="Fast2" 
-                  width={52} 
-                  height={52}
-                  className="h-12 w-auto object-contain"
+                  width={112} 
+                  height={40}
+                  priority
+                  className="block h-10 w-auto object-contain"
                 />
               </div>
             </div>
             <a
               href={PLAY_STORE_URL}
-              className="inline-flex items-center bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-lg"
+              className="inline-flex h-9 items-center bg-gray-900 text-white px-4 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
