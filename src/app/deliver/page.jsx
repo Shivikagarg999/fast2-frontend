@@ -42,6 +42,17 @@ export default function DeliveryPartnerPage() {
 
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setStatusMessage({
+        type: 'error',
+        text: 'Please upload image files only.'
+      });
+      e.target.value = '';
+      return;
+    }
+
     if (file) {
       setStatusMessage({ type: '', text: '' });
       setFormData({
@@ -126,23 +137,23 @@ export default function DeliveryPartnerPage() {
       {/* Navigation */}
       <nav className="border-b bg-white border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex justify-between items-center py-2 min-h-16">
             <div className="flex items-center space-x-3">
               <div className="rounded-xl flex items-center justify-center">
                 <Image 
                   src={Logo} 
                   alt="Fast2" 
-                  width={80} 
-                  height={80}
-                  className="object-contain"
+                  width={52} 
+                  height={52}
+                  className="h-12 w-auto object-contain"
                 />
               </div>
             </div>
             <a
               href={PLAY_STORE_URL}
-              className="inline-flex items-center bg-gray-900 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-all duration-300 shadow-md hover:shadow-lg"
             >
-              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
               </svg>
               Download App
@@ -298,20 +309,27 @@ export default function DeliveryPartnerPage() {
                     
                     <div className="grid md:grid-cols-3 gap-4">
                       {[
-                        { field: 'aadharFront', label: 'Aadhar Front' },
-                        { field: 'aadharBack', label: 'Aadhar Back' },
+                        { field: 'aadharFront', label: 'Aadhaar Front' },
+                        { field: 'aadharBack', label: 'Aadhaar Back' },
                         { field: 'panCard', label: 'PAN Card' }
-                      ].map((doc, index) => (
-                        <div key={index}>
-                          <label className="block text-gray-700 font-semibold mb-3">{doc.label} *</label>
-                          <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-4 hover:border-green-500 transition-all cursor-pointer h-32 group">
+                      ].map((doc) => {
+                        const inputId = `driver-${doc.field}`;
+
+                        return (
+                          <div key={doc.field}>
+                            <span className="block text-gray-700 font-semibold mb-3">{doc.label} *</span>
                             <input
+                              id={inputId}
+                              name={doc.field}
                               type="file"
                               accept="image/*"
                               onChange={(e) => handleFileChange(e, doc.field)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                              required
+                              className="sr-only"
                             />
+                            <label
+                              htmlFor={inputId}
+                              className="block border-2 border-dashed border-gray-300 rounded-xl p-4 hover:border-green-500 focus-within:border-green-500 transition-all cursor-pointer h-32 group"
+                            >
                             {previews[doc.field] ? (
                               <img src={previews[doc.field]} alt={doc.label} className="w-full h-full object-cover rounded-lg" />
                             ) : (
@@ -324,9 +342,10 @@ export default function DeliveryPartnerPage() {
                                 <p className="text-sm text-gray-600 font-medium">Upload {doc.label.split(' ')[0]}</p>
                               </div>
                             )}
+                            </label>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
