@@ -14,12 +14,20 @@ const initialFormData = {
   password: '',
   aadharFront: null,
   aadharBack: null,
-  panCard: null
+  panCard: null,
+  drivingLicense: null,
+  rcDocument: null,
+  insurance: null,
+  bankProof: null
 };
 const initialPreviews = {
   aadharFront: null,
   aadharBack: null,
-  panCard: null
+  panCard: null,
+  drivingLicense: null,
+  rcDocument: null,
+  insurance: null,
+  bankProof: null
 };
 
 export default function DeliveryPartnerPage() {
@@ -75,10 +83,18 @@ export default function DeliveryPartnerPage() {
     e.preventDefault();
     setStatusMessage({ type: '', text: '' });
 
-    if (!formData.aadharFront || !formData.aadharBack || !formData.panCard) {
+    if (
+      !formData.aadharFront ||
+      !formData.aadharBack ||
+      !formData.panCard ||
+      !formData.drivingLicense ||
+      !formData.rcDocument ||
+      !formData.insurance ||
+      !formData.bankProof
+    ) {
       setStatusMessage({
         type: 'error',
-        text: 'Please upload Aadhaar front, Aadhaar back, and PAN card images.'
+        text: 'Please upload all required documents: Aadhaar front, Aadhaar back, PAN card, Driving Licence, Vehicle RC, Insurance and Bank Passbook/Cheque.'
       });
       return;
     }
@@ -102,6 +118,10 @@ export default function DeliveryPartnerPage() {
       formDataToSend.append('aadharFront', formData.aadharFront);
       formDataToSend.append('aadharBack', formData.aadharBack);
       formDataToSend.append('panCard', formData.panCard);
+      formDataToSend.append('drivingLicense', formData.drivingLicense);
+      formDataToSend.append('rcDocument', formData.rcDocument);
+      formDataToSend.append('insurance', formData.insurance);
+      formDataToSend.append('bankProof', formData.bankProof);
 
       const response = await fetch(`${API_BASE_URL}/api/driver/register`, {
         method: 'POST',
@@ -312,7 +332,11 @@ export default function DeliveryPartnerPage() {
                       {[
                         { field: 'aadharFront', label: 'Aadhaar Front' },
                         { field: 'aadharBack', label: 'Aadhaar Back' },
-                        { field: 'panCard', label: 'PAN Card' }
+                        { field: 'panCard', label: 'PAN Card' },
+                        { field: 'drivingLicense', label: 'Driving Licence' },
+                        { field: 'rcDocument', label: 'Vehicle RC' },
+                        { field: 'insurance', label: 'Insurance' },
+                        { field: 'bankProof', label: 'Bank Passbook / Cheque' }
                       ].map((doc) => {
                         const inputId = `driver-${doc.field}`;
 
