@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./components/header/page";
 import Cart from "./components/cart/page";
 import PopupManager from "./components/popup/PopupManager";
+import ChatWidget from "./components/chatbot/page";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
         <main className="relative z-10 pt-[150px] lg:pt-[70px]">{children}</main>
         <Cart />
         <PopupManager />
+        <ChatWidget />
       </body>
     </html>
   );
