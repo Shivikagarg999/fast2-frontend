@@ -49,6 +49,12 @@ const CheckoutPage = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [razorpayOrder, setRazorpayOrder] = useState(null);
+  const [cashfreeOrder, setCashfreeOrder] = useState(null);
+  const [paymentOptions, setPaymentOptions] = useState({
+    activeGateway: 'razorpay',
+    onlinePaymentEnabled: true,
+    cashfreeMode: 'production'
+  });
   const [placedOrderSummary, setPlacedOrderSummary] = useState(null);
   const [prescriptionImage, setPrescriptionImage] = useState(null);
   const [prescriptionPreview, setPrescriptionPreview] = useState(null);
@@ -71,24 +77,79 @@ const CheckoutPage = () => {
   });
 
   useEffect(() => {
-    const loadRazorpay = () => {
+    const loadScript = (src) => {
       return new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.src = src;
         script.async = true;
-        script.onload = () => {
-          console.log('Razorpay SDK loaded');
-          resolve();
-        };
+        script.onload = () => resolve();
         script.onerror = () => {
-          console.error('Failed to load Razorpay SDK');
+          console.error(`Failed to load script: ${src}`);
           resolve();
         };
         document.body.appendChild(script);
       });
     };
 
-    loadRazorpay();
+    const loadPaymentGateway = async () => {
+      try {
+        const res = await fetch('/proxy/api/order/payment-options');
+        const data = await res.json();
+
+        if (data.success) {
+          setPaymentOptions({
+            activeGateway: data.activeGateway,
+            onlinePaymentEnabled: data.onlinePaymentEnabled,
+            cashfreeMode: data.cashfreeMode || 'production'
+          });
+
+          if (data.onlinePaymentEnabled && data.activeGateway === 'razorpay') {
+            await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+          } else if (data.onlinePaymentEnabled && data.activeGateway === 'cashfree') {
+            await loadScript('https://sdk.cashfree.com/js/v3/cashfree.js');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load payment options:', err);
+      }
+    };
+
+    loadPaymentGateway();
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const returnOrderId = params.get('cfReturn');
+    if (!returnOrderId) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const confirmReturnedPayment = async () => {
+      try {
+        setOrderId(returnOrderId);
+        const res = await fetch('/proxy/api/order/verify-cashfree-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ orderId: returnOrderId })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success && data.paymentStatus === 'paid') {
+          setStep(2);
+          await clearCart(token);
+        } else {
+          setError('We could not confirm your payment. Please check My Orders before retrying.');
+        }
+      } catch (err) {
+        setError('We could not confirm your payment. Please check My Orders before retrying.');
+      }
+    };
+
+    confirmReturnedPayment();
   }, []);
 
   useEffect(() => {
@@ -215,12 +276,10 @@ const CheckoutPage = () => {
   const calculateDeliveryFee = () => {
     const subtotal = calculateTotal();
 
-    // Global Free Delivery Threshold - same as backend logic
     if (subtotal > 199) {
       return 0;
     }
 
-    // Otherwise, sum up individual product delivery charges
     return cartItems.reduce((total, item) => {
       return total + (item.product?.delivery?.deliveryCharges || 0);
     }, 0);
@@ -439,6 +498,41 @@ const CheckoutPage = () => {
     });
   };
 
+  const processCashfreePayment = async (cashfreeOrderData) => {
+    if (!window.Cashfree) {
+      throw new Error('Cashfree SDK not loaded');
+    }
+
+    const cashfree = window.Cashfree({ mode: paymentOptions.cashfreeMode });
+
+    const result = await cashfree.checkout({
+      paymentSessionId: cashfreeOrderData.paymentSessionId,
+      redirectTarget: '_modal'
+    });
+
+    if (result.error) {
+      throw new Error('Payment cancelled by user');
+    }
+
+    const token = localStorage.getItem('token');
+    const verifyResponse = await fetch('/proxy/api/order/verify-cashfree-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ orderId })
+    });
+
+    const verifyData = await verifyResponse.json();
+
+    if (verifyResponse.ok && verifyData.success && verifyData.paymentStatus === 'paid') {
+      return verifyData;
+    }
+
+    throw new Error(verifyData.error || 'Payment verification failed');
+  };
+
   const handlePlaceOrder = async () => {
     if (!validateShipping()) return;
 
@@ -624,6 +718,20 @@ const CheckoutPage = () => {
 
         try {
           await processRazorpayPayment(responseData.order.razorpay);
+          setStep(2);
+          await clearCart(token);
+        } catch (paymentError) {
+          if (paymentError.message !== 'Payment cancelled by user') {
+            setError(paymentError.message);
+          }
+          setProcessing(false);
+          return;
+        }
+      } else if (paymentMethod === 'online' && responseData.order?.cashfree) {
+        setCashfreeOrder(responseData.order.cashfree);
+
+        try {
+          await processCashfreePayment(responseData.order.cashfree);
           setStep(2);
           await clearCart(token);
         } catch (paymentError) {
@@ -1179,39 +1287,45 @@ const CheckoutPage = () => {
                         </p>
                       </div>
 
-                      <div
-                        onClick={() => setPaymentMethod('online')}
-                        className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${paymentMethod === 'online'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${paymentMethod === 'online'
-                              ? 'border-green-600 bg-green-600'
-                              : 'border-gray-300'
-                              }`}>
-                              {paymentMethod === 'online' && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
-                            </div>
+                      {paymentOptions.onlinePaymentEnabled && (
+                        <div
+                          onClick={() => setPaymentMethod('online')}
+                          className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${paymentMethod === 'online'
+                            ? 'border-green-500 bg-green-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                        >
+                          <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <CreditCardIcon className={`w-5 h-5 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'} mr-2`} />
-                              <span className={`font-semibold ${paymentMethod === 'online' ? 'text-green-800' : 'text-gray-800'}`}>
-                                Pay Online
+                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${paymentMethod === 'online'
+                                ? 'border-green-600 bg-green-600'
+                                : 'border-gray-300'
+                                }`}>
+                                {paymentMethod === 'online' && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
+                              </div>
+                              <div className="flex items-center">
+                                <CreditCardIcon className={`w-5 h-5 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'} mr-2`} />
+                                <span className={`font-semibold ${paymentMethod === 'online' ? 'text-green-800' : 'text-gray-800'}`}>
+                                  Pay Online
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              {paymentOptions.activeGateway === 'cashfree' ? (
+                                <span className="text-xs font-medium text-gray-500">Secured by Cashfree</span>
+                              ) : (
+                                <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-6" />
+                              )}
+                              <span className={`font-medium ${paymentMethod === 'online' ? 'text-green-700' : 'text-gray-700'}`}>
+                                Secure Payment
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-6" />
-                            <span className={`font-medium ${paymentMethod === 'online' ? 'text-green-700' : 'text-gray-700'}`}>
-                              Secure Payment
-                            </span>
-                          </div>
+                          <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'}`}>
+                            Pay instantly with UPI, Cards, Net Banking or Wallets. 100% secure.
+                          </p>
                         </div>
-                        <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'}`}>
-                          Pay instantly with UPI, Cards, Net Banking or Wallets. 100% secure.
-                        </p>
-                      </div>
+                      )}
                     </div>
                   </div>
 
