@@ -372,8 +372,11 @@ const CheckoutPage = () => {
     return Math.round(calculateFinalAmount() * 100);
   };
 
-  const isMedicalOrder = () => {
+  const requiresPrescription = () => {
     return cartItems.some(item =>
+      item.product?.isPrescriptionRequired ||
+      item.product?.prescriptionRequired ||
+      item.product?.requiresPrescription ||
       item.product?.shop?.shopType === 'medical'
     );
   };
@@ -536,8 +539,8 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     if (!validateShipping()) return;
 
-    if (isMedicalOrder() && !prescriptionImage) {
-      setError('A doctor\'s prescription is required for medical shops');
+    if (requiresPrescription() && !prescriptionImage) {
+      setError('A doctor\'s prescription is required for this order');
       return;
     }
 
@@ -646,6 +649,7 @@ const CheckoutPage = () => {
       formData.append('shippingAddress', JSON.stringify(orderData.shippingAddress));
       formData.append('paymentMethod', paymentMethod);
       formData.append('useWallet', useWallet);
+      formData.append('requiresPrescription', requiresPrescription());
 
       if (prescriptionImage) {
         formData.append('prescriptionImage', prescriptionImage);
@@ -884,25 +888,25 @@ const CheckoutPage = () => {
           Back
         </button>
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="border-b border-gray-200 bg-white">
-            <div className="flex justify-center items-center p-6">
-              <div className={`flex items-center ${step >= 1 ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${step >= 1 ? 'border-green-600' : 'border-gray-300'}`}>
+        <div className="bg-white rounded-2xl shadow-md ring-1 ring-gray-100 overflow-hidden">
+          <div className="border-b border-gray-100 bg-gray-50/70 px-6 py-5">
+            <div className="flex justify-center items-center max-w-sm mx-auto">
+              <div className={`flex items-center gap-2.5 ${step >= 1 ? 'text-gray-900' : 'text-gray-400'}`}>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${step >= 1 ? 'bg-green-600 text-white shadow-sm' : 'bg-gray-200 text-gray-500'}`}>
                   {step > 1 ? <CheckCircleSolidIcon className="w-5 h-5" /> : '1'}
                 </div>
-                <span className="ml-2 font-medium">Shipping Details</span>
+                <span className="text-sm font-semibold whitespace-nowrap">Shipping Details</span>
               </div>
 
-              <div className="flex-1 h-1 bg-gray-200 mx-4 max-w-20">
-                <div className={`h-1 ${step >= 2 ? 'bg-green-600' : 'bg-gray-200'}`}></div>
+              <div className="flex-1 h-0.5 bg-gray-200 mx-3 min-w-10 rounded-full overflow-hidden">
+                <div className={`h-0.5 transition-all duration-300 ${step >= 2 ? 'bg-green-600 w-full' : 'w-0'}`}></div>
               </div>
 
-              <div className={`flex items-center ${step >= 2 ? 'text-green-600' : 'text-gray-400'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${step >= 2 ? 'border-green-600' : 'border-gray-300'}`}>
+              <div className={`flex items-center gap-2.5 ${step >= 2 ? 'text-gray-900' : 'text-gray-400'}`}>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${step >= 2 ? 'bg-green-600 text-white shadow-sm' : 'bg-gray-200 text-gray-500'}`}>
                   2
                 </div>
-                <span className="ml-2 font-medium">Confirmation</span>
+                <span className="text-sm font-semibold whitespace-nowrap">Confirmation</span>
               </div>
             </div>
           </div>
@@ -944,9 +948,9 @@ const CheckoutPage = () => {
                             <div
                               key={address._id}
                               onClick={() => handleAddressSelect(address)}
-                              className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${selectedAddress?._id === address._id
-                                ? 'border-green-500 bg-green-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                              className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${selectedAddress?._id === address._id
+                                ? 'border-green-500 bg-green-50/60 shadow-sm'
+                                : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                                 }`}
                             >
                               <div className="flex items-start justify-between">
@@ -997,7 +1001,7 @@ const CheckoutPage = () => {
                   )}
 
                   {(showAddressForm || savedAddresses.length === 0) && (
-                    <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                    <div className="bg-gray-50 rounded-2xl p-6 mb-6">
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="text-lg font-semibold text-gray-900">
                           {savedAddresses.length > 0 ? 'Add New Address' : 'Delivery Address'}
@@ -1170,22 +1174,22 @@ const CheckoutPage = () => {
                   )}
 
                   {/* Prescription Upload Section */}
-                  {isMedicalOrder() && (
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
+                  {requiresPrescription() && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-6">
                       <div className="flex items-center mb-4">
-                        <CheckBadgeIcon className="w-6 h-6 text-green-600 mr-2" />
-                        <h3 className="text-lg font-bold text-green-900">Medical Order - Prescription Required</h3>
+                        <CheckBadgeIcon className="w-6 h-6 text-amber-600 mr-2" />
+                        <h3 className="text-lg font-bold text-amber-900">Prescription Required</h3>
                       </div>
-                      <p className="text-sm text-green-700 mb-6">
-                        One or more items in your cart belong to a medical shop. Please upload your doctor&apos;s prescription to proceed.
+                      <p className="text-sm text-amber-700 mb-6">
+                        One or more items in your cart require a doctor&apos;s prescription. Please upload it to proceed.
                       </p>
 
                       <div className="flex items-start space-x-4">
-                        <div className="w-32 h-32 border-2 border-dashed border-green-300 rounded-xl flex items-center justify-center bg-white relative overflow-hidden flex-shrink-0">
+                        <div className="w-32 h-32 border-2 border-dashed border-amber-300 rounded-xl flex items-center justify-center bg-white relative overflow-hidden flex-shrink-0">
                           {prescriptionPreview ? (
                             <img src={prescriptionPreview} alt="Prescription preview" className="w-full h-full object-cover" />
                           ) : (
-                            <PencilIcon className="h-8 w-8 text-green-300" />
+                            <PencilIcon className="h-8 w-8 text-amber-300" />
                           )}
                         </div>
                         <div className="flex-1">
@@ -1198,12 +1202,12 @@ const CheckoutPage = () => {
                           />
                           <label
                             htmlFor="prescription-upload"
-                            className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 cursor-pointer shadow-sm transition-all"
+                            className="inline-flex items-center px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 cursor-pointer shadow-sm transition-all"
                           >
                             <PlusIcon className="w-5 h-5 mr-2" />
                             {prescriptionImage ? 'Change Prescription' : 'Upload Prescription'}
                           </label>
-                          <p className="text-xs text-green-500 mt-2">Maximum file size: 5MB (JPG, PNG)</p>
+                          <p className="text-xs text-amber-600/80 mt-2">Maximum file size: 5MB (JPG, PNG)</p>
                           {prescriptionImage && (
                             <button
                               onClick={() => { setPrescriptionImage(null); setPrescriptionPreview(null); }}
@@ -1219,12 +1223,12 @@ const CheckoutPage = () => {
 
                   <div className="space-y-4 mb-6">
                     {walletBalance > 0 && (
-                      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                      <div className={`border rounded-2xl p-6 transition-colors ${useWallet ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
                             <button
                               onClick={() => setUseWallet(!useWallet)}
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${useWallet
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-colors ${useWallet
                                 ? 'border-green-600 bg-green-600'
                                 : 'border-gray-300 hover:border-green-400'
                                 }`}
@@ -1232,11 +1236,11 @@ const CheckoutPage = () => {
                               {useWallet && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                             </button>
                             <div className="flex items-center">
-                              {useWallet ? <WalletSolidIcon className="w-5 h-5 text-green-600 mr-2" /> : <WalletIcon className="w-5 h-5 text-green-600 mr-2" />}
-                              <span className="font-semibold text-green-800">Use Wallet Balance</span>
+                              {useWallet ? <WalletSolidIcon className="w-5 h-5 text-green-600 mr-2" /> : <WalletIcon className="w-5 h-5 text-gray-500 mr-2" />}
+                              <span className={`font-semibold ${useWallet ? 'text-green-800' : 'text-gray-800'}`}>Use Wallet Balance</span>
                             </div>
                           </div>
-                          <span className="font-semibold text-green-700">₹{walletBalance}</span>
+                          <span className={`font-semibold ${useWallet ? 'text-green-700' : 'text-gray-700'}`}>₹{walletBalance}</span>
                         </div>
 
                         {useWallet && (
@@ -1258,9 +1262,9 @@ const CheckoutPage = () => {
                     <div className="space-y-3">
                       <div
                         onClick={() => setPaymentMethod('cod')}
-                        className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${paymentMethod === 'cod'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                        className={`cursor-pointer border-2 rounded-2xl p-6 transition-all ${paymentMethod === 'cod'
+                          ? 'border-green-500 bg-green-50/60 shadow-sm'
+                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                           }`}
                       >
                         <div className="flex items-center justify-between">
@@ -1290,9 +1294,9 @@ const CheckoutPage = () => {
                       {paymentOptions.onlinePaymentEnabled && (
                         <div
                           onClick={() => setPaymentMethod('online')}
-                          className={`cursor-pointer border-2 rounded-xl p-6 transition-all ${paymentMethod === 'online'
-                            ? 'border-green-500 bg-green-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                          className={`cursor-pointer border-2 rounded-2xl p-6 transition-all ${paymentMethod === 'online'
+                            ? 'border-green-500 bg-green-50/60 shadow-sm'
+                            : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                             }`}
                         >
                           <div className="flex items-center justify-between">
@@ -1310,19 +1314,16 @@ const CheckoutPage = () => {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              {paymentOptions.activeGateway === 'cashfree' ? (
-                                <span className="text-xs font-medium text-gray-500">Secured by Cashfree</span>
-                              ) : (
-                                <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-6" />
-                              )}
-                              <span className={`font-medium ${paymentMethod === 'online' ? 'text-green-700' : 'text-gray-700'}`}>
-                                Secure Payment
+                            {paymentOptions.activeGateway === 'cashfree' ? (
+                              <span className="text-xs font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
+                                Cashfree
                               </span>
-                            </div>
+                            ) : (
+                              <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-6" />
+                            )}
                           </div>
                           <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'}`}>
-                            Pay instantly with UPI, Cards, Net Banking or Wallets. 100% secure.
+                            Pay instantly with UPI, Cards, Net Banking or Wallets &middot; 100% secure
                           </p>
                         </div>
                       )}
@@ -1332,7 +1333,7 @@ const CheckoutPage = () => {
                   <button
                     onClick={handlePlaceOrder}
                     disabled={processing || !shippingInfo.addressLine}
-                    className="w-full bg-green-600 text-white py-4 px-6 rounded-xl hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                    className="w-full bg-green-600 text-white py-4 px-6 rounded-xl hover:bg-green-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md transition-all shadow-md"
                   >
                     {processing ? (
                       <div className="flex items-center justify-center">
@@ -1349,11 +1350,19 @@ const CheckoutPage = () => {
                   {paymentMethod === 'online' && (
                     <div className="mt-4 text-center">
                       <p className="text-sm text-gray-600">
-                        You will be redirected to Razorpay's secure payment page
+                        {paymentOptions.activeGateway === 'cashfree'
+                          ? "You will be redirected to Cashfree's secure payment page"
+                          : "You will be redirected to Razorpay's secure payment page"}
                       </p>
                       <div className="flex justify-center items-center mt-2 space-x-4">
-                        <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-4 opacity-75" />
-                        <span className="text-xs text-gray-500">Powered by Razorpay</span>
+                        {paymentOptions.activeGateway === 'cashfree' ? (
+                          <span className="text-xs text-gray-500">Powered by Cashfree</span>
+                        ) : (
+                          <>
+                            <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-4 opacity-75" />
+                            <span className="text-xs text-gray-500">Powered by Razorpay</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1369,8 +1378,8 @@ const CheckoutPage = () => {
 
             {/* Right Column - Order Summary */}
             <div className="lg:w-1/3 mt-8 lg:mt-0">
-              <div className="bg-white border border-gray-200 rounded-xl p-6 sticky top-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-200">Order Summary</h3>
+              <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-6 sticky top-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">Order Summary</h3>
 
                 <div className="space-y-4 mb-6 max-h-80 overflow-y-auto">
                   {cartItems.map((item) => {
@@ -1451,8 +1460,8 @@ const CheckoutPage = () => {
                             value={couponCode}
                             onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponError(''); }}
                             onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
-                            placeholder="Scratch card coupon code"
-                            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase placeholder-normal"
+                            placeholder="Coupon code"
+                            className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase"
                           />
                           <button
                             onClick={handleApplyCoupon}
@@ -1495,9 +1504,9 @@ const CheckoutPage = () => {
                     </div>
                   )}
 
-                  <div className="flex justify-between pt-3 border-t border-gray-200">
+                  <div className="flex justify-between items-center mt-2 pt-4 pb-1 px-1 -mx-1 border-t-2 border-dashed border-gray-200">
                     <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-lg font-bold text-green-600">₹{amountBreakdown.payableAmount}</span>
+                    <span className="text-xl font-bold text-green-600">₹{amountBreakdown.payableAmount}</span>
                   </div>
 
                   {useWallet && walletBalance > 0 && (

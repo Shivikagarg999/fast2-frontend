@@ -355,6 +355,11 @@ const Cart = () => {
                   const productWeight = getProductWeight(product);
                   const productPrice = item.price || product.effectivePrice || product.price || 0;
                   const quantity = item.quantity || 1;
+                  const needsPrescription =
+                    product.isPrescriptionRequired ||
+                    product.prescriptionRequired ||
+                    product.requiresPrescription ||
+                    product.shop?.shopType === 'medical';
 
                   let productImage = '';
                   if (product.images && product.images.length > 0) {
@@ -391,6 +396,11 @@ const Cart = () => {
                           <h3 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2">{productName}</h3>
                           {productWeight && (
                             <p className="text-xs text-gray-500 mt-1 font-medium">{productWeight}</p>
+                          )}
+                          {needsPrescription && (
+                            <span className="inline-flex mt-1 text-[10px] font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md">
+                              Prescription Required
+                            </span>
                           )}
                         </div>
 

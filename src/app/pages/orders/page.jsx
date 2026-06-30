@@ -70,6 +70,18 @@ const MyOrdersPage = () => {
             ? order.cashOnDelivery
             : (paymentMethod === 'cod' ? Math.max(0, finalAmount - walletDeduction) : 0);
 
+          const prescription =
+            order.prescription ||
+            (order.prescriptionImage?.url ? {
+              imageUrl: order.prescriptionImage.url,
+              status: order.status === 'prescription-rejected'
+                ? 'rejected'
+                : order.status === 'prescription-approved'
+                  ? 'approved'
+                  : 'pending',
+              rejectionReason: order.prescriptionRejectionReason || ''
+            } : null);
+
           return {
             _id: order._id,
             orderId: order.orderId,
@@ -97,6 +109,7 @@ const MyOrdersPage = () => {
             shippingAddress: order.shippingAddress || { addressLine: '', city: '', state: '', pinCode: '', phone: '' },
             paymentMethod,
             paymentStatus: order.paymentStatus || 'pending',
+            prescription,
             createdAt: order.createdAt || new Date(),
             updatedAt: order.updatedAt || new Date(),
             orderScratchCard: order.orderScratchCard || null,
@@ -161,6 +174,9 @@ const MyOrdersPage = () => {
   const getStatusPill = (status) => {
     switch (status?.toLowerCase()) {
       case 'pending':   return { label: 'Order Placed', cls: 'bg-yellow-100 text-yellow-700' };
+      case 'pending-prescription': return { label: 'Prescription Review', cls: 'bg-amber-100 text-amber-700' };
+      case 'prescription-approved': return { label: 'Prescription Approved', cls: 'bg-blue-100 text-blue-700' };
+      case 'prescription-rejected': return { label: 'Prescription Rejected', cls: 'bg-red-100 text-red-600' };
       case 'confirmed': return { label: 'Confirmed',    cls: 'bg-blue-100 text-blue-700' };
       case 'accepted':  return { label: 'Confirmed',    cls: 'bg-blue-100 text-blue-700' };
       case 'picked-up': return { label: 'In Transit',   cls: 'bg-purple-100 text-purple-700' };
@@ -182,7 +198,17 @@ const MyOrdersPage = () => {
       d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' +
       d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
-    const levelMap = { pending: 1, confirmed: 2, accepted: 2, 'picked-up': 3, delivered: 5, cancelled: 0 };
+    const levelMap = {
+      pending: 1,
+      'pending-prescription': 1,
+      'prescription-approved': 2,
+      confirmed: 2,
+      accepted: 2,
+      'picked-up': 3,
+      delivered: 5,
+      cancelled: 0,
+      'prescription-rejected': 0
+    };
     const done = levelMap[order.status] || 0;
 
     const steps = [
@@ -205,7 +231,16 @@ const MyOrdersPage = () => {
     const updates = [
       { title: 'Order Confirmed', desc: 'Your order has been confirmed', time: fmt(base), green: true },
     ];
-    if (['confirmed', 'accepted', 'picked-up', 'delivered'].includes(order.status)) {
+    if (order.status === 'pending-prescription') {
+      return [{ title: 'Prescription Under Review', desc: 'Your prescription is being verified by the medical shop', time: fmt(base), green: false }];
+    }
+    if (order.status === 'prescription-rejected') {
+      return [{ title: 'Prescription Rejected', desc: order.prescription?.rejectionReason || 'Your prescription could not be verified', time: fmt(base), green: false, red: true }];
+    }
+    if (['prescription-approved', 'confirmed', 'accepted', 'picked-up', 'delivered'].includes(order.status)) {
+      if (order.status === 'prescription-approved') {
+        updates.push({ title: 'Prescription Approved', desc: 'Medical shop has approved your prescription', time: fmt(base), green: true });
+      }
       updates.push({ title: "We're Preparing Your Order", desc: 'Seller has started preparing your order', time: fmt(new Date(base.getTime() + 105 * 60000)), green: false });
     }
     if (['picked-up', 'delivered'].includes(order.status)) {
@@ -516,6 +551,31 @@ const MyOrdersPage = () => {
           </div>
         </div>
 
+        {order.prescription && (
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+            <h3 className="font-bold text-gray-900 mb-3">Prescription</h3>
+            <div className="flex items-start gap-4">
+              {order.prescription.imageUrl && (
+                <img
+                  src={order.prescription.imageUrl}
+                  alt="Prescription"
+                  className="w-24 h-24 object-cover rounded-lg border border-gray-200 flex-shrink-0"
+                />
+              )}
+              <div className="min-w-0">
+                <p className="text-sm text-gray-600">
+                  Status: <span className="font-semibold text-gray-900 capitalize">{order.prescription.status || 'pending'}</span>
+                </p>
+                {order.prescription.rejectionReason && (
+                  <p className="text-sm text-red-600 mt-2">
+                    Reason: {order.prescription.rejectionReason}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Order Items */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
           <h3 className="font-bold text-gray-900 mb-3">Order Items</h3>
@@ -634,15 +694,20 @@ const MyOrdersPage = () => {
   const tabs = [
     { id: 'all',       label: 'All Orders', count: orders.length,                                         icon: ShoppingBagIcon },
     { id: 'pending',   label: 'Pending',    count: orders.filter(o => o.status === 'pending').length,     icon: ClockIcon },
-    { id: 'confirmed', label: 'Confirmed',  count: orders.filter(o => ['confirmed','accepted'].includes(o.status)).length, icon: CheckCircleIcon },
+    { id: 'pending-prescription', label: 'Prescription Review', count: orders.filter(o => o.status === 'pending-prescription').length, icon: ClockIcon },
+    { id: 'confirmed', label: 'Confirmed',  count: orders.filter(o => ['prescription-approved','confirmed','accepted'].includes(o.status)).length, icon: CheckCircleIcon },
     { id: 'picked-up', label: 'In Transit', count: orders.filter(o => o.status === 'picked-up').length,  icon: TruckIcon },
     { id: 'delivered', label: 'Delivered',  count: orders.filter(o => o.status === 'delivered').length,  icon: CheckCircleSolidIcon },
-    { id: 'cancelled', label: 'Cancelled',  count: orders.filter(o => o.status === 'cancelled').length,  icon: XCircleIcon },
+    { id: 'cancelled', label: 'Cancelled',  count: orders.filter(o => ['cancelled','prescription-rejected'].includes(o.status)).length,  icon: XCircleIcon },
   ];
 
   const filteredOrders = orders.filter(order => {
     const matchesTab = activeTab === 'all'
-      || (activeTab === 'confirmed' ? ['confirmed', 'accepted'].includes(order.status) : order.status === activeTab);
+      || (activeTab === 'confirmed'
+        ? ['prescription-approved', 'confirmed', 'accepted'].includes(order.status)
+        : activeTab === 'cancelled'
+          ? ['cancelled', 'prescription-rejected'].includes(order.status)
+          : order.status === activeTab);
     const matchesSearch = searchTerm === ''
       || order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase())
       || order.orderId?.toLowerCase().includes(searchTerm.toLowerCase())

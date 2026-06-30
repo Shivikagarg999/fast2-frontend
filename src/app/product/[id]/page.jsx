@@ -378,6 +378,12 @@ const ProductDetailPage = () => {
   const displayPrice = discount.hasDiscount ? discount.discountedPrice : currentPrice;
   const images = getProductImages();
   const hasMultipleImages = images.length > 1;
+  const medicineDetails = product?.medicineDetails || {};
+  const prescriptionRequired =
+    product?.isPrescriptionRequired ||
+    product?.prescriptionRequired ||
+    product?.requiresPrescription ||
+    product?.shop?.shopType === 'medical';
 
   if (loading) {
     return (
@@ -666,6 +672,15 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
+              {prescriptionRequired && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                  <p className="font-semibold text-amber-800">Prescription Required</p>
+                  <p className="text-sm text-amber-700 mt-1">
+                    Doctor prescription is required to purchase this medicine.
+                  </p>
+                </div>
+              )}
+
               {/* Quantity Selector */}
               <div className="border-t border-gray-200 pt-6 mb-6">
                 <div className="flex items-center justify-between">
@@ -760,6 +775,30 @@ const ProductDetailPage = () => {
                   {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
+              {(medicineDetails.salt || medicineDetails.composition) && (
+                <div className="flex justify-between py-2 border-b border-gray-100 gap-4">
+                  <span className="text-gray-500">Salt / Composition</span>
+                  <span className="font-medium text-right">{medicineDetails.salt || medicineDetails.composition}</span>
+                </div>
+              )}
+              {medicineDetails.dosage && (
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Dosage</span>
+                  <span className="font-medium">{medicineDetails.dosage}</span>
+                </div>
+              )}
+              {medicineDetails.manufacturer && (
+                <div className="flex justify-between py-2 border-b border-gray-100 gap-4">
+                  <span className="text-gray-500">Manufacturer</span>
+                  <span className="font-medium text-right">{medicineDetails.manufacturer}</span>
+                </div>
+              )}
+              {medicineDetails.expiryDate && (
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Expiry Date</span>
+                  <span className="font-medium">{new Date(medicineDetails.expiryDate).toLocaleDateString('en-IN')}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
