@@ -732,11 +732,11 @@ export default function LoginPage() {
             {!showForgotPassword && (
               <p className="mt-6 text-center text-xs text-gray-500">
                 By continuing, you agree to our{' '}
-                <Link href="/terms" className="text-green-600 hover:underline">
+                <Link href="/terms-and-conditions" className="text-green-600 hover:underline">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-green-600 hover:underline">
+                <Link href="/policies" className="text-green-600 hover:underline">
                   Privacy Policy
                 </Link>
               </p>
