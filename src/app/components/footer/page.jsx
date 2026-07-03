@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Logo from "../../../assets/images/logo.png";
 import Link from "next/link";
+import { POLICY_PAGES } from "../policyPage/page";
 
 export default function Footer() {
   const [categories, setCategories] = useState([]);
@@ -138,11 +139,13 @@ export default function Footer() {
                   Contact
                 </a>
               </li>
-              <li>
-                <a href="/policies" className="hover:text-black transition-colors">
-                  Fast2 Policies
-                </a>
-              </li>
+              {POLICY_PAGES.map((p) => (
+                <li key={p.type}>
+                  <a href={p.href} className="hover:text-black transition-colors">
+                    {p.label}
+                  </a>
+                </li>
+              ))}
               <li>
                 <a href="/shops" className="hover:text-black transition-colors">
                   Browse Shops
@@ -238,12 +241,14 @@ export default function Footer() {
         {/* Copyright and bottom links */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-black mb-2 md:mb-0">
-            © {new Date().getFullYear()} Fast2. All rights reserved.
+            © {new Date().getFullYear()} Fast2 Market Digital Solutions. All rights reserved.
           </p>
-<div className="flex space-x-6 text-sm text-black">
-            <a href="/policies" className="hover:text-black transition-colors">
-              Fast2 Policies
-            </a>
+<div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-black">
+            {POLICY_PAGES.map((p) => (
+              <a key={p.type} href={p.href} className="hover:text-black transition-colors">
+                {p.label}
+              </a>
+            ))}
           </div>
         </div>
       </div>
