@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
-const GREETING = "Hi! I'm the Fast2 Assistant. Ask me about ordering, tracking your order, your wallet, refer & earn, or becoming a delivery partner.";
+const GREETING = "Hi! I'm the GMKart Assistant. Ask me about ordering, tracking your order, your wallet, refer & earn, or becoming a delivery partner.";
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,13 +41,13 @@ const ChatWidget = () => {
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: data.message || 'Sorry, something went wrong. Please contact support@fast2.in.' },
+          { role: 'assistant', content: data.message || 'Sorry, something went wrong. Please contact support@GMkart.in.' },
         ]);
       }
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, something went wrong. Please contact support@fast2.in.' },
+        { role: 'assistant', content: 'Sorry, something went wrong. Please contact support@GMkart.in.' },
       ]);
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ const ChatWidget = () => {
           <div className="bg-green-600 px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
               <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
-              <span className="text-white font-semibold text-sm">Fast2 Assistant</span>
+              <span className="text-white font-semibold text-sm">GMKart Assistant</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}

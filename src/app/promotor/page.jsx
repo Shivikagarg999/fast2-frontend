@@ -79,7 +79,7 @@ export default function PromoterPartnerPage() {
                 <div className="rounded-lg flex items-center justify-center">
                   <Image 
                     src={Logo} 
-                    alt="Fast2" 
+                    alt="GMKart" 
                     width={50} 
                     height={50}
                   />
@@ -119,14 +119,14 @@ export default function PromoterPartnerPage() {
                     <div className="rounded-xl flex items-center justify-center">
                       <Image 
                         src={Logo} 
-                        alt="Fast2" 
+                        alt="GMKart" 
                         width={80} 
                         height={80}
                       />
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900">Promoter Partner Application</h2>
-                      <p className="text-gray-600">Start your partnership with Fast2</p>
+                      <p className="text-gray-600">Start your partnership with GMKart</p>
                     </div>
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export default function PromoterPartnerPage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Become a Fast2 Partner?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Become a GMKart Partner?</h2>
             <p className="text-gray-600 text-lg">Unlock exceptional benefits and growth opportunities</p>
           </div>
 
@@ -328,7 +328,7 @@ export default function PromoterPartnerPage() {
           <div className="space-y-6">
             {[
               {
-                question: "What does a Fast2 Promoter Partner do?",
+                question: "What does a GMKart Promoter Partner do?",
                 answer: "As a promoter partner, you'll help businesses onboard onto our platform, promote our services, generate leads, and build long-term client relationships while earning attractive commissions."
               },
               {

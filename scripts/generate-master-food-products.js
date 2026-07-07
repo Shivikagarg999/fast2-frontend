@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Master data source for food categories & products.
-// Field names mirror fast2-backend/models/product.js and models/category.js
+// Field names mirror GMkart-backend/models/product.js and models/category.js
 // so this can be mapped/imported with minimal changes.
 //
 // Edit the arrays below to add/remove items, then re-run:
@@ -389,7 +389,7 @@ function buildProducts() {
     const defs = PRODUCTS_BY_CATEGORY[category.slug] || [];
     for (const [brand, name, subCategory, weight, weightUnit] of defs) {
       products.push({
-        // --- Product schema fields (fast2-backend/models/product.js) ---
+        // --- Product schema fields (GMkart-backend/models/product.js) ---
         name,
         description: buildDescription(category.slug, subCategory, name, weight, weightUnit),
         brand,
@@ -435,7 +435,7 @@ function buildProducts() {
 
 function buildCategories() {
   return CATEGORIES.map((category, index) => ({
-    // --- Category schema fields (fast2-backend/models/category.js) ---
+    // --- Category schema fields (GMkart-backend/models/category.js) ---
     name: category.name,
     image: null, // TODO: add category image URL
     hsnCode: null, // TODO: verify with finance/compliance

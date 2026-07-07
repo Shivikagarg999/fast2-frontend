@@ -114,7 +114,7 @@ export default function WalletPage() {
           <div className="text-sm text-yellow-800">
             <p className="font-semibold mb-0.5">How wallet balance works</p>
             <p className="text-yellow-700 leading-relaxed">
-              Your wallet balance is credited by Fast2 as cashback or promotional rewards. It is automatically applied during checkout to reduce your order total.
+              Your wallet balance is credited by GMKart as cashback or promotional rewards. It is automatically applied during checkout to reduce your order total.
             </p>
           </div>
         </div>

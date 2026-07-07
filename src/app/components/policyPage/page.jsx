@@ -195,7 +195,7 @@ export default function PolicyPageLayout({ policyType }) {
                         </h3>
                         <p className="text-gray-600 mb-6">
                           {policyType === 'terms'
-                            ? "By accessing or using Fast2's services, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services."
+                            ? "By accessing or using GMKart's services, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services."
                             : "This policy is an integral part of our terms of service. By using our services, you agree to comply with this policy."
                           }
                         </p>
@@ -218,7 +218,7 @@ export default function PolicyPageLayout({ policyType }) {
                         <div className="bg-white rounded-xl p-4 border border-gray-200">
                           <p className="text-sm text-gray-500 mb-1">Email</p>
                           <p className="font-medium text-gray-900">
-                            {policy.metadata?.contactEmail || 'support@fast2.in'}
+                            {policy.metadata?.contactEmail || 'support@GMkart.in'}
                           </p>
                         </div>
                         <div className="bg-white rounded-xl p-4 border border-gray-200">

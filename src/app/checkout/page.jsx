@@ -446,7 +446,7 @@ const CheckoutPage = () => {
         key: razorpayOrderData.key,
         amount: razorpayOrderData.amount,
         currency: razorpayOrderData.currency,
-        name: 'Fast 2',
+        name: 'GMKart',
         description: 'Order Payment',
         order_id: razorpayOrderData.orderId,
         handler: async function (response) {

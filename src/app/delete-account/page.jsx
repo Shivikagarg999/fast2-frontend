@@ -173,7 +173,7 @@ export default function DeleteAccountPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Delete Your Account</h1>
           <p className="text-gray-500 mt-2 text-sm">
-            Enter your credentials to permanently delete your fast2 account.
+            Enter your credentials to permanently delete your GMKart account.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function DeleteAccountPage() {
         <p className="text-center text-sm text-gray-500 mt-6">
           Changed your mind?{' '}
           <Link href="/" className="text-green-600 font-medium hover:underline">
-            Go back to fast2
+            Go back to GMKart
           </Link>
         </p>
       </div>

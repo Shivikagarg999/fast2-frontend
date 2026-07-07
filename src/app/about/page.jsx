@@ -69,7 +69,7 @@ const leadership = [
   {
     name: 'Smt. Meena Singh',
     role: 'Owner',
-    description: 'Visionary leader guiding Fast2.in\'s growth with commitment to quality and customer satisfaction.',
+    description: 'Visionary leader guiding GMkart.in\'s growth with commitment to quality and customer satisfaction.',
     icon: SparklesIcon,
   },
   {
@@ -93,7 +93,7 @@ export default function About() {
               <div className="pt-10 px-4 sm:px-6 lg:px-8 lg:pt-16 lg:pr-0">
                 <div className="lg:self-center">
                   <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-                    About <span className="block text-yellow-400">Fast2.in</span>
+                    About <span className="block text-yellow-400">GMkart.in</span>
                   </h1>
                   <p className="mt-5 text-xl text-green-100 max-w-xl">
                     A quick e-commerce platform that makes online shopping fast, simple, and hassle-free.
@@ -114,7 +114,7 @@ export default function About() {
             <div className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                alt="Fast2.in e-commerce platform"
+                alt="GMkart.in e-commerce platform"
                 fill
                 className="object-cover"
                 priority
@@ -169,11 +169,11 @@ export default function About() {
                 <div className="space-y-12">
                   <div className="text-center">
                     <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                      Welcome to Fast2.in
+                      Welcome to GMkart.in
                     </h2>
                     <div className="mt-6 prose prose-lg text-gray-600 mx-auto max-w-4xl">
                       <p className="text-xl leading-relaxed">
-                        Fast2.in is a quick e-commerce platform that makes online shopping fast, simple, and hassle-free. 
+                        GMkart.in is a quick e-commerce platform that makes online shopping fast, simple, and hassle-free. 
                         We deliver quality products, rapid service, and a seamless shopping experience right to your doorstep.
                       </p>
                       
@@ -256,7 +256,7 @@ export default function About() {
                       <div className="prose prose-lg text-gray-700">
                         <p className="text-lg leading-relaxed">
                           To provide every customer with a quick, reliable, and enjoyable shopping experience, 
-                          offering quality products with transparency and speed. Fast2.in is more than an online 
+                          offering quality products with transparency and speed. GMkart.in is more than an online 
                           store—we are a fast, trustworthy marketplace built for today's busy shopper.
                         </p>
                       </div>
@@ -317,7 +317,7 @@ export default function About() {
                       Our Leadership Team
                     </h2>
                     <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-                      Meet the dedicated individuals who drive Fast2.in's success with passion and commitment.
+                      Meet the dedicated individuals who drive GMkart.in's success with passion and commitment.
                     </p>
                   </div>
 
@@ -326,7 +326,7 @@ export default function About() {
                     <div className="bg-gradient-to-r from-green-50 to-indigo-50 rounded-2xl p-8 mb-12">
                       <p className="text-lg text-gray-700 leading-relaxed">
                         The platform is run by Mr. Lalit Kumar, ensuring smooth operations and prompt customer support, 
-                        and owned by Smt. Meena Singh, whose vision and commitment to quality guide Fast2.in's growth. 
+                        and owned by Smt. Meena Singh, whose vision and commitment to quality guide GMkart.in's growth. 
                         Together, they lead a team dedicated to trust, innovation, and customer satisfaction.
                       </p>
                     </div>
@@ -423,8 +423,8 @@ export default function About() {
                               <EnvelopeIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">Email</h4>
-                                <a href="mailto:support@fast2.in" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
-                                  support@fast2.in
+                                <a href="mailto:support@GMkart.in" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
+                                  support@GMkart.in
                                 </a>
                               </div>
                             </div>
@@ -433,8 +433,8 @@ export default function About() {
                               <GlobeAltIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">Website</h4>
-                                <a href="https://www.fast2.in" target="_blank" rel="noopener noreferrer" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
-                                  www.fast2.in
+                                <a href="https://www.GMkart.in" target="_blank" rel="noopener noreferrer" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
+                                  www.GMkart.in
                                 </a>
                               </div>
                             </div>
@@ -541,7 +541,7 @@ export default function About() {
           <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
             <div>
               <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                <span className="block">Experience the Fast2.in Difference</span>
+                <span className="block">Experience the GMkart.in Difference</span>
                 <span className="block text-yellow-400">Fast, Reliable, Quality Shopping</span>
               </h2>
               <p className="mt-4 text-lg text-green-100 max-w-3xl">

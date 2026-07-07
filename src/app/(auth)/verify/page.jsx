@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Footer from '@/app/components/footer/page';
@@ -155,7 +155,7 @@ export default function VerifyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
-        <title>Verify OTP | Fast2.in</title>
+        <title>Verify OTP | GMKart</title>
         <meta name="description" content="Verify your OTP" />
       </Head>
       <main className="container mx-auto px-4 py-8">

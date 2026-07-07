@@ -136,7 +136,7 @@ export default function DeliveryPartnerPage() {
 
       setStatusMessage({
         type: 'success',
-        text: 'Registration successful. Download the Fast2 Partner app from Google Play to continue.'
+        text: 'Registration successful. Download the GMKart Partner app from Google Play to continue.'
       });
       setFormData(initialFormData);
       setPreviews(initialPreviews);
@@ -162,7 +162,7 @@ export default function DeliveryPartnerPage() {
               <div className="h-10 w-28 flex items-center">
                 <Image 
                   src={Logo} 
-                  alt="Fast2" 
+                  alt="GMKart" 
                   width={112} 
                   height={40}
                   priority
@@ -198,7 +198,7 @@ export default function DeliveryPartnerPage() {
                 <div className=" rounded-lg flex items-center justify-center">
                   <Image 
                     src={Logo} 
-                    alt="Fast2" 
+                    alt="GMKart" 
                     width={50} 
                     height={50}
                     className=" object-contain"
@@ -209,7 +209,7 @@ export default function DeliveryPartnerPage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Start <span className="bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">Earning</span> with Fast2
+              Start <span className="bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">Earning</span> with GMKart
             </h1>
             <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join India's newest and most innovative delivery partner network. Earn competitive pay with complete flexibility and weekly settlements.
@@ -247,14 +247,14 @@ export default function DeliveryPartnerPage() {
                     <div className="rounded-xl flex items-center justify-center">
                       <Image 
                         src={Logo} 
-                        alt="Fast2" 
+                        alt="GMKart" 
                         width={100} 
                         height={100}
                       />
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900">Partner Registration</h2>
-                      <p className="text-gray-600">Start your journey with Fast2 Delivery</p>
+                      <p className="text-gray-600">Start your journey with GMKart Delivery</p>
                     </div>
                   </div>
                 </div>
@@ -426,12 +426,12 @@ export default function DeliveryPartnerPage() {
               <div className="rounded-lg flex items-center justify-center mr-3">
                 <Image 
                   src={Logo} 
-                  alt="Fast2" 
+                  alt="GMKart" 
                   width={100} 
                   height={100}
                 />
               </div>
-              <span className="text-green-600 font-semibold">Why Choose Fast2?</span>
+              <span className="text-green-600 font-semibold">Why Choose GMKart?</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Be Among Our <span className="bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">First Partners</span>
@@ -539,7 +539,7 @@ export default function DeliveryPartnerPage() {
             <div className="lg:w-1/2">
               <div className="max-w-2xl">
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  Get started with the Fast2 Partner app
+                  Get started with the GMKart Partner app
                 </h2>
                 
                 <div className="space-y-8">
@@ -582,7 +582,7 @@ export default function DeliveryPartnerPage() {
 
                 {/* Download Buttons */}
                 <div className="mt-12">
-                  <p className="text-gray-600 text-lg mb-6">Drivers can log in and manage deliveries from the Fast2 Partner app on Google Play</p>
+                  <p className="text-gray-600 text-lg mb-6">Drivers can log in and manage deliveries from the GMKart Partner app on Google Play</p>
                   <div className="flex flex-wrap gap-4">
                     <a href={PLAY_STORE_URL} className="inline-flex items-center bg-gray-900 text-white px-8 py-4 rounded-xl hover:bg-gray-800 transition-colors">
                       <svg className="w-7 h-7 mr-4" viewBox="0 0 24 24" fill="currentColor">
@@ -610,13 +610,13 @@ export default function DeliveryPartnerPage() {
                           <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center mr-2">
                             <Image 
                               src={Logo} 
-                              alt="Fast2" 
+                              alt="GMKart" 
                               width={14} 
                               height={14}
                               className="w-3.5 h-3.5 object-contain filter brightness-0 invert"
                             />
                           </div>
-                          Fast2 Partner
+                          GMKart Partner
                         </div>
                         <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">Online</div>
                       </div>

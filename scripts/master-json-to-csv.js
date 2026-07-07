@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Converts data/master-food-products.json into two CSVs whose headers match
-// the fast2-backend bulk-upload endpoints exactly:
-//   - data/master-categories.csv -> POST /api/category/upload/csv      (fast2-admin: Categories > Upload CSV)
-//   - data/master-products.csv   -> POST /api/admin/products/upload/csv (fast2-admin: Products > Upload CSV)
+// the GMkart-backend bulk-upload endpoints exactly:
+//   - data/master-categories.csv -> POST /api/category/upload/csv      (GMkart-admin: Categories > Upload CSV)
+//   - data/master-products.csv   -> POST /api/admin/products/upload/csv (GMkart-admin: Products > Upload CSV)
 //
 // Upload order matters: import categories first so the product importer's
 // Category column matches an existing category (with the correct HSN/GST

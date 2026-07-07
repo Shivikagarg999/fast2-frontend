@@ -114,13 +114,13 @@ const ReferralPage = () => {
   };
 
   const shareReferral = async () => {
-    const shareText = `Join me on Fast2! Use my referral code ${referralStats?.yourReferralCode} to get ₹50 bonus!`;
+    const shareText = `Join me on GMKart! Use my referral code ${referralStats?.yourReferralCode} to get ₹50 bonus!`;
     const shareUrl = window.location.origin;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Fast2 Referral',
+          title: 'GMKart Referral',
           text: shareText,
           url: shareUrl,
         });
@@ -381,7 +381,7 @@ const ReferralPage = () => {
                 <CurrencyRupeeIcon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">Use Wallet Money</h3>
-              <p className="text-green-100 text-sm">Use your earnings for shopping on Fast2</p>
+              <p className="text-green-100 text-sm">Use your earnings for shopping on GMKart</p>
             </div>
           </div>
         </div>
@@ -408,7 +408,7 @@ const ReferralPage = () => {
             
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Where can I use my wallet money?</h3>
-              <p className="text-gray-600 text-sm">You can use your wallet balance for any purchase on Fast2 platform. It will be automatically applied during checkout.</p>
+              <p className="text-gray-600 text-sm">You can use your wallet balance for any purchase on GMKart platform. It will be automatically applied during checkout.</p>
             </div>
           </div>
         </div>

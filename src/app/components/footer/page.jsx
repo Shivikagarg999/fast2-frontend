@@ -37,7 +37,7 @@ export default function Footer() {
             <div className="flex items-center mb-4">
               <Image
                 src={Logo}
-                alt="Blinkit"
+                alt="GMKart"
                 width={180}
                 height={80}
                 className="h-16 w-auto object-contain"
@@ -153,7 +153,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://seller.fast2.in/warehouse/login"
+                  href="https://seller.GMkart.in/warehouse/login"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
@@ -173,7 +173,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://seller.fast2.in"
+                  href="https://seller.GMkart.in"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
@@ -183,7 +183,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://promotor.fast2.in"
+                  href="https://promotor.GMkart.in"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
@@ -207,7 +207,7 @@ export default function Footer() {
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                support@fast2.in
+                support@GMkart.in
               </li>
               <li className="flex items-start">
                 <svg
@@ -241,7 +241,7 @@ export default function Footer() {
         {/* Copyright and bottom links */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-black mb-2 md:mb-0">
-            © {new Date().getFullYear()} Fast2 Market Digital Solutions. All rights reserved.
+            © {new Date().getFullYear()} GMKart Market Digital Solutions. All rights reserved.
           </p>
 <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-black">
             {POLICY_PAGES.map((p) => (

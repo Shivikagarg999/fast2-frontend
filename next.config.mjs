@@ -15,7 +15,7 @@ const nextConfig = {
     return [
       {
         source: '/proxy/:path*',
-        destination: 'https://api.fast2.in/:path*',
+        destination: 'https://api.GMkart.in/:path*',
       },
     ];
   },

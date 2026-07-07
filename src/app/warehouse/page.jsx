@@ -69,7 +69,7 @@ export default function WarehousePartnerPage() {
               <div className="rounded-xl flex items-center justify-center">
                 <Image 
                   src={Logo} 
-                  alt="Fast2" 
+                  alt="GMKart" 
                   width={100} 
                   height={100}
                 />
@@ -77,7 +77,7 @@ export default function WarehousePartnerPage() {
             </div>
            
               <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
-                Fast2 Warehouse
+                GMKart Warehouse
               </span>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function WarehousePartnerPage() {
                 <div className="rounded-lg flex items-center justify-center">
                   <Image 
                     src={Logo} 
-                    alt="Fast2" 
+                    alt="GMKart" 
                     width={50} 
                     height={50}
                   />
@@ -138,14 +138,14 @@ export default function WarehousePartnerPage() {
                     <div className="rounded-xl flex items-center justify-center">
                       <Image 
                         src={Logo} 
-                        alt="Fast2" 
+                        alt="GMKart" 
                         width={80} 
                         height={80}
                       />
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900">Warehouse Job Application</h2>
-                      <p className="text-gray-600">Start your career with Fast2 Warehouse</p>
+                      <p className="text-gray-600">Start your career with GMKart Warehouse</p>
                     </div>
                   </div>
                 </div>
@@ -271,7 +271,7 @@ export default function WarehousePartnerPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-gray-600 text-lg">Get answers to common questions about working at Fast2 Warehouse</p>
+            <p className="text-gray-600 text-lg">Get answers to common questions about working at GMKart Warehouse</p>
           </div>
 
           <div className="space-y-6">

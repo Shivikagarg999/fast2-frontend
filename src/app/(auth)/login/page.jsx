@@ -322,7 +322,7 @@ export default function LoginPage() {
                 ? 'Login quickly and securely with OTP'
                 : showForgotPassword
                   ? 'We will send a password reset link to your email'
-                  : 'Access your Fast2 account securely'}
+                  : 'Access your GMKart account securely'}
             </p>
           </div>
           

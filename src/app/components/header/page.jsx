@@ -902,7 +902,7 @@ function HeaderContent() {
               >
                 <Image
                   src={Logo}
-                  alt="Fast2"
+                  alt="GMKart"
                   width={120}
                   height={50}
                   className="h-auto object-contain"

@@ -21,7 +21,7 @@ export default function ConditionalHeader() {
               <span className="text-white font-bold text-sm">F2</span>
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
-              Fast2
+              GMkart
             </span>
           </div>
           <nav className="flex space-x-8">

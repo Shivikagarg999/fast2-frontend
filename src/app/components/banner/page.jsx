@@ -69,7 +69,7 @@ const Banner = () => {
           >
             <Image
               src={getSafeImageUrl(s.image)}
-              alt={s.title || 'Fast2 Grocery Delivery'}
+              alt={s.title || 'GMKart Grocery Delivery'}
               fill
               className="object-cover object-center"
               priority={i === 0}

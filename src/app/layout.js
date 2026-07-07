@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Fast2",
-  description: "Fast2 - Your shopping partner",
+  title: "GMKart",
+  description: "GMKart - Your shopping partner",
   icons: {
     icon: "/favicon/logo.jpeg",
     shortcut: "/favicon/logo.jpeg",
