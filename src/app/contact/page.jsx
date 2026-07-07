@@ -28,8 +28,8 @@ const ContactPage = () => {
   const contactInfo = [
     {
       title: 'Email Address',
-      description: 'support@GMkart.in',
-      href: 'mailto:support@GMkart.in',
+      description: 'support@fast2.in',
+      href: 'mailto:support@fast2.in',
       icon: EnvelopeIcon,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
@@ -52,8 +52,8 @@ const ContactPage = () => {
     },
     {
       title: 'Website',
-      description: 'www.GMkart.in',
-      href: 'https://www.GMkart.in',
+      description: 'www.fast2.in',
+      href: 'https://www.fast2.in',
       icon: GlobeAltIcon,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
@@ -283,7 +283,7 @@ const handleSubmit = async (e) => {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="GMkart.in Location"
+                  title="Fast2.in Location"
                 />
               </div>
             </div>

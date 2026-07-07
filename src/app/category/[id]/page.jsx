@@ -298,7 +298,7 @@ const CategoryProductsComponent = () => {
     }
     
     if (category.image.startsWith('/')) {
-      return `https://www.GMkart.in${category.image}`;
+      return `https://www.fast2.in${category.image}`;
     }
     
     return category.image;

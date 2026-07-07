@@ -41,13 +41,13 @@ const ChatWidget = () => {
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: data.message || 'Sorry, something went wrong. Please contact support@GMkart.in.' },
+          { role: 'assistant', content: data.message || 'Sorry, something went wrong. Please contact support@fast2.in.' },
         ]);
       }
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, something went wrong. Please contact support@GMkart.in.' },
+        { role: 'assistant', content: 'Sorry, something went wrong. Please contact support@fast2.in.' },
       ]);
     } finally {
       setLoading(false);

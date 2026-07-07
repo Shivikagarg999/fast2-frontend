@@ -218,7 +218,7 @@ export default function PolicyPageLayout({ policyType }) {
                         <div className="bg-white rounded-xl p-4 border border-gray-200">
                           <p className="text-sm text-gray-500 mb-1">Email</p>
                           <p className="font-medium text-gray-900">
-                            {policy.metadata?.contactEmail || 'support@GMkart.in'}
+                            {policy.metadata?.contactEmail || 'support@fast2.in'}
                           </p>
                         </div>
                         <div className="bg-white rounded-xl p-4 border border-gray-200">
