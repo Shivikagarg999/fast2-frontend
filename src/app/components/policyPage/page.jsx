@@ -49,7 +49,7 @@ export default function PolicyPageLayout({ policyType }) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <section className="py-12 bg-gradient-to-b from-green-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb / policy switcher */}
@@ -218,7 +218,7 @@ export default function PolicyPageLayout({ policyType }) {
                         <div className="bg-white rounded-xl p-4 border border-gray-200">
                           <p className="text-sm text-gray-500 mb-1">Email</p>
                           <p className="font-medium text-gray-900">
-                            {policy.metadata?.contactEmail || 'support@fast2.in'}
+                            {policy.metadata?.contactEmail || 'support@gmkart.com'}
                           </p>
                         </div>
                         <div className="bg-white rounded-xl p-4 border border-gray-200">
@@ -254,7 +254,7 @@ export default function PolicyPageLayout({ policyType }) {
         </div>
       </section>
 
-      <Footer />
+      <div className="mt-auto"><Footer /></div>
 
       {/* Global Styles for TinyMCE Content */}
       <style jsx global>{`

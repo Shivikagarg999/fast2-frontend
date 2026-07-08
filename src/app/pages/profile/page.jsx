@@ -339,7 +339,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20 flex flex-col">
       {/* Header with Blinkit-style gradient background */}
       <div className="bg-gradient-to-r from-blinkit-orange to-blinkit-purple text-black pb-24 pt-6">
         <div className="max-w-2xl mx-auto px-4">
@@ -582,7 +582,7 @@ const ProfilePage = () => {
         </div>
       )}
 
-      <Footer/>
+      <div className="mt-auto"><Footer/></div>
     </div>
   );
 };

@@ -413,8 +413,8 @@ export default function About() {
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">Address</h4>
                                 <p className="mt-1 text-green-50">
-                                  Indra Nagar near Sain Devin school,<br />
-                                  Thatipur, Gwalior, Madhya Pradesh 474011
+                                  HNO39, Indra Nagar Road, Morar Road,<br />
+                                  Near Sai Devin School, Thatipur, Gwalior, Madhya Pradesh – 474011
                                 </p>
                               </div>
                             </div>
@@ -423,8 +423,8 @@ export default function About() {
                               <EnvelopeIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">Email</h4>
-                                <a href="mailto:support@fast2.in" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
-                                  support@fast2.in
+                                <a href="mailto:support@gmkart.com" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
+                                  support@gmkart.com
                                 </a>
                               </div>
                             </div>
@@ -433,8 +433,8 @@ export default function About() {
                               <GlobeAltIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
                               <div className="ml-4">
                                 <h4 className="font-semibold text-green-100">Website</h4>
-                                <a href="https://www.fast2.in" target="_blank" rel="noopener noreferrer" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
-                                  www.fast2.in
+                                <a href="https://www.gmkart.com" target="_blank" rel="noopener noreferrer" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
+                                  www.gmkart.com
                                 </a>
                               </div>
                             </div>

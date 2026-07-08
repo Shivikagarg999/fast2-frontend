@@ -153,7 +153,7 @@ export default function DeliveryPartnerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Navigation */}
       <nav className="h-16 border-b bg-white border-gray-200 sticky top-0 z-50 overflow-hidden">
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -688,7 +688,7 @@ export default function DeliveryPartnerPage() {
         </div>
       </section>
 
-     <Footer/>
+     <div className="mt-auto"><Footer/></div>
     </div>
   );
 }

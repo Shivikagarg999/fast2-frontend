@@ -20,9 +20,9 @@ export const metadata = {
   title: "GMKart",
   description: "GMKart - Your shopping partner",
   icons: {
-    icon: "/favicon/logo.jpeg",
-    shortcut: "/favicon/logo.jpeg",
-    apple: "/favicon/logo.jpeg",
+    icon: "/favicon/logo.png",
+    shortcut: "/favicon/logo.png",
+    apple: "/favicon/logo.png",
   },
 };
 

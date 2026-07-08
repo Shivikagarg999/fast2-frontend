@@ -131,7 +131,7 @@ function ShopsContent() {
     const hasActiveFilters = search || city || minRating || verified || pincode || sortBy !== 'rating';
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Hero Section */}
             <div className="bg-gradient-to-br from-green-600 via-purple-600 to-pink-500 text-white">
                 <div className="max-w-7xl mx-auto px-4 py-10 md:py-16">
@@ -344,7 +344,7 @@ function ShopsContent() {
                 )}
             </div>
 
-            <Footer />
+            <div className="mt-auto"><Footer /></div>
         </div>
     );
 }

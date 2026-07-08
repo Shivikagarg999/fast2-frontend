@@ -153,7 +153,7 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Head>
         <title>Verify OTP | GMKart</title>
         <meta name="description" content="Verify your OTP" />
@@ -241,7 +241,7 @@ export default function VerifyPage() {
           </div>
         </div>
       </main>
-     <Footer/>
+     <div className="mt-auto"><Footer/></div>
     </div>
   );
 }

@@ -457,7 +457,7 @@ export default function ShopDetailPage() {
     const defaultLogo = 'https://via.placeholder.com/100x100?text=Shop';
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-10">
+        <div className="min-h-screen bg-gray-50 pb-10 flex flex-col">
             {/* Login Prompt */}
             {showLoginPrompt && (
                 <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
@@ -1203,7 +1203,7 @@ export default function ShopDetailPage() {
                 )}
             </div>
 
-            <div className="mt-10">
+            <div className="mt-auto">
                 <Footer />
             </div>
         </div>

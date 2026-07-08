@@ -207,7 +207,7 @@ export default function Footer() {
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                support@fast2.in
+                support@gmkart.com
               </li>
               <li className="flex items-start">
                 <svg
@@ -231,7 +231,7 @@ export default function Footer() {
                     clipRule="evenodd"
                   />
                 </svg>
-                Indra Nagar near Sain Devin school, Thatipur, Gwalior, MP 474011
+                HNO39, Indra Nagar Road, Morar Road, Near Sai Devin School, Thatipur, Gwalior, Madhya Pradesh – 474011
               </li>
             </ul>
           </div>
@@ -241,7 +241,7 @@ export default function Footer() {
         {/* Copyright and bottom links */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-black mb-2 md:mb-0">
-            © {new Date().getFullYear()} GMKart Market Digital Solutions. All rights reserved.
+            © {new Date().getFullYear()} Fast2market Digital Solutions Inc. GMKart.com. All Rights Reserved.
           </p>
 <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-black">
             {POLICY_PAGES.map((p) => (

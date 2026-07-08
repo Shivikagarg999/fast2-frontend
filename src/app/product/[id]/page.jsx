@@ -410,8 +410,8 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      
+    <div className="min-h-screen bg-gray-50 pb-20 flex flex-col">
+
       {showLoginPrompt && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
@@ -860,8 +860,8 @@ const ProductDetailPage = () => {
         }
       `}</style>
       
-      <Footer/>
-    </div> 
+      <div className="mt-auto"><Footer/></div>
+    </div>
   );
 };
 

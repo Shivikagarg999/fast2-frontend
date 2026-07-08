@@ -306,7 +306,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen flex flex-col">
       <Head>
         <title>{isLogin ? 'Login' : 'Register'} - Your App</title>
       </Head>
@@ -773,7 +773,7 @@ export default function LoginPage() {
           </div>
         )}
       </main>
-      <Footer/>
+      <div className="mt-auto"><Footer/></div>
     </div>
   );
 }

@@ -62,7 +62,7 @@ export default function PromoterPartnerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
 
       {/* Enhanced Hero Section */}
       <section className="relative bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 py-24 overflow-hidden">
@@ -369,7 +369,7 @@ export default function PromoterPartnerPage() {
         </div>
       </section>
 
-    <Footer/>
+    <div className="mt-auto"><Footer/></div>
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default function PoliciesLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <section className="py-12 bg-gradient-to-b from-green-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -123,7 +123,7 @@ export default function PoliciesLandingPage() {
         </div>
       </section>
 
-      <Footer />
+      <div className="mt-auto"><Footer /></div>
     </div>
   );
 }

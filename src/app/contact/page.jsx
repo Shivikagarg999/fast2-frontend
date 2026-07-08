@@ -28,8 +28,8 @@ const ContactPage = () => {
   const contactInfo = [
     {
       title: 'Email Address',
-      description: 'support@fast2.in',
-      href: 'mailto:support@fast2.in',
+      description: 'support@gmkart.com',
+      href: 'mailto:support@gmkart.com',
       icon: EnvelopeIcon,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
@@ -44,16 +44,16 @@ const ContactPage = () => {
     },
     {
       title: 'Business Address',
-      description: 'Indra Nagar near Sain Devin school, Thatipur, Gwalior, Madhya Pradesh 474011',
-      href: 'https://maps.google.com/?q=Indra+Nagar+near+Sain+Devin+school+Thatipur+Gwalior+Madhya+Pradesh+474011',
+      description: 'HNO39, Indra Nagar Road, Morar Road, Near Sai Devin School, Thatipur, Gwalior, Madhya Pradesh – 474011',
+      href: 'https://maps.google.com/?q=HNO39+Indra+Nagar+Road+Morar+Road+Near+Sai+Devin+School+Thatipur+Gwalior+Madhya+Pradesh+474011',
       icon: MapPinIcon,
       color: 'text-red-600',
       bgColor: 'bg-red-50'
     },
     {
       title: 'Website',
-      description: 'www.fast2.in',
-      href: 'https://www.fast2.in',
+      description: 'www.gmkart.com',
+      href: 'https://www.gmkart.com',
       icon: GlobeAltIcon,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
@@ -197,7 +197,7 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
       <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
 
       {/* Hero Section */}
@@ -283,7 +283,7 @@ const handleSubmit = async (e) => {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Fast2.in Location"
+                  title="GMKart.com Location"
                 />
               </div>
             </div>
@@ -471,7 +471,7 @@ const handleSubmit = async (e) => {
           </div>
         </div>
       </div>
-      <Footer/>
+      <div className="mt-auto"><Footer/></div>
     </div>
   );
 };
