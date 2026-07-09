@@ -1,9 +1,9 @@
 "use client";
 import { useState } from 'react';
 import Image from 'next/image';
-import { 
-  ClockIcon, 
-  TruckIcon, 
+import {
+  ClockIcon,
+  TruckIcon,
   ShieldCheckIcon,
   ArrowPathIcon,
   DevicePhoneMobileIcon,
@@ -15,69 +15,59 @@ import {
   LightBulbIcon,
   HeartIcon,
   RocketLaunchIcon,
-  BoltIcon
+  BoltIcon,
+  ChatBubbleLeftRightIcon,
+  BuildingOffice2Icon,
+  PhoneIcon,
+  StarIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import Footer from '@/app/components/footer/page';
 
-const features = [
-  {
-    name: 'Fast Delivery',
-    description: 'Get your products delivered quickly with our efficient delivery network.',
-    icon: ClockIcon,
-  },
-  {
-    name: 'Quality Products',
-    description: 'We deliver quality products sourced from trusted suppliers with transparency.',
-    icon: ShieldCheckIcon,
-  },
-  {
-    name: 'Wide Selection',
-    description: 'Choose from a diverse range of products across multiple categories.',
-    icon: TruckIcon,
-  },
-  {
-    name: 'Hassle-Free Service',
-    description: 'Enjoy a seamless shopping experience with easy returns and prompt support.',
-    icon: ArrowPathIcon,
-  },
-];
-
-const values = [
+const coreValues = [
   {
     name: 'Customer First',
-    description: 'Our customers are at the heart of everything we do. We listen, adapt, and prioritize your needs.',
+    description: 'Every decision begins with the customer.',
     icon: HeartIcon,
   },
   {
-    name: 'Speed & Efficiency',
-    description: 'We value your time and deliver rapid service with the highest efficiency standards.',
-    icon: BoltIcon,
-  },
-  {
-    name: 'Trust & Quality',
-    description: 'We never compromise on quality. Every product and service reflects our commitment to excellence.',
+    name: 'Trust & Integrity',
+    description: 'Building lasting relationships through transparency, accountability, and reliability.',
     icon: ShieldCheckIcon,
   },
   {
     name: 'Innovation',
-    description: 'Continuously improving our platform to provide a better shopping experience.',
+    description: 'Continuously improving products, services, and technology.',
     icon: LightBulbIcon,
   },
-];
-
-const leadership = [
   {
-    name: 'Smt. Meena Singh',
-    role: 'Owner',
-    description: 'Visionary leader guiding GMKart\'s growth with commitment to quality and customer satisfaction.',
+    name: 'Quality',
+    description: 'Delivering products and experiences customers can trust.',
     icon: SparklesIcon,
   },
   {
-    name: 'Mr. Lalit Kumar',
-    role: 'Platform Runner',
-    description: 'Ensuring smooth operations and prompt customer support for a seamless shopping experience.',
-    icon: UserCircleIcon,
+    name: 'Empowering Local Businesses',
+    description: 'Enabling neighborhood retailers to succeed in the digital economy.',
+    icon: BuildingOffice2Icon,
   },
+  {
+    name: 'Excellence',
+    description: 'Pursuing the highest standards in operations, technology, and customer service.',
+    icon: StarIcon,
+  },
+];
+
+const whyChoose = [
+  { text: 'Technology-powered Quick Commerce platform', icon: BoltIcon },
+  { text: 'Trusted local retailers and verified sellers', icon: ShieldCheckIcon },
+  { text: 'Wide selection of groceries and everyday essentials', icon: ArrowPathIcon },
+  { text: 'Live order tracking with real-time updates', icon: TruckIcon },
+  { text: 'Secure online payment options', icon: CheckCircleIcon },
+  { text: 'Website live chat support', icon: ChatBubbleLeftRightIcon },
+  { text: 'Transparent pricing and exclusive offers', icon: SparklesIcon },
+  { text: 'Reliable order fulfillment', icon: RocketLaunchIcon },
+  { text: 'Dedicated customer support', icon: UserCircleIcon },
+  { text: 'Safe, seamless, and customer-focused shopping experience', icon: HeartIcon },
 ];
 
 export default function About() {
@@ -93,10 +83,10 @@ export default function About() {
               <div className="pt-10 px-4 sm:px-6 lg:px-8 lg:pt-16 lg:pr-0">
                 <div className="lg:self-center">
                   <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-                    About <span className="block text-yellow-400">GMKart</span>
+                    About <span className="block text-yellow-400">GMKART</span>
                   </h1>
                   <p className="mt-5 text-xl text-green-100 max-w-xl">
-                    A quick e-commerce platform that makes online shopping fast, simple, and hassle-free.
+                    A technology-driven Quick Commerce platform redefining how India shops for everyday essentials.
                   </p>
                   <div className="mt-8 flex flex-col sm:flex-row gap-4">
                     <a
@@ -114,7 +104,7 @@ export default function About() {
             <div className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full relative">
               <Image
                 src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                alt="GMKart e-commerce platform"
+                alt="GMKART e-commerce platform"
                 fill
                 className="object-cover"
                 priority
@@ -147,81 +137,69 @@ export default function About() {
                       : 'text-gray-600 hover:text-green-600'
                   }`}
                 >
-                  Our Mission
+                  Mission & Vision
                 </button>
                 <button
-                  onClick={() => setActiveTab('team')}
+                  onClick={() => setActiveTab('corporate')}
                   className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-                    activeTab === 'team'
+                    activeTab === 'corporate'
                       ? 'bg-green-600 text-white shadow'
                       : 'text-gray-600 hover:text-green-600'
                   }`}
                 >
-                  Leadership Team
+                  Corporate Info
                 </button>
               </div>
             </div>
 
             {/* Tab Content */}
             <div className="mt-12">
+
               {/* About Us Tab */}
               {activeTab === 'about' && (
                 <div className="space-y-12">
-                  <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                      Welcome to GMKart
+                  <div className="max-w-4xl mx-auto">
+                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-8 text-center">
+                      About GMKART
                     </h2>
-                    <div className="mt-6 prose prose-lg text-gray-600 mx-auto max-w-4xl">
-                      <p className="text-xl leading-relaxed">
-                        GMKart is a quick e-commerce platform that makes online shopping fast, simple, and hassle-free. 
-                        We deliver quality products, rapid service, and a seamless shopping experience right to your doorstep.
+
+                    <div className="prose prose-lg text-gray-700 space-y-6">
+                      <p className="text-lg leading-relaxed">
+                        GMKART is a technology-driven Quick Commerce (Q-Commerce) platform operated by <strong>Fast2market Digital Solutions</strong>, built to redefine how India shops for everyday essentials. By combining advanced technology with a trusted network of local retailers, GMKART delivers a fast, seamless, and reliable shopping experience that brings convenience closer to every home.
                       </p>
-                      
-                      <div className="mt-10 bg-gradient-to-r from-green-50 to-indigo-50 rounded-2xl p-8">
-                        <h3 className="text-2xl font-semibold text-green-900 mb-6">What Makes Us Different</h3>
-                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="flex items-start space-x-4">
-                            <div className="flex-shrink-0">
-                              <RocketLaunchIcon className="h-8 w-8 text-green-600" />
-                            </div>
-                            <div>
-                              <h4 className="text-lg font-semibold text-gray-900">Quick Commerce</h4>
-                              <p className="mt-2 text-gray-600">
-                                We specialize in fast delivery without compromising on product quality or customer service.
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-start space-x-4">
-                            <div className="flex-shrink-0">
-                              <ShieldCheckIcon className="h-8 w-8 text-green-600" />
-                            </div>
-                            <div>
-                              <h4 className="text-lg font-semibold text-gray-900">Trust & Reliability</h4>
-                              <p className="mt-2 text-gray-600">
-                                Built on a foundation of trust, we ensure every transaction is secure and satisfactory.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="text-lg leading-relaxed">
+                        We are building a digital ecosystem where customers can effortlessly access groceries, fresh fruits and vegetables, dairy products, beverages, household essentials, personal care products, and other daily necessities through one secure and easy-to-use platform. Every interaction is designed to be simple, transparent, and dependable.
+                      </p>
+                      <p className="text-lg leading-relaxed">
+                        At GMKART, we believe the future of retail belongs to local businesses empowered by technology. Our platform enables neighborhood retailers to embrace digital commerce, expand their customer reach, improve operational efficiency, and grow sustainably in an increasingly connected economy. As our partners grow, the communities they serve become stronger.
+                      </p>
+                      <p className="text-lg leading-relaxed">
+                        Driven by innovation and customer satisfaction, GMKART offers a comprehensive shopping experience with live order tracking, real-time order notifications, secure online payments, transparent pricing, website live chat support, and reliable order fulfillment. Every feature is built with a single purpose—to deliver exceptional convenience while maintaining the highest standards of quality, security, and service.
+                      </p>
+                    </div>
+
+                    {/* Tagline */}
+                    <div className="mt-10 bg-gradient-to-r from-green-600 to-green-800 rounded-2xl p-8 text-center">
+                      <p className="text-xl font-semibold text-white italic">
+                        "GMKART – Empowering Local Stores. Delivering Everyday Convenience."
+                      </p>
                     </div>
                   </div>
 
-                  {/* Features Section */}
-                  <div className="mt-16">
-                    <h2 className="text-3xl font-bold text-center text-gray-900 sm:text-4xl mb-12">
-                      Our Key Features
-                    </h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                      {features.map((feature) => (
-                        <div key={feature.name} className="relative bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-                          <div className="absolute -top-4 left-6 flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
-                            <feature.icon className="h-6 w-6" aria-hidden="true" />
+                  {/* Why Choose GMKART */}
+                  <div className="max-w-4xl mx-auto mt-16">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+                      Why Choose GMKART?
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {whyChoose.map((item) => (
+                        <div key={item.text} className="flex items-start space-x-4 bg-green-50 rounded-xl p-4 border border-green-100">
+                          <div className="flex-shrink-0">
+                            <div className="h-9 w-9 rounded-lg bg-green-600 flex items-center justify-center">
+                              <item.icon className="h-5 w-5 text-white" />
+                            </div>
                           </div>
-                          <div className="pt-8">
-                            <h3 className="text-lg font-semibold text-gray-900">{feature.name}</h3>
-                            <p className="mt-3 text-gray-600">{feature.description}</p>
-                          </div>
+                          <p className="text-gray-700 font-medium pt-1">{item.text}</p>
                         </div>
                       ))}
                     </div>
@@ -229,66 +207,47 @@ export default function About() {
                 </div>
               )}
 
-              {/* Mission Tab */}
+              {/* Mission & Vision Tab */}
               {activeTab === 'mission' && (
                 <div className="space-y-12">
-                  <div className="text-center">
-                    <div className="flex justify-center mb-6">
-                      <LightBulbIcon className="h-16 w-16 text-yellow-500" />
-                    </div>
-                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                      Our Mission & Vision
-                    </h2>
-                  </div>
-
                   <div className="max-w-4xl mx-auto">
                     {/* Mission Card */}
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 mb-12 border border-green-200">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 mb-10 border border-green-200">
                       <div className="flex items-center mb-6">
                         <div className="flex-shrink-0 h-12 w-12 bg-green-600 rounded-lg flex items-center justify-center">
                           <RocketLaunchIcon className="h-7 w-7 text-white" />
                         </div>
                         <div className="ml-4">
                           <h3 className="text-2xl font-bold text-green-900">Our Mission</h3>
-                          <p className="text-green-700">Driving Purpose & Commitment</p>
                         </div>
                       </div>
-                      <div className="prose prose-lg text-gray-700">
-                        <p className="text-lg leading-relaxed">
-                          To provide every customer with a quick, reliable, and enjoyable shopping experience, 
-                          offering quality products with transparency and speed. GMKart is more than an online 
-                          store—we are a fast, trustworthy marketplace built for today's busy shopper.
-                        </p>
-                      </div>
+                      <p className="text-lg leading-relaxed text-gray-700">
+                        To build India's most trusted Quick Commerce (Q-Commerce) platform by empowering local retailers with innovative technology and delivering everyday essentials through a fast, secure, reliable, and customer-centric shopping experience.
+                      </p>
                     </div>
 
                     {/* Vision Card */}
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 border border-green-200">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 mb-12 border border-green-200">
                       <div className="flex items-center mb-6">
                         <div className="flex-shrink-0 h-12 w-12 bg-green-600 rounded-lg flex items-center justify-center">
                           <SparklesIcon className="h-7 w-7 text-white" />
                         </div>
                         <div className="ml-4">
                           <h3 className="text-2xl font-bold text-green-900">Our Vision</h3>
-                          <p className="text-green-700">Future Aspirations</p>
                         </div>
                       </div>
-                      <div className="prose prose-lg text-gray-700">
-                        <p className="text-lg leading-relaxed">
-                          To become the most trusted quick-commerce platform in India, known for exceptional 
-                          speed, unparalleled quality, and outstanding customer service. We envision creating 
-                          a shopping ecosystem that saves time while enriching lives.
-                        </p>
-                      </div>
+                      <p className="text-lg leading-relaxed text-gray-700">
+                        To become India's leading Quick Commerce platform by creating a connected digital ecosystem where local businesses thrive, customers enjoy effortless shopping, and technology drives inclusive and sustainable growth.
+                      </p>
                     </div>
 
-                    {/* Values Section */}
-                    <div className="mt-16">
+                    {/* Core Values */}
+                    <div className="mt-4">
                       <h3 className="text-2xl font-bold text-center text-gray-900 mb-10">
                         Our Core Values
                       </h3>
-                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {values.map((value) => (
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {coreValues.map((value) => (
                           <div key={value.name} className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100">
                             <div className="flex justify-center mb-4">
                               <div className="h-14 w-14 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
@@ -305,233 +264,113 @@ export default function About() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Closing statement */}
+                    <div className="mt-12 bg-gradient-to-r from-green-50 to-indigo-50 rounded-2xl p-8">
+                      <p className="text-lg text-gray-700 leading-relaxed text-center">
+                        At GMKART, we are building more than a shopping platform—we are shaping the future of neighborhood commerce. By connecting technology with trusted local retailers, we create lasting value for customers, empower businesses to grow, and strengthen the communities they serve.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Leadership Team Tab */}
-              {activeTab === 'team' && (
+              {/* Corporate Info Tab */}
+              {activeTab === 'corporate' && (
                 <div className="space-y-12">
-                  <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                      Our Leadership Team
-                    </h2>
-                    <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-                      Meet the dedicated individuals who drive GMKart's success with passion and commitment.
-                    </p>
-                  </div>
-
                   <div className="max-w-4xl mx-auto">
-                    {/* Introduction */}
-                    <div className="bg-gradient-to-r from-green-50 to-indigo-50 rounded-2xl p-8 mb-12">
-                      <p className="text-lg text-gray-700 leading-relaxed">
-                        The platform is run by Mr. Lalit Kumar, ensuring smooth operations and prompt customer support, 
-                        and owned by Smt. Meena Singh, whose vision and commitment to quality guide GMKart's growth. 
-                        Together, they lead a team dedicated to trust, innovation, and customer satisfaction.
-                      </p>
-                    </div>
+                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-10 text-center">
+                      Corporate Information
+                    </h2>
 
-                    {/* Leadership Cards */}
-                    <div className="grid md:grid-cols-2 gap-8">
-                      {leadership.map((person, index) => (
-                        <div key={person.name} className={`rounded-2xl overflow-hidden shadow-xl ${index === 0 ? 'bg-gradient-to-br from-yellow-50 to-orange-50' : 'bg-gradient-to-br from-green-50 to-cyan-50'}`}>
-                          <div className="p-8">
-                            <div className="flex items-center mb-6">
-                              <div className={`h-16 w-16 rounded-full flex items-center justify-center ${index === 0 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-green-500 to-cyan-500'}`}>
-                                <person.icon className="h-8 w-8 text-white" />
-                              </div>
-                              <div className="ml-6">
-                                <h3 className="text-2xl font-bold text-gray-900">{person.name}</h3>
-                                <p className={`text-lg font-semibold ${index === 0 ? 'text-orange-600' : 'text-green-600'}`}>
-                                  {person.role}
-                                </p>
-                              </div>
-                            </div>
-                            <p className="text-gray-700 leading-relaxed">
-                              {person.description}
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-10">
+                      <div className="bg-gradient-to-r from-green-600 to-green-800 px-8 py-6">
+                        <h3 className="text-2xl font-bold text-white">Company Details</h3>
+                      </div>
+                      <div className="p-8 space-y-6">
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <BuildingOffice2Icon className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Brand Name</p>
+                            <p className="text-lg font-semibold text-gray-900">GMKART</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <ShieldCheckIcon className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Operated By</p>
+                            <p className="text-lg font-semibold text-gray-900">Fast2market Digital Solutions</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <MapPinIcon className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Registered Office</p>
+                            <p className="text-lg font-semibold text-gray-900">
+                              H. No. 39, Indra Nagar Road, Near Sai Devi School,<br />
+                              Morar Road, Thatipur, Gwalior,<br />
+                              Madhya Pradesh – 474011, India
                             </p>
                           </div>
                         </div>
-                      ))}
-                    </div>
 
-                    {/* Team Description */}
-                    <div className="mt-12 bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                        Our Dedicated Team
-                      </h3>
-                      <div className="grid md:grid-cols-3 gap-6">
-                        <div className="text-center">
-                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
-                            <TruckIcon className="h-6 w-6" />
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <GlobeAltIcon className="h-6 w-6 text-green-600" />
                           </div>
-                          <h4 className="font-semibold text-gray-900">Delivery Experts</h4>
-                          <p className="text-sm text-gray-600 mt-2">Ensuring prompt and safe delivery</p>
-                        </div>
-                        <div className="text-center">
-                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
-                            <ShieldCheckIcon className="h-6 w-6" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Website</p>
+                            <a href="https://www.gmkart.com" target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                              www.gmkart.com
+                            </a>
                           </div>
-                          <h4 className="font-semibold text-gray-900">Quality Team</h4>
-                          <p className="text-sm text-gray-600 mt-2">Maintaining product excellence</p>
-                        </div>
-                        <div className="text-center">
-                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
-                            <DevicePhoneMobileIcon className="h-6 w-6" />
-                          </div>
-                          <h4 className="font-semibold text-gray-900">Support Staff</h4>
-                          <p className="text-sm text-gray-600 mt-2">Providing 24/7 customer assistance</p>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              )}
 
-              {/* Contact Info Tab */}
-              {activeTab === 'contact' && (
-                <div id="contact" className="space-y-12">
-                  <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-                      Contact & Information
-                    </h2>
-                    <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-                      Get in touch with us. We're here to help with any questions or concerns.
-                    </p>
-                  </div>
-
-                  <div className="max-w-4xl mx-auto">
+                    {/* Customer Support */}
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                      <div className="md:flex">
-                        {/* Contact Details */}
-                        <div className="md:w-1/2 bg-gradient-to-br from-green-600 to-green-800 p-8 text-white">
-                          <h3 className="text-2xl font-bold mb-8">Contact Details</h3>
-                          
-                          <div className="space-y-6">
-                            <div className="flex items-start">
-                              <MapPinIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
-                              <div className="ml-4">
-                                <h4 className="font-semibold text-green-100">Address</h4>
-                                <p className="mt-1 text-green-50">
-                                  HNO39, Indra Nagar Road, Morar Road,<br />
-                                  Near Sai Devin School, Thatipur, Gwalior, Madhya Pradesh – 474011
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex items-start">
-                              <EnvelopeIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
-                              <div className="ml-4">
-                                <h4 className="font-semibold text-green-100">Email</h4>
-                                <a href="mailto:support@gmkart.com" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
-                                  support@gmkart.com
-                                </a>
-                              </div>
-                            </div>
-
-                            <div className="flex items-start">
-                              <GlobeAltIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
-                              <div className="ml-4">
-                                <h4 className="font-semibold text-green-100">Website</h4>
-                                <a href="https://www.gmkart.com" target="_blank" rel="noopener noreferrer" className="mt-1 text-green-50 hover:text-yellow-300 transition-colors">
-                                  www.gmkart.com
-                                </a>
-                              </div>
-                            </div>
-
-                            <div className="flex items-start">
-                              <ShieldCheckIcon className="h-6 w-6 text-green-200 mt-1 flex-shrink-0" />
-                              <div className="ml-4">
-                                <h4 className="font-semibold text-green-100">GST Number</h4>
-                                <p className="mt-1 text-green-50 font-mono tracking-wide">23LQZPK8550M1ZO</p>
-                              </div>
-                            </div>
+                      <div className="bg-gradient-to-r from-green-600 to-green-800 px-8 py-6">
+                        <h3 className="text-2xl font-bold text-white">Customer Support</h3>
+                      </div>
+                      <div className="p-8 space-y-6">
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <EnvelopeIcon className="h-6 w-6 text-green-600" />
                           </div>
-
-                          <div className="mt-12 pt-8 border-t border-green-500/30">
-                            <h4 className="text-lg font-semibold text-green-100 mb-4">Business Hours</h4>
-                            <div className="space-y-2 text-green-50">
-                              <p>Monday - Sunday: 7:00 AM - 11:00 PM</p>
-                              <p>Customer Support: 24/7 Available</p>
-                            </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Email</p>
+                            <a href="mailto:support@gmkart.com" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                              support@gmkart.com
+                            </a>
                           </div>
                         </div>
 
-                        {/* Quick Contact Form */}
-                        <div className="md:w-1/2 p-8">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h3>
-                          <form className="space-y-6">
-                            <div>
-                              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                                Name
-                              </label>
-                              <input
-                                type="text"
-                                id="name"
-                                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                placeholder="Your name"
-                              />
-                            </div>
-                            <div>
-                              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email
-                              </label>
-                              <input
-                                type="email"
-                                id="email"
-                                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                placeholder="your@email.com"
-                              />
-                            </div>
-                            <div>
-                              <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                                Message
-                              </label>
-                              <textarea
-                                id="message"
-                                rows={4}
-                                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 shadow-sm focus:border-green-500 focus:ring-green-500"
-                                placeholder="How can we help you?"
-                              />
-                            </div>
-                            <button
-                              type="submit"
-                              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold py-3 px-4 rounded-lg hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300"
-                            >
-                              Send Message
-                            </button>
-                          </form>
+                        <div className="flex items-start space-x-4">
+                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <PhoneIcon className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Customer Care</p>
+                            <a href="tel:+919981306588" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                              +91 99813 06588
+                            </a>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Additional Info */}
-                    <div className="mt-8 grid md:grid-cols-3 gap-6">
-                      <div className="bg-gray-50 rounded-xl p-6 text-center">
-                        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
-                          <ClockIcon className="h-6 w-6" />
-                        </div>
-                        <h4 className="font-semibold text-gray-900">Fast Response</h4>
-                        <p className="text-sm text-gray-600 mt-2">We respond to queries within 2 hours</p>
-                      </div>
-                      <div className="bg-gray-50 rounded-xl p-6 text-center">
-                        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
-                          <ShieldCheckIcon className="h-6 w-6" />
-                        </div>
-                        <h4 className="font-semibold text-gray-900">Secure Communication</h4>
-                        <p className="text-sm text-gray-600 mt-2">Your information is safe with us</p>
-                      </div>
-                      <div className="bg-gray-50 rounded-xl p-6 text-center">
-                        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-green-100 text-green-600 mb-4">
-                          <ArrowPathIcon className="h-6 w-6" />
-                        </div>
-                        <h4 className="font-semibold text-gray-900">Quick Resolution</h4>
-                        <p className="text-sm text-gray-600 mt-2">Issues resolved within 24 hours</p>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
+
             </div>
           </div>
         </div>
@@ -541,11 +380,11 @@ export default function About() {
           <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
             <div>
               <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                <span className="block">Experience the GMKart Difference</span>
+                <span className="block">Experience the GMKART Difference</span>
                 <span className="block text-yellow-400">Fast, Reliable, Quality Shopping</span>
               </h2>
               <p className="mt-4 text-lg text-green-100 max-w-3xl">
-                Join thousands of satisfied customers who trust us for their daily shopping needs. 
+                Join thousands of satisfied customers who trust us for their daily shopping needs.
                 Fast delivery, quality products, and exceptional service await you.
               </p>
             </div>
