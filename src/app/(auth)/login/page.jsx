@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Footer from '@/app/components/footer/page';
 import Link from 'next/link';
-import { signInWithPhoneNumber } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { firebaseAuth, isFirebaseConfigured, missingFirebaseConfigKeys } from '@/app/lib/firebase';
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/proxy";
 
@@ -40,7 +40,22 @@ export default function LoginPage() {
     window.dispatchEvent(new Event('storage'));
   };
 
-  const resetRecaptcha = () => {};
+  const setupRecaptcha = async () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(firebaseAuth, 'recaptcha-container', {
+        size: 'invisible',
+      });
+      await window.recaptchaVerifier.render();
+    }
+    return window.recaptchaVerifier;
+  };
+
+  const resetRecaptcha = () => {
+    if (window.recaptchaVerifier) {
+      try { window.recaptchaVerifier.clear(); } catch (_) {}
+      window.recaptchaVerifier = null;
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -121,7 +136,8 @@ export default function LoginPage() {
 
     try {
       const phoneNumber = `+91${cleanPhone}`;
-      const result = await signInWithPhoneNumber(firebaseAuth, phoneNumber);
+      const appVerifier = await setupRecaptcha();
+      const result = await signInWithPhoneNumber(firebaseAuth, phoneNumber, appVerifier);
 
       console.log('OTP sent successfully');
       setConfirmationResult(result);
@@ -447,6 +463,8 @@ export default function LoginPage() {
                     </div>
                   </div>
                 )}
+
+                <div id="recaptcha-container" />
 
                 <div className="mb-5">
                   <label htmlFor="phone" className="mb-2 block text-sm font-semibold text-gray-800">
