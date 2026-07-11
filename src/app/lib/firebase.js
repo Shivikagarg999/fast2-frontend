@@ -1,5 +1,6 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,11 +11,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const requiredFirebaseConfig = [
-  'apiKey',
-  'authDomain',
-  'projectId',
-];
+const requiredFirebaseConfig = ['apiKey', 'authDomain', 'projectId'];
 
 export const missingFirebaseConfigKeys = requiredFirebaseConfig.filter(
   (key) => !firebaseConfig[key]
@@ -27,5 +24,17 @@ const firebaseApp = isFirebaseConfigured
     ? getApp()
     : initializeApp(firebaseConfig)
   : null;
+
+// Initialize App Check with reCAPTCHA Enterprise (web key from Google Cloud Console)
+if (firebaseApp && typeof window !== 'undefined') {
+  try {
+    initializeAppCheck(firebaseApp, {
+      provider: new ReCaptchaEnterpriseProvider('6LfR00YtAAAAAJ8FkSv59ZM0y8WXSGZbpTMchlxB'),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (_) {
+    // Already initialized on hot reload
+  }
+}
 
 export const firebaseAuth = firebaseApp ? getAuth(firebaseApp) : null;
