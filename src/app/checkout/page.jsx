@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import MapboxGeocoderComponent from '../components/mapbox/mapboxGeocoder';
 import {
@@ -394,7 +394,7 @@ const CheckoutPage = () => {
     setShippingInfo(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleMapSelect = (result) => {
+  const handleMapSelect = useCallback((result) => {
     const [lng, lat] = result.center;
     const ctx = result.context || [];
     const get = (prefix) => ctx.find(c => c.id.startsWith(prefix))?.text || '';
@@ -407,7 +407,7 @@ const CheckoutPage = () => {
       lng,
       locationSelected: true,
     }));
-  };
+  }, []);
 
   const handleResetLocation = () => {
     setShippingInfo(prev => ({
