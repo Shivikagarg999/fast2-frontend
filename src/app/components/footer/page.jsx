@@ -153,7 +153,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://seller.fast2.in/warehouse/login"
+                  href="https://seller.gmkart.com/warehouse/login"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
@@ -173,7 +173,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://seller.fast2.in"
+                  href="https://seller.gmkart.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
@@ -183,7 +183,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://promotor.fast2.in"
+                  href="https://promotor.gmkart.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-black transition-colors"
