@@ -22,10 +22,16 @@ const ProductCard = ({
 
   const originalPrice = getNumber(product?.price);
   const effectivePrice = getNumber(product?.effectivePrice, originalPrice);
-  const discountPercent = getNumber(product?.campaignDiscountPercentage);
-  const hasDiscount = discountPercent > 0;
+  const campaignDiscountPercent = getNumber(product?.campaignDiscountPercentage);
+  const hasDiscount = campaignDiscountPercent > 0;
   const displayPrice = hasDiscount ? effectivePrice : originalPrice;
   const savings = Math.max(originalPrice - effectivePrice, 0);
+
+  // Overall discount vs MRP (oldPrice), covering both a marked-up list price and any
+  // active campaign discount — this is the number shown on the badge, not just the campaign %.
+  const mrp = getNumber(product?.oldPrice);
+  const hasMrpDiscount = mrp > displayPrice;
+  const mrpDiscountPercent = hasMrpDiscount ? Math.round(((mrp - displayPrice) / mrp) * 100) : 0;
 
   const formatDisplayPrice = (price) => {
     const roundedPrice = Math.round(getNumber(price));
@@ -84,11 +90,11 @@ const ProductCard = ({
       className="bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md flex flex-col h-full cursor-pointer border border-gray-100 hover:border-gray-200 relative"
       onClick={handleCardClick}
     >
-      {/* Discount Badge */}
-      {hasDiscount && (
+      {/* Discount Badge — overall % off vs MRP (oldPrice), covering any active campaign too */}
+      {hasMrpDiscount && (
         <div className="absolute top-2 left-2 z-10">
           <div className="px-2 py-1 rounded-full text-xs font-bold text-white shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
-            {Math.round(discountPercent)}% OFF
+            {mrpDiscountPercent}% OFF
           </div>
         </div>
       )}
