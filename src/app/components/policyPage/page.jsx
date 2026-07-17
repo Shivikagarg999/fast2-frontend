@@ -10,6 +10,7 @@ export const POLICY_PAGES = [
   { type: 'return', label: 'Return Policy', icon: '🔄', color: 'from-green-600 to-green-700', href: '/return-policy' },
   { type: 'cancellation', label: 'Cancellation Policy', icon: '❌', color: 'from-red-600 to-red-700', href: '/cancellation-policy' },
   { type: 'refund', label: 'Refund Policy', icon: '💰', color: 'from-amber-600 to-amber-700', href: '/refund-policy' },
+  { type: 'privacy', label: 'Privacy Policy', icon: '🔒', color: 'from-blue-600 to-blue-700', href: '/privacy-policy' },
 ];
 
 const formatDate = (dateString) => {
