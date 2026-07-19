@@ -37,6 +37,10 @@ const CheckoutPage = () => {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromoCoupon, setAppliedPromoCoupon] = useState(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState('');
   const [scratchCard, setScratchCard] = useState(null);
   const [scratching, setScratching] = useState(false);
   const [scratchRevealed, setScratchRevealed] = useState(false);
@@ -325,12 +329,7 @@ const CheckoutPage = () => {
   };
 
   const getRegularCouponDiscount = () => {
-    return (
-      Number(cart?.couponDiscount) ||
-      Number(cart?.couponApplied?.discountAmount) ||
-      Number(cart?.appliedCoupon?.discountAmount) ||
-      0
-    );
+    return Number(appliedPromoCoupon?.discountAmount) || 0;
   };
 
   const getAmountBreakdown = () => {
@@ -659,13 +658,8 @@ const CheckoutPage = () => {
         formData.append('scratchCouponCode', couponCode.trim());
       }
 
-      const regularCouponCode =
-        cart?.coupon ||
-        cart?.couponCode ||
-        cart?.couponApplied?.code ||
-        cart?.appliedCoupon?.code;
-      if (regularCouponCode) {
-        formData.append('coupon', regularCouponCode);
+      if (appliedPromoCoupon) {
+        formData.append('coupon', JSON.stringify({ code: appliedPromoCoupon.code }));
       }
 
       console.log('Sending order data via FormData');
@@ -782,6 +776,36 @@ const CheckoutPage = () => {
       setCouponError('Could not apply coupon. Please try again.');
     } finally {
       setCouponLoading(false);
+    }
+  };
+
+  const handleApplyPromoCoupon = async () => {
+    if (!promoCode.trim()) return;
+    setPromoLoading(true);
+    setPromoError('');
+    setAppliedPromoCoupon(null);
+    try {
+      const token = localStorage.getItem('token');
+      const breakdown = getAmountBreakdown();
+      const orderAmount = breakdown.total + breakdown.gst;
+      const res = await fetch('/proxy/api/admin/coupon/coupons/apply', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code: promoCode.trim(), orderAmount })
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setAppliedPromoCoupon({ ...data.coupon, discountAmount: data.discount });
+      } else {
+        setPromoError(data.message || 'Invalid coupon code');
+      }
+    } catch {
+      setPromoError('Could not apply coupon. Please try again.');
+    } finally {
+      setPromoLoading(false);
     }
   };
 
@@ -1434,7 +1458,49 @@ const CheckoutPage = () => {
                     </div>
                   )}
 
-                  {/* Coupon Input */}
+                  {/* Promo Coupon Input */}
+                  <div className="border border-dashed border-gray-300 rounded-lg p-3">
+                    {appliedPromoCoupon ? (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold text-green-700">🏷️ Coupon Applied</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{appliedPromoCoupon.code} — Save ₹{appliedPromoCoupon.discountAmount}</p>
+                          {appliedPromoCoupon.description && (
+                            <p className="text-xs text-gray-400 mt-0.5">{appliedPromoCoupon.description}</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => { setAppliedPromoCoupon(null); setPromoCode(''); setPromoError(''); }}
+                          className="text-xs text-red-500 hover:text-red-600 font-medium ml-3"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={promoCode}
+                            onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); }}
+                            onKeyDown={(e) => e.key === 'Enter' && handleApplyPromoCoupon()}
+                            placeholder="Coupon code"
+                            className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase"
+                          />
+                          <button
+                            onClick={handleApplyPromoCoupon}
+                            disabled={promoLoading || !promoCode.trim()}
+                            className="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {promoLoading ? '...' : 'Apply'}
+                          </button>
+                        </div>
+                        {promoError && <p className="text-red-500 text-xs mt-2">{promoError}</p>}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Scratch Coupon Input */}
                   <div className="border border-dashed border-gray-300 rounded-lg p-3">
                     {appliedCoupon ? (
                       <div className="flex items-center justify-between">
