@@ -26,6 +26,7 @@ import {
   CubeIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
+import { formatWeight } from '../../utils/formatWeight';
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -98,7 +99,7 @@ const MyOrdersPage = () => {
                 name: item.product?.name || 'Product',
                 price: item.price || 0,
                 images: item.product?.images || [],
-                weight: item.product?.weight ? `${item.product.weight}${item.product.weightUnit || ''}` : '',
+                weight: item.product?.weight ? formatWeight(item.product.weight, item.product.weightUnit) : '',
                 category: item.product?.category,
               },
               quantity: item.quantity || 1,

@@ -28,6 +28,7 @@ import {
     HandThumbUpIcon as HandThumbUpSolidIcon,
 } from '@heroicons/react/24/solid';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { formatWeight } from '../../utils/formatWeight';
 import Footer from '../../components/footer/page';
 
 const API_BASE = '/proxy';
@@ -731,7 +732,7 @@ export default function ShopDetailPage() {
 
                                                 {product.weight && (
                                                     <p className="text-xs text-gray-500 mb-2 font-bold">
-                                                        {product.weight} {product.weightUnit || ''}
+                                                        {formatWeight(product.weight, product.weightUnit)}
                                                     </p>
                                                 )}
 

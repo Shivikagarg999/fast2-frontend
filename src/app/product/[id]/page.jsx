@@ -16,6 +16,7 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
 import ProductCard from '@/app/components/productCard/page';
+import { formatWeight } from '@/app/utils/formatWeight';
 
 const ProductDetailPage = () => {
   const router = useRouter();
@@ -766,7 +767,7 @@ const ProductDetailPage = () => {
               {product.weight && (
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-500">Weight</span>
-                  <span className="font-medium">{product.weight} {product.weightUnit}</span>
+                  <span className="font-medium">{formatWeight(product.weight, product.weightUnit)}</span>
                 </div>
               )}
               <div className="flex justify-between py-2 border-b border-gray-100">

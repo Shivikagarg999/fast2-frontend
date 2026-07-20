@@ -3,6 +3,7 @@
 import React from 'react';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
+import { formatWeight } from '../../utils/formatWeight';
 
 const ProductCard = ({
   product = {},
@@ -37,6 +38,7 @@ const ProductCard = ({
     const roundedPrice = Math.round(getNumber(price));
     return formatPrice ? formatPrice(roundedPrice) : `\u20B9${roundedPrice}`;
   };
+
 
   const handleAdd = async (e) => {
     e.stopPropagation();
@@ -148,7 +150,7 @@ const ProductCard = ({
           {/* Product Weight */}
           {product?.weight && (
             <p className="text-xs text-gray-500 mb-2 font-bold">
-              {product.weight} {product?.weightUnit || ''}
+              {formatWeight(product.weight, product?.weightUnit)}
             </p>
           )}
         </div>

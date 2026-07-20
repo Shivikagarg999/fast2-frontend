@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cartEvents } from '../header/page';
 import { useRouter } from 'next/navigation';
+import { formatWeight } from '../../utils/formatWeight';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -228,7 +229,7 @@ const Cart = () => {
   // Helper to format weight from product
   const getProductWeight = (product) => {
     if (product.weight) {
-      return `${product.weight} ${product.weightUnit || ''}`;
+      return formatWeight(product.weight, product.weightUnit);
     }
     return '';
   };
