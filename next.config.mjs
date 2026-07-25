@@ -2,7 +2,11 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    unoptimized: true,
+    remotePatterns: [
+      { protocol: 'https', hostname: 'ik.imagekit.io' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'via.placeholder.com' },
+    ],
   },
   experimental: {
     esmExternals: 'loose'

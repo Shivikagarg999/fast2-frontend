@@ -17,12 +17,40 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "GMKart",
-  description: "GMKart - Your shopping partner",
+  metadataBase: new URL("https://www.gmkart.com"),
+  title: {
+    default: "GMKart - Online Grocery Delivery | Fresh Products, Fast Delivery",
+    template: "%s | GMKart",
+  },
+  description:
+    "Order groceries, fresh produce, and daily essentials online with GMKart. Fast delivery to your doorstep, best prices, and a wide range of trusted local shops.",
+  keywords: [
+    "GMKart",
+    "online grocery delivery",
+    "grocery shopping online",
+    "fresh produce delivery",
+    "quick commerce",
+    "local shops online",
+  ],
   icons: {
     icon: "/favicon/logo.png",
     shortcut: "/favicon/logo.png",
     apple: "/favicon/logo.png",
+  },
+  openGraph: {
+    siteName: "GMKart",
+    type: "website",
+    locale: "en_IN",
+    title: "GMKart - Online Grocery Delivery | Fresh Products, Fast Delivery",
+    description:
+      "Order groceries, fresh produce, and daily essentials online with GMKart. Fast delivery to your doorstep, best prices, and a wide range of trusted local shops.",
+    url: "https://www.gmkart.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GMKart - Online Grocery Delivery",
+    description:
+      "Order groceries, fresh produce, and daily essentials online with GMKart. Fast delivery to your doorstep.",
   },
 };
 
