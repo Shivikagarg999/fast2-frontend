@@ -103,6 +103,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                <a href="/deliver" className="hover:text-black transition-colors">
+                  Become a Delivery Partner
+                </a>
+              </li>
+              <li>
                 <a
                   href="https://seller.gmkart.com/warehouse/login"
                   target="_blank"
