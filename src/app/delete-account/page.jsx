@@ -29,28 +29,56 @@ export default function DeleteAccountPage() {
     setError('');
 
     try {
-      // Step 1: Login to get JWT
-      const loginRes = await fetch(`${BASE_URL}/api/user/login`, {
+      // Try customer account first
+      const userLoginRes = await fetch(`${BASE_URL}/api/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const loginData = await loginRes.json();
+      if (userLoginRes.ok) {
+        const userLoginData = await userLoginRes.json();
 
-      if (!loginRes.ok) {
-        setError(loginData.error || 'Invalid email or password.');
+        const deleteRes = await fetch(`${BASE_URL}/api/user/delete-account`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${userLoginData.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password }),
+        });
+
+        const deleteData = await deleteRes.json();
+
+        if (!deleteRes.ok) {
+          setError(deleteData.error || 'Failed to delete account. Please try again.');
+          setStep('form');
+          return;
+        }
+
+        setStep('success');
+        return;
+      }
+
+      // Not a customer account — try driver account
+      const driverLoginRes = await fetch(`${BASE_URL}/api/driver/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const driverLoginData = await driverLoginRes.json();
+
+      if (!driverLoginRes.ok) {
+        setError('Invalid email or password.');
         setStep('form');
         return;
       }
 
-      const token = loginData.token;
-
-      // Step 2: Delete account
-      const deleteRes = await fetch(`${BASE_URL}/api/user/delete-account`, {
+      const deleteRes = await fetch(`${BASE_URL}/api/driver/delete-account`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${driverLoginData.token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ password }),
@@ -59,7 +87,7 @@ export default function DeleteAccountPage() {
       const deleteData = await deleteRes.json();
 
       if (!deleteRes.ok) {
-        setError(deleteData.error || 'Failed to delete account. Please try again.');
+        setError(deleteData.message || 'Failed to delete account. Please try again.');
         setStep('form');
         return;
       }

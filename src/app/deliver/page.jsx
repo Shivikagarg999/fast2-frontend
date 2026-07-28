@@ -688,6 +688,12 @@ export default function DeliveryPartnerPage() {
         </div>
       </section>
 
+      <div className="text-center py-6 text-sm text-gray-500">
+        <a href="/deliver/privacy-policy" className="text-green-700 hover:underline font-medium">
+          Delivery Partner Privacy Policy
+        </a>
+      </div>
+
      <div className="mt-auto"><Footer/></div>
     </div>
   );
