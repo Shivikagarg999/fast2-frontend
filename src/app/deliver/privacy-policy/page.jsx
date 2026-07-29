@@ -1,13 +1,15 @@
 "use client";
 
 import Link from 'next/link';
-import Footer from '../../components/footer/page';
+import DeliverHeader from '../components/DeliverHeader';
+import DeliverFooter from '../components/DeliverFooter';
 
 const lastUpdated = 'July 28, 2026';
 
 export default function DriverPrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <DeliverHeader />
       <section className="py-12 bg-gradient-to-b from-green-50 to-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
@@ -193,7 +195,7 @@ export default function DriverPrivacyPolicyPage() {
         </div>
       </section>
 
-      <div className="mt-auto"><Footer /></div>
+      <div className="mt-auto"><DeliverFooter /></div>
 
       <style jsx global>{`
         .policy-content {

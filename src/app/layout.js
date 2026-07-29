@@ -4,6 +4,7 @@ import Header from "./components/header/page";
 import Cart from "./components/cart/page";
 import PopupManager from "./components/popup/PopupManager";
 import ChatWidget from "./components/chatbot/page";
+import MainContent from "./components/MainContent";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -82,7 +83,7 @@ export default function RootLayout({ children }) {
         {/* Use the conditional header component */}
         <ConditionalHeader />
 
-        <main className="relative z-10 pt-[150px] lg:pt-[70px]">{children}</main>
+        <MainContent>{children}</MainContent>
         <Cart />
         <PopupManager />
         <ChatWidget />
