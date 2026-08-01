@@ -204,6 +204,18 @@ const Cart = () => {
     }, 0);
   };
 
+  const calculateHandlingCharge = () => {
+    if (cartItems.length === 0) return 0;
+    const HANDLING_CHARGE_PER_SHOP = 2;
+    const shopIds = new Set(
+      cartItems.map((item) => {
+        const product = item.product || item;
+        return product.seller?._id || product.seller || product._id || product.id;
+      })
+    );
+    return shopIds.size * HANDLING_CHARGE_PER_SHOP;
+  };
+
   const calculateGst = () => {
     return cartItems.reduce((total, item) => {
       if (item.gstAmount > 0) return total + item.gstAmount;
@@ -224,7 +236,8 @@ const Cart = () => {
   const deliveryFee = calculateDeliveryFee();
   const subTotal = calculateTotal();
   const gstTotal = calculateGst();
-  const finalTotal = subTotal + deliveryFee + gstTotal;
+  const handlingCharge = calculateHandlingCharge();
+  const finalTotal = subTotal + deliveryFee + gstTotal + handlingCharge;
 
   // Helper to format weight from product
   const getProductWeight = (product) => {
@@ -479,6 +492,12 @@ const Cart = () => {
                     <div className="flex justify-between items-center text-gray-600">
                       <span>GST</span>
                       <span>₹{gstTotal.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {handlingCharge > 0 && (
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Handling Charge</span>
+                      <span>₹{handlingCharge.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 my-2 pt-2 flex justify-between items-center font-bold text-gray-900">

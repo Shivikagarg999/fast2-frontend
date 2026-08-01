@@ -630,6 +630,7 @@ const CheckoutPage = () => {
       const orderData = {
         items,
         shippingAddress: {
+          name: `${shippingInfo.firstName} ${shippingInfo.lastName}`.trim(),
           addressLine: shippingInfo.addressLine,
           city: shippingInfo.city,
           state: shippingInfo.state,
