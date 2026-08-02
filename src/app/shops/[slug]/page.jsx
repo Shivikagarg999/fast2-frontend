@@ -33,7 +33,7 @@ export async function generateMetadata({ params }) {
     ? shop.description.slice(0, 155)
     : `Shop from ${shop.shopName} on GMKart. Browse products, reviews, and more.`;
   const url = `${SITE_URL}/shops/${slug}`;
-  const image = shop.coverImage || shop.logo;
+  const image = shop.coverImage?.url || shop.logo?.url;
 
   return {
     title,
