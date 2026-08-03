@@ -96,11 +96,17 @@ const ProductListingComponent = () => {
       
       let url = '/proxy/api/product';
       const params = new URLSearchParams();
-      
+
       if (pincode) {
         params.append('pincode', pincode);
       }
-      
+      // The backend defaults to limit=20 per request, which — once grouped by
+      // category for this "browse all" view — starves categories with many
+      // products (e.g. a 43-item category showing only 2) because only the
+      // 20 most-recent products site-wide get fetched. Request a much larger
+      // page so every category gets fairly represented here.
+      params.append('limit', '500');
+
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
