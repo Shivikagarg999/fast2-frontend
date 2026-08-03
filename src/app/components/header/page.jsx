@@ -384,6 +384,12 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       onLocationSelect(locationData);
     }
 
+    // Dispatch event so other components (e.g. the homepage product list)
+    // re-fetch with the new pincode without needing a full page reload.
+    window.dispatchEvent(new CustomEvent('locationUpdated', {
+      detail: locationData
+    }));
+
     alert(`Location set to: ${streetAddress}, ${pincode}`);
   };
 
