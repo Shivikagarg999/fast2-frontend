@@ -494,7 +494,10 @@ export default function ShopDetailClient() {
 
                         {/* Shop Name and Badges */}
                         <div className="flex-1">
-                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                            <h1
+                                className="text-2xl md:text-3xl font-bold text-gray-900 mb-2"
+                                style={{ textShadow: '0 1px 3px rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.7)' }}
+                            >
                                 {shop.shopName || 'Shop'}
                             </h1>
                             {shop.tagline && (
