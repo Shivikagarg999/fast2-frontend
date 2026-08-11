@@ -506,6 +506,18 @@ const ProfilePage = () => {
           </div>
         </div>
 
+        {/* Refer & Earn */}
+        <button
+          onClick={() => router.push('/referrals')}
+          className="w-full bg-white rounded-xl shadow-sm p-6 mb-6 flex items-center justify-between hover:bg-gray-50 transition-colors text-left"
+        >
+          <span className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+            <GiftIcon className="w-5 h-5 text-blinkit-purple" />
+            Refer & Earn
+          </span>
+          <ChevronRightIcon className="w-5 h-5 text-gray-400" />
+        </button>
+
         {/* Save Button (when editing) */}
         {editing && (
           <div className="sticky bottom-4 bg-white rounded-xl shadow-lg p-4 border border-gray-200">

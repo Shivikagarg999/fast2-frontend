@@ -211,6 +211,7 @@ export default function LoginPage() {
         body: JSON.stringify({
           idToken,
           fcmToken,
+          referralCode: referralCode || undefined,
         }),
       });
 
@@ -490,6 +491,23 @@ export default function LoginPage() {
                     />
                   </div>
                 </div>
+
+                {!otpSent && (
+                  <div className="mb-5">
+                    <label htmlFor="phoneReferralCode" className="mb-2 block text-sm font-semibold text-gray-800">
+                      Referral Code <span className="text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      id="phoneReferralCode"
+                      name="phoneReferralCode"
+                      type="text"
+                      className="w-full rounded-lg border border-gray-200 px-3 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 sm:px-4"
+                      placeholder="Enter referral code if you have one"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value)}
+                    />
+                  </div>
+                )}
 
                 {otpSent && (
                   <>

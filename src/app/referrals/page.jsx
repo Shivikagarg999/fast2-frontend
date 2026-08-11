@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   ClipboardDocumentIcon,
   ClipboardDocumentCheckIcon,
   UserGroupIcon,
   CurrencyRupeeIcon,
   GiftIcon,
   ShareIcon,
-  QrCodeIcon
+  QrCodeIcon,
+  ShoppingBagIcon
 } from '@heroicons/react/24/outline';
 
 const ReferralPage = () => {
@@ -181,7 +182,7 @@ const ReferralPage = () => {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid lg:grid-cols-4 gap-6 mb-8">
           {/* Stats Cards */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
@@ -192,6 +193,20 @@ const ReferralPage = () => {
                 <p className="text-sm font-medium text-gray-600">Total Referrals</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {referralStats?.totalReferrals || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <ShoppingBagIcon className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Went On To Order</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {referralStats?.totalOrdered || 0}
                 </p>
               </div>
             </div>
