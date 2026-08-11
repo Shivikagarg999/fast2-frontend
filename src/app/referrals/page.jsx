@@ -115,7 +115,7 @@ const ReferralPage = () => {
   };
 
   const shareReferral = async () => {
-    const shareText = `Join me on GMKart! Use my referral code ${referralStats?.yourReferralCode} to get ₹50 bonus!`;
+    const shareText = `Join me on GMKart! Use my referral code ${referralStats?.yourReferralCode} to get ₹20 bonus!`;
     const shareUrl = window.location.origin;
 
     if (navigator.share) {
@@ -309,7 +309,7 @@ const ReferralPage = () => {
                   You were referred by {referralStats.referredBy.name || referralStats.referredBy.phone}
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  ₹50 bonus has been added to your wallet
+                  ₹20 bonus has been added to your wallet
                 </p>
               </div>
             ) : (
@@ -340,7 +340,7 @@ const ReferralPage = () => {
                       Applying...
                     </div>
                   ) : (
-                    'Apply Referral & Get ₹50'
+                    'Apply Referral & Get ₹20'
                   )}
                 </button>
               </form>
@@ -360,7 +360,7 @@ const ReferralPage = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
-                  Both get ₹50 bonus in wallet
+                  You get ₹50, your friend gets ₹20
                 </li>
               </ul>
             </div>
@@ -387,8 +387,8 @@ const ReferralPage = () => {
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
                 <GiftIcon className="w-6 h-6" />
               </div>
-              <h3 className="font-semibold mb-2">Earn ₹50 Each</h3>
-              <p className="text-green-100 text-sm">Both you and your friend get ₹50 bonus</p>
+              <h3 className="font-semibold mb-2">Earn On Every Referral</h3>
+              <p className="text-green-100 text-sm">You get ₹50, your friend gets ₹20</p>
             </div>
 
             <div className="text-center">
@@ -408,7 +408,7 @@ const ReferralPage = () => {
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">How much do I earn per referral?</h3>
-              <p className="text-gray-600 text-sm">You earn ₹50 for every successful referral. Your friend also gets ₹50 when they use your code.</p>
+              <p className="text-gray-600 text-sm">You earn ₹50 for every successful referral. Your friend gets ₹20 when they use your code.</p>
             </div>
             
             <div>
