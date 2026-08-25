@@ -365,7 +365,7 @@ const ProductListingComponent = () => {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
       window.scrollTo(0, 0);
     }
-    router.push(`/product/${product._id}`);
+    router.push(`/product/${product.slug || product._id}`);
   };
 
   const handleSetLocation = () => {

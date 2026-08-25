@@ -285,7 +285,7 @@ const CategoryProductsComponent = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
     }
-    router.push(`/product/${product._id}`);
+    router.push(`/product/${product.slug || product._id}`);
   };
 
   // Fix category image URL

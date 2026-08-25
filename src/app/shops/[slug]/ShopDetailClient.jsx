@@ -380,7 +380,7 @@ export default function ShopDetailClient() {
 
     const handleProductClick = (product) => {
         sessionStorage.setItem('selectedProduct', JSON.stringify(product));
-        router.push(`/product/${product._id}`);
+        router.push(`/product/${product.slug || product._id}`);
     };
 
     const getProductImage = (product) => {

@@ -106,7 +106,7 @@ const ProductDetailClient = ({ initialProduct }) => {
       if (storedProduct) {
         try {
           const productData = JSON.parse(storedProduct);
-          if (productData?._id === params.id) {
+          if (productData?._id === params.id || productData?.slug === params.id) {
             setProduct(productData);
             setLoading(false);
             return;
@@ -261,7 +261,7 @@ const ProductDetailClient = ({ initialProduct }) => {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
       window.scrollTo(0, 0);
     }
-    router.push(`/product/${product._id}`);
+    router.push(`/product/${product.slug || product._id}`);
   };
 
   const addToCart = async (productId, quantity = 1, price) => {

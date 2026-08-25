@@ -39,7 +39,8 @@ export async function generateMetadata({ params }) {
     : `Buy ${product.name} online on GMKart. Fast delivery, best prices.`;
   const title = `${product.name}${product.brand ? ` by ${product.brand}` : ''} | GMKart`;
   const imageUrl = product.images?.[0]?.url;
-  const url = `${SITE_URL}/product/${id}`;
+  const productPath = product.slug || id;
+  const url = `${SITE_URL}/product/${productPath}`;
 
   return {
     title,
@@ -82,7 +83,7 @@ export default async function ProductDetailPage({ params }) {
       : undefined,
     offers: {
       '@type': 'Offer',
-      url: `${SITE_URL}/product/${id}`,
+      url: `${SITE_URL}/product/${product.slug || id}`,
       priceCurrency: 'INR',
       price: product.effectivePrice ?? product.price,
       availability: product.quantity > 0

@@ -16,7 +16,7 @@ async function getProductEntries() {
   const data = await safeFetchJson(`${API_BASE}/product?limit=5000`);
   const products = data?.products || [];
   return products.map((p) => ({
-    url: `${SITE_URL}/product/${p._id}`,
+    url: `${SITE_URL}/product/${p.slug || p._id}`,
     lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
     changeFrequency: 'weekly',
     priority: 0.7,
