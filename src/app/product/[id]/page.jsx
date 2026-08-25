@@ -1,4 +1,5 @@
 import ProductDetailClient from './ProductDetailClient';
+import { getProductSlug } from '@/app/utils/productSlug';
 
 const API_BASE = 'https://api.fast2.in/api';
 const SITE_URL = 'https://www.gmkart.com';
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }) {
     : `Buy ${product.name} online on GMKart. Fast delivery, best prices.`;
   const title = `${product.name}${product.brand ? ` by ${product.brand}` : ''} | GMKart`;
   const imageUrl = product.images?.[0]?.url;
-  const productPath = product.slug || id;
+  const productPath = getProductSlug(product) || id;
   const url = `${SITE_URL}/product/${productPath}`;
 
   return {
@@ -83,7 +84,7 @@ export default async function ProductDetailPage({ params }) {
       : undefined,
     offers: {
       '@type': 'Offer',
-      url: `${SITE_URL}/product/${product.slug || id}`,
+      url: `${SITE_URL}/product/${getProductSlug(product) || id}`,
       priceCurrency: 'INR',
       price: product.effectivePrice ?? product.price,
       availability: product.quantity > 0

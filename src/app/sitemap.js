@@ -1,3 +1,5 @@
+import { getProductSlug } from './utils/productSlug';
+
 const API_BASE = 'https://api.fast2.in/api';
 const SITE_URL = 'https://www.gmkart.com';
 
@@ -16,7 +18,7 @@ async function getProductEntries() {
   const data = await safeFetchJson(`${API_BASE}/product?limit=5000`);
   const products = data?.products || [];
   return products.map((p) => ({
-    url: `${SITE_URL}/product/${p.slug || p._id}`,
+    url: `${SITE_URL}/product/${getProductSlug(p)}`,
     lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
     changeFrequency: 'weekly',
     priority: 0.7,

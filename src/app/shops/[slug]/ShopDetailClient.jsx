@@ -29,6 +29,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { formatWeight } from '../../utils/formatWeight';
+import { getProductPath } from '../../utils/productSlug';
 import Footer from '../../components/footer/page';
 
 const API_BASE = '/proxy';
@@ -380,7 +381,7 @@ export default function ShopDetailClient() {
 
     const handleProductClick = (product) => {
         sessionStorage.setItem('selectedProduct', JSON.stringify(product));
-        router.push(`/product/${product.slug || product._id}`);
+        router.push(getProductPath(product));
     };
 
     const getProductImage = (product) => {

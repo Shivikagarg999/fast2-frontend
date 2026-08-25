@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react'; 
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
+import { getProductPath } from '../../utils/productSlug';
 import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline';
 
 const ProductListingComponent = () => {
@@ -365,7 +366,7 @@ const ProductListingComponent = () => {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
       window.scrollTo(0, 0);
     }
-    router.push(`/product/${product.slug || product._id}`);
+    router.push(getProductPath(product));
   };
 
   const handleSetLocation = () => {

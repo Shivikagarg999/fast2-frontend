@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/app/components/footer/page";
 import ProductCard from "@/app/components/productCard/page";
+import { getProductPath } from "@/app/utils/productSlug";
 
 const CustomImage = ({ src, alt, fallback, ...props }) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -285,7 +286,7 @@ const CategoryProductsComponent = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
     }
-    router.push(`/product/${product.slug || product._id}`);
+    router.push(getProductPath(product));
   };
 
   // Fix category image URL

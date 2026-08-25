@@ -17,6 +17,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
 import ProductCard from '@/app/components/productCard/page';
 import { formatWeight } from '@/app/utils/formatWeight';
+import { getProductPath, getProductSlug } from '@/app/utils/productSlug';
 
 const ProductDetailClient = ({ initialProduct }) => {
   const router = useRouter();
@@ -50,6 +51,15 @@ const ProductDetailClient = ({ initialProduct }) => {
       fetchRelatedProducts(product.category._id, product._id);
     }
   }, [product]);
+
+  useEffect(() => {
+    if (!product || !params?.id) return;
+
+    const productSlug = getProductSlug(product);
+    if (productSlug && params.id !== productSlug) {
+      router.replace(getProductPath(product), { scroll: false });
+    }
+  }, [product, params?.id, router]);
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -106,7 +116,11 @@ const ProductDetailClient = ({ initialProduct }) => {
       if (storedProduct) {
         try {
           const productData = JSON.parse(storedProduct);
-          if (productData?._id === params.id || productData?.slug === params.id) {
+          if (
+            productData?._id === params.id ||
+            productData?.slug === params.id ||
+            getProductSlug(productData) === params.id
+          ) {
             setProduct(productData);
             setLoading(false);
             return;
@@ -261,7 +275,7 @@ const ProductDetailClient = ({ initialProduct }) => {
       sessionStorage.setItem('selectedProduct', JSON.stringify(product));
       window.scrollTo(0, 0);
     }
-    router.push(`/product/${product.slug || product._id}`);
+    router.push(getProductPath(product));
   };
 
   const addToCart = async (productId, quantity = 1, price) => {
