@@ -22,34 +22,6 @@ import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiZmFzdDIiLCJhIjoiY21mbW9qbzZlMDQ5dzJpcXhlOW82ODdlcSJ9.HYJxZbPDCZHD8_Q5faa6ig';
-const GOOGLE_MAPS_TOKEN = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || '';
-let googlePlacesLoader = null;
-
-const loadGooglePlaces = () => {
-  if (typeof window === 'undefined' || !GOOGLE_MAPS_TOKEN) return Promise.resolve(null);
-  if (window.google?.maps?.places) return Promise.resolve(window.google);
-  if (googlePlacesLoader) return googlePlacesLoader;
-
-  googlePlacesLoader = new Promise((resolve, reject) => {
-    const existingScript = document.querySelector('script[data-google-places]');
-    if (existingScript) {
-      existingScript.addEventListener('load', () => resolve(window.google));
-      existingScript.addEventListener('error', reject);
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_TOKEN}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.dataset.googlePlaces = 'true';
-    script.onload = () => resolve(window.google);
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-
-  return googlePlacesLoader;
-};
 
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();
@@ -183,43 +155,6 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
     setIsSearching(true);
     try {
-      if (GOOGLE_MAPS_TOKEN) {
-        const google = await loadGooglePlaces();
-        if (google?.maps?.places?.AutocompleteService) {
-          const service = new google.maps.places.AutocompleteService();
-          const predictions = await new Promise((resolve, reject) => {
-            service.getPlacePredictions(
-              {
-                input: query,
-                componentRestrictions: { country: 'in' },
-                types: ['geocode']
-              },
-              (results, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                  resolve(results || []);
-                  return;
-                }
-                if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-                  resolve([]);
-                  return;
-                }
-                reject(new Error(status));
-              }
-            );
-          });
-
-          setSearchResults(predictions.map((prediction) => ({
-            provider: 'google',
-            id: prediction.place_id,
-            placeId: prediction.place_id,
-            text: prediction.structured_formatting?.main_text || prediction.description,
-            place_name: prediction.description,
-            description: prediction.description
-          })));
-          return;
-        }
-      }
-
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
         `access_token=${MAPBOX_TOKEN}` +
@@ -325,6 +260,38 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     }
   };
 
+  const persistLocation = ({ address, locationName, locationPincode = '', latitude, longitude, accuracy }) => {
+    const locationData = {
+      streetAddress: address,
+      pincode: locationPincode,
+      locationName: locationName || address,
+      latitude,
+      longitude,
+      ...(accuracy ? { accuracy } : {})
+    };
+
+    localStorage.setItem('userStreetAddress', locationData.streetAddress);
+    localStorage.setItem('userPincode', locationData.pincode);
+    localStorage.setItem('userLocation', locationData.locationName);
+    localStorage.setItem('userLocationData', JSON.stringify(locationData));
+
+    setSelectedLocation(locationData.locationName);
+    setStreetAddress(locationData.streetAddress);
+    setPincode(locationData.pincode);
+    setSelectedCoordinates({ latitude, longitude });
+    setShowLocationDropdown(false);
+    setSearchQuery('');
+    setSearchResults([]);
+
+    if (onLocationSelect) {
+      onLocationSelect(locationData);
+    }
+
+    window.dispatchEvent(new CustomEvent('locationUpdated', {
+      detail: locationData
+    }));
+  };
+
   const autoDetectLocation = async () => {
     if (!navigator.geolocation) {
       setLocationError('Geolocation is not supported by your browser');
@@ -360,32 +327,17 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
             if (locationPincode) {
               setPincode(locationPincode);
+            }
 
-              // Auto-save if we have both address and pincode
-              if (address && locationPincode) {
-                const savedLocationData = {
-                  streetAddress: address,
-                  pincode: locationPincode,
-                  locationName: locationName || address,
-                  latitude,
-                  longitude,
-                  accuracy
-                };
-
-                localStorage.setItem('userStreetAddress', address);
-                localStorage.setItem('userPincode', locationPincode);
-                localStorage.setItem('userLocation', savedLocationData.locationName);
-                localStorage.setItem('userLocationData', JSON.stringify(savedLocationData));
-
-                if (onLocationSelect) {
-                  onLocationSelect(savedLocationData);
-                }
-
-                // Dispatch event for other components
-                window.dispatchEvent(new CustomEvent('locationUpdated', {
-                  detail: savedLocationData
-                }));
-              }
+            if (address) {
+              persistLocation({
+                address,
+                locationName: locationName || address,
+                locationPincode,
+                latitude,
+                longitude,
+                accuracy
+              });
             }
           }
         } catch (error) {
@@ -423,101 +375,28 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   };
 
   const handleSaveLocation = () => {
-    if (!streetAddress) {
-      alert('Please enter or select an address');
-      return;
-    }
-
-    if (pincode && !/^\d{6}$/.test(pincode)) {
-      alert('Please enter a valid 6-digit pincode');
-      return;
-    }
-
     if (!selectedCoordinates) {
       alert('Please select an address from search results or use auto-detect location');
       return;
     }
 
-    const locationData = {
-      streetAddress,
-      pincode,
+    persistLocation({
+      address: streetAddress || selectedLocation,
       locationName: selectedLocation || streetAddress,
+      locationPincode: pincode,
       latitude: selectedCoordinates.latitude,
       longitude: selectedCoordinates.longitude
-    };
-
-    localStorage.setItem('userStreetAddress', streetAddress);
-    localStorage.setItem('userPincode', pincode);
-    localStorage.setItem('userLocation', locationData.locationName);
-    localStorage.setItem('userLocationData', JSON.stringify(locationData));
-
-    setShowLocationDropdown(false);
-
-    if (onLocationSelect) {
-      onLocationSelect(locationData);
-    }
-
-    // Dispatch event so other components (e.g. the homepage product list)
-    // re-fetch with the new pincode without needing a full page reload.
-    window.dispatchEvent(new CustomEvent('locationUpdated', {
-      detail: locationData
-    }));
-
-    alert(`Location set to: ${streetAddress}`);
-  };
-
-  const extractGooglePincode = (addressComponents = []) => {
-    return addressComponents.find(component => component.types?.includes('postal_code'))?.long_name || '';
-  };
-
-  const resolveGooglePlace = async (placeId) => {
-    const google = await loadGooglePlaces();
-    if (!google?.maps?.Geocoder) return null;
-
-    const geocoder = new google.maps.Geocoder();
-    const results = await new Promise((resolve, reject) => {
-      geocoder.geocode({ placeId }, (geocodeResults, status) => {
-        if (status === 'OK') {
-          resolve(geocodeResults || []);
-          return;
-        }
-        reject(new Error(status));
-      });
     });
-
-    const result = results[0];
-    if (!result?.geometry?.location) return null;
-
-    return {
-      latitude: result.geometry.location.lat(),
-      longitude: result.geometry.location.lng(),
-      pincode: extractGooglePincode(result.address_components),
-      address: result.formatted_address?.replace(/, India$/, '') || ''
-    };
   };
 
   const getDisplayAddress = (location) => {
-    return (location?.description || location?.place_name || location?.text || '').replace(/, India$/, '');
+    return (location?.place_name || location?.text || '').replace(/, India$/, '');
   };
 
-  const handleLocationSelect = async (location) => {
-    let locationName = getDisplayAddress(location) || extractLocationName(location);
-    let locationPincode = extractPincode(location);
-    let [longitude, latitude] = location.center || [];
-
-    if (location.provider === 'google') {
-      try {
-        const resolved = await resolveGooglePlace(location.placeId);
-        if (resolved) {
-          locationName = resolved.address || locationName;
-          locationPincode = resolved.pincode || locationPincode;
-          latitude = resolved.latitude;
-          longitude = resolved.longitude;
-        }
-      } catch {
-        setLocationError('Could not fetch exact coordinates for this address.');
-      }
-    }
+  const handleLocationSelect = (location) => {
+    const locationName = getDisplayAddress(location) || extractLocationName(location);
+    const locationPincode = extractPincode(location);
+    const [longitude, latitude] = location.center || [];
 
     if (locationName && locationName !== 'Selected Location') {
       setSelectedLocation(locationName);
@@ -528,40 +407,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
         setSelectedCoordinates({ latitude, longitude });
       }
-    }
-  };
-
-  const commonLocations = [
-    { name: 'Sonipat, Haryana', pincode: '131001' },
-    { name: 'Panipat, Haryana', pincode: '132103' },
-    { name: 'Rohtak, Haryana', pincode: '124001' },
-    { name: 'Karnal, Haryana', pincode: '132001' },
-    { name: 'Connaught Place, New Delhi', pincode: '110001' },
-    { name: 'Gurugram Sector 14, Haryana', pincode: '122001' },
-    { name: 'Noida Sector 18, Uttar Pradesh', pincode: '201301' },
-    { name: 'Greater Kailash, Delhi', pincode: '110048' },
-    { name: 'Saket, Delhi', pincode: '110017' },
-    { name: 'Hauz Khas, Delhi', pincode: '110016' }
-  ];
-
-  const handleManualLocationSelect = async (location) => {
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json?` +
-        `access_token=${MAPBOX_TOKEN}&country=in&limit=1`
-      );
-      const data = await response.json();
-      const [longitude, latitude] = data.features?.[0]?.center || [];
-      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-        throw new Error('Coordinates not found');
-      }
-      setSelectedLocation(location.name);
-      setStreetAddress(location.name);
-      setPincode(location.pincode);
-      setSelectedCoordinates({ latitude, longitude });
       setLocationError('');
-    } catch {
-      setLocationError('Could not locate this address. Please use search or auto-detect.');
     }
   };
 
@@ -603,66 +449,24 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
           <div className="p-4 border-b border-green-100">
             <h3 className="font-medium text-green-900 mb-3">Set Delivery Location</h3>
 
-            <div className="space-y-3 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-green-800 mb-1">
-                  Street Address
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your street address..."
-                  className="w-full rounded-lg border border-green-300 bg-white px-3 py-2 text-sm text-gray-900 caret-green-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-green-500"
-                  value={streetAddress}
-                  onChange={(e) => setStreetAddress(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-green-800 mb-1">
-                  Pincode
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter 6-digit pincode"
-                  maxLength={6}
-                  className="w-full rounded-lg border border-green-300 bg-white px-3 py-2 text-sm text-gray-900 caret-green-600 placeholder:text-gray-500 focus:border-transparent focus:ring-2 focus:ring-green-500"
-                  value={pincode}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    setPincode(value);
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={handleSaveLocation}
-                disabled={!streetAddress || !selectedCoordinates || (pincode && pincode.length !== 6)}
-                className="flex-1 bg-green-700 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-800 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors"
-              >
-                Save Location
-              </button>
-
-              <button
-                onClick={autoDetectLocation}
-                disabled={isGettingLocation}
-                className="flex items-center justify-center gap-2 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
-                title="Auto-detect my location"
-              >
-                {isGettingLocation ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span className="hidden sm:inline">Detecting...</span>
-                  </>
-                ) : (
-                  <>
-                    <MapPinIcon className="w-4 h-4" />
-                    <span className="hidden sm:inline">Auto-detect</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={autoDetectLocation}
+              disabled={isGettingLocation}
+              className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-300"
+              title="Auto-detect my location"
+            >
+              {isGettingLocation ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Detecting...</span>
+                </>
+              ) : (
+                <>
+                  <MapPinIcon className="w-4 h-4" />
+                  <span>Use Current Location</span>
+                </>
+              )}
+            </button>
 
             {locationError && (
               <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg">
@@ -680,7 +484,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
             <div className="flex items-center my-4">
               <div className="flex-1 border-t border-green-200"></div>
-              <span className="px-2 text-xs text-green-700">OR SEARCH</span>
+              <span className="px-2 text-xs text-green-700">OR SEARCH ADDRESS</span>
               <div className="flex-1 border-t border-green-200"></div>
             </div>
 
@@ -736,6 +540,28 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                 </div>
               </div>
             )}
+
+            {selectedCoordinates && streetAddress && (
+              <div className="mb-3 rounded-lg border border-green-200 bg-green-50 p-3">
+                <div className="flex items-start gap-2">
+                  <MapPinIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-green-900">{streetAddress}</p>
+                    <p className="mt-1 text-xs text-green-700">
+                      {Number(selectedCoordinates.latitude).toFixed(5)}, {Number(selectedCoordinates.longitude).toFixed(5)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={handleSaveLocation}
+              disabled={!streetAddress || !selectedCoordinates}
+              className="w-full rounded-lg bg-green-700 px-4 py-2.5 font-medium text-white transition-colors hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-green-300"
+            >
+              Save Location
+            </button>
 
           </div>
 
