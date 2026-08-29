@@ -45,7 +45,7 @@ const ProductListingComponent = () => {
         setUserCoordinates({ latitude: savedLocationData.latitude, longitude: savedLocationData.longitude });
       }
       
-      if (!savedPincode) {
+      if (savedLocationData?.latitude == null || savedLocationData?.longitude == null) {
         setShowLocationPrompt(true);
       }
     };
@@ -421,15 +421,6 @@ const ProductListingComponent = () => {
         </div>
       )}
       
-      {showLocationPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-3 rounded-lg z-50">
-          <div className="flex items-center space-x-2">
-            <MapPinIcon className="w-4 h-4" />
-            <p className="text-sm font-medium">Set your location to see available products</p>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-8xl mx-auto px-4 py-6">
     
         {!userCoordinates && (

@@ -21,6 +21,36 @@ import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiZmFzdDIiLCJhIjoiY21mbW9qbzZlMDQ5dzJpcXhlOW82ODdlcSJ9.HYJxZbPDCZHD8_Q5faa6ig';
+const GOOGLE_MAPS_TOKEN = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || '';
+let googlePlacesLoader = null;
+
+const loadGooglePlaces = () => {
+  if (typeof window === 'undefined' || !GOOGLE_MAPS_TOKEN) return Promise.resolve(null);
+  if (window.google?.maps?.places) return Promise.resolve(window.google);
+  if (googlePlacesLoader) return googlePlacesLoader;
+
+  googlePlacesLoader = new Promise((resolve, reject) => {
+    const existingScript = document.querySelector('script[data-google-places]');
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(window.google));
+      existingScript.addEventListener('error', reject);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_TOKEN}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.dataset.googlePlaces = 'true';
+    script.onload = () => resolve(window.google);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  return googlePlacesLoader;
+};
+
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -153,18 +183,51 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
     setIsSearching(true);
     try {
-      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-      if (!token) {
-        throw new Error('Mapbox token not configured');
+      if (GOOGLE_MAPS_TOKEN) {
+        const google = await loadGooglePlaces();
+        if (google?.maps?.places?.AutocompleteService) {
+          const service = new google.maps.places.AutocompleteService();
+          const predictions = await new Promise((resolve, reject) => {
+            service.getPlacePredictions(
+              {
+                input: query,
+                componentRestrictions: { country: 'in' },
+                types: ['geocode']
+              },
+              (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                  resolve(results || []);
+                  return;
+                }
+                if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                  resolve([]);
+                  return;
+                }
+                reject(new Error(status));
+              }
+            );
+          });
+
+          setSearchResults(predictions.map((prediction) => ({
+            provider: 'google',
+            id: prediction.place_id,
+            placeId: prediction.place_id,
+            text: prediction.structured_formatting?.main_text || prediction.description,
+            place_name: prediction.description,
+            description: prediction.description
+          })));
+          return;
+        }
       }
 
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
-        `access_token=${token}` +
+        `access_token=${MAPBOX_TOKEN}` +
         `&country=in` +
-        `&types=place,locality,neighborhood,address,postcode` +
+        `&types=address,poi,place,locality,neighborhood,postcode` +
         `&autocomplete=true` +
-        `&limit=5`
+        `&limit=10` +
+        (selectedCoordinates ? `&proximity=${selectedCoordinates.longitude},${selectedCoordinates.latitude}` : '')
       );
 
       if (!response.ok) {
@@ -244,16 +307,10 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
   const reverseGeocode = async (latitude, longitude) => {
     try {
-      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-      if (!token) {
-        throw new Error('Mapbox token not configured');
-      }
-
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?` +
-        `access_token=${token}` +
-        `&country=in` +
-        `&types=address,postcode,locality,place`
+        `access_token=${MAPBOX_TOKEN}` +
+        `&country=in`
       );
 
       if (!response.ok) {
@@ -409,10 +466,58 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     alert(`Location set to: ${streetAddress}`);
   };
 
-  const handleLocationSelect = (location) => {
-    const locationName = extractLocationName(location);
-    const locationPincode = extractPincode(location);
-    const [longitude, latitude] = location.center || [];
+  const extractGooglePincode = (addressComponents = []) => {
+    return addressComponents.find(component => component.types?.includes('postal_code'))?.long_name || '';
+  };
+
+  const resolveGooglePlace = async (placeId) => {
+    const google = await loadGooglePlaces();
+    if (!google?.maps?.Geocoder) return null;
+
+    const geocoder = new google.maps.Geocoder();
+    const results = await new Promise((resolve, reject) => {
+      geocoder.geocode({ placeId }, (geocodeResults, status) => {
+        if (status === 'OK') {
+          resolve(geocodeResults || []);
+          return;
+        }
+        reject(new Error(status));
+      });
+    });
+
+    const result = results[0];
+    if (!result?.geometry?.location) return null;
+
+    return {
+      latitude: result.geometry.location.lat(),
+      longitude: result.geometry.location.lng(),
+      pincode: extractGooglePincode(result.address_components),
+      address: result.formatted_address?.replace(/, India$/, '') || ''
+    };
+  };
+
+  const getDisplayAddress = (location) => {
+    return (location?.description || location?.place_name || location?.text || '').replace(/, India$/, '');
+  };
+
+  const handleLocationSelect = async (location) => {
+    let locationName = getDisplayAddress(location) || extractLocationName(location);
+    let locationPincode = extractPincode(location);
+    let [longitude, latitude] = location.center || [];
+
+    if (location.provider === 'google') {
+      try {
+        const resolved = await resolveGooglePlace(location.placeId);
+        if (resolved) {
+          locationName = resolved.address || locationName;
+          locationPincode = resolved.pincode || locationPincode;
+          latitude = resolved.latitude;
+          longitude = resolved.longitude;
+        }
+      } catch {
+        setLocationError('Could not fetch exact coordinates for this address.');
+      }
+    }
 
     if (locationName && locationName !== 'Selected Location') {
       setSelectedLocation(locationName);
@@ -441,10 +546,9 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
   const handleManualLocationSelect = async (location) => {
     try {
-      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json?` +
-        `access_token=${token}&country=in&limit=1`
+        `access_token=${MAPBOX_TOKEN}&country=in&limit=1`
       );
       const data = await response.json();
       const [longitude, latitude] = data.features?.[0]?.center || [];
@@ -466,6 +570,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   return (
     <div className="relative" ref={locationRef}>
       <div
+        data-location-selector
         className={`flex items-center cursor-pointer group ${isMobile ? 'w-full min-w-0' : 'w-64'
           }`}
         onClick={() => !isGettingLocation && setShowLocationDropdown(!showLocationDropdown)}
@@ -603,7 +708,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                 </h4>
                 <div className="space-y-1">
                   {searchResults.map((location, index) => {
-                    const locationName = extractLocationName(location);
+                    const locationName = getDisplayAddress(location) || extractLocationName(location);
                     const locationPincode = extractPincode(location);
                     if (locationName && locationName !== 'Selected Location') {
                       return (
@@ -859,7 +964,6 @@ function HeaderContent() {
 
   const handleLocationSelect = (locationData) => {
     setUserPincode(locationData.pincode);
-    window.dispatchEvent(new CustomEvent('locationUpdated', { detail: locationData }));
   };
 
   const closeMenu = () => {
