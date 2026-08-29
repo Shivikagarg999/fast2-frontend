@@ -19,6 +19,7 @@ const ProductListingComponent = () => {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [userPincode, setUserPincode] = useState('');
   const [userLocation, setUserLocation] = useState('');
+  const [userCoordinates, setUserCoordinates] = useState(null);
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
 
   const searchQuery = searchParams.get('search') || '';
@@ -32,12 +33,16 @@ const ProductListingComponent = () => {
     const loadUserLocation = () => {
       const savedPincode = localStorage.getItem('userPincode');
       const savedLocation = localStorage.getItem('userLocation');
+      const savedLocationData = JSON.parse(localStorage.getItem('userLocationData') || 'null');
       
       if (savedPincode) {
         setUserPincode(savedPincode);
       }
       if (savedLocation) {
         setUserLocation(savedLocation);
+      }
+      if (savedLocationData?.latitude != null && savedLocationData?.longitude != null) {
+        setUserCoordinates({ latitude: savedLocationData.latitude, longitude: savedLocationData.longitude });
       }
       
       if (!savedPincode) {
@@ -52,8 +57,9 @@ const ProductListingComponent = () => {
       const locationData = event.detail;
       setUserPincode(locationData.pincode);
       setUserLocation(locationData.locationName);
+      setUserCoordinates({ latitude: locationData.latitude, longitude: locationData.longitude });
       setShowLocationPrompt(false);
-      fetchProducts(locationData.pincode);
+      fetchProducts(locationData);
     };
 
     window.addEventListener('authChange', checkAuth);
@@ -90,7 +96,7 @@ const ProductListingComponent = () => {
     return null;
   };
 
-  const fetchProducts = async (pincode = '') => {
+  const fetchProducts = async (location = null) => {
     try {
       setLoading(true);
       setError(null);
@@ -98,8 +104,10 @@ const ProductListingComponent = () => {
       let url = '/proxy/api/product';
       const params = new URLSearchParams();
 
-      if (pincode) {
-        params.append('pincode', pincode);
+      const saved = location || JSON.parse(localStorage.getItem('userLocationData') || 'null');
+      if (saved?.latitude != null && saved?.longitude != null) {
+        params.append('latitude', saved.latitude);
+        params.append('longitude', saved.longitude);
       }
       // The backend defaults to limit=20 per request, which — once grouped by
       // category for this "browse all" view — starves categories with many
@@ -148,12 +156,13 @@ const ProductListingComponent = () => {
   };
 
   useEffect(() => {
-    if (userPincode) {
-      fetchProducts(userPincode);
-    } else {
+    if (userCoordinates?.latitude != null && userCoordinates?.longitude != null) {
       fetchProducts();
+    } else {
+      setLoading(false);
+      setShowLocationPrompt(true);
     }
-  }, [userPincode]);
+  }, [userCoordinates]);
 
   useEffect(() => {
     const fetchCartQuantities = async () => {
@@ -394,7 +403,7 @@ const ProductListingComponent = () => {
           <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Products</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
-            onClick={() => fetchProducts(userPincode)}
+            onClick={() => fetchProducts()}
             className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
           >
             Try Again
@@ -423,7 +432,7 @@ const ProductListingComponent = () => {
 
       <div className="max-w-8xl mx-auto px-4 py-6">
     
-        {!userPincode && (
+        {!userCoordinates && (
           <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -433,7 +442,7 @@ const ProductListingComponent = () => {
                     Set your location to see products available in your area
                   </p>
                   <p className="text-xs text-gray-600">
-                    Products are filtered based on delivery pincode
+                    Products are filtered by distance from your current location
                   </p>
                 </div>
               </div>
@@ -569,7 +578,7 @@ const ProductListingComponent = () => {
           </div>
         )}
 
-        {products.length === 0 && !loading && !searchQuery && userPincode && (
+        {products.length === 0 && !loading && !searchQuery && userCoordinates && (
           <div className="text-center py-16">
             <div className="text-gray-300 text-6xl mb-4">
               <MapPinIcon className="h-16 w-16 mx-auto" />
@@ -578,7 +587,7 @@ const ProductListingComponent = () => {
               No products available in your area
             </h3>
             <p className="text-gray-500 mb-4">
-              We don't have any products that can be delivered to pincode {userPincode} yet.
+              No shop is currently serving your selected location within the configured radius.
             </p>
             <button
               onClick={handleSetLocation}

@@ -85,8 +85,16 @@ const CategoryProductsComponent = () => {
         
         const categoryData = await categoryResponse.json();
 
+        const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
+        if (location?.latitude == null || location?.longitude == null) {
+          throw new Error('Please select your location to see nearby products');
+        }
+        const locationParams = new URLSearchParams({
+          latitude: String(location.latitude),
+          longitude: String(location.longitude)
+        });
         const productsResponse = await fetch(
-          `/proxy/api/product/category/${categoryId}`
+          `/proxy/api/product/category/${categoryId}?${locationParams}`
         );
         
         if (!productsResponse.ok) {

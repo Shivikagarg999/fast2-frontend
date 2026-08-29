@@ -241,12 +241,13 @@ const ProductDetailClient = ({ initialProduct }) => {
   const fetchRelatedProducts = async (categoryId, currentProductId) => {
     setLoadingRelated(true);
     try {
-      const userPincode = localStorage.getItem('userPincode');
+      const userLocation = JSON.parse(localStorage.getItem('userLocationData') || 'null');
       let url = `/proxy/api/product/category/${categoryId}`;
       const params = new URLSearchParams();
 
-      if (userPincode) {
-        params.append('pincode', userPincode);
+      if (userLocation?.latitude != null && userLocation?.longitude != null) {
+        params.append('latitude', userLocation.latitude);
+        params.append('longitude', userLocation.longitude);
       }
 
       if (params.toString()) {

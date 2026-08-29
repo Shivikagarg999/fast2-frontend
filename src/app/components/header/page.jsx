@@ -101,6 +101,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [locationAccuracy, setLocationAccuracy] = useState(null);
+  const [selectedCoordinates, setSelectedCoordinates] = useState(null);
   const [pincode, setPincode] = useState('');
   const [streetAddress, setStreetAddress] = useState('');
   const [locationError, setLocationError] = useState('');
@@ -110,6 +111,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     const savedLocation = localStorage.getItem('userLocation');
     const savedPincode = localStorage.getItem('userPincode');
     const savedStreetAddress = localStorage.getItem('userStreetAddress');
+    const savedLocationData = JSON.parse(localStorage.getItem('userLocationData') || 'null');
 
     if (savedLocation) {
       setSelectedLocation(savedLocation);
@@ -121,6 +123,12 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       setStreetAddress(savedStreetAddress);
     } else {
       autoDetectLocation();
+    }
+    if (savedLocationData?.latitude != null && savedLocationData?.longitude != null) {
+      setSelectedCoordinates({
+        latitude: savedLocationData.latitude,
+        longitude: savedLocationData.longitude
+      });
     }
   }, []);
 
@@ -273,6 +281,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       async (position) => {
         try {
           const { latitude, longitude, accuracy } = position.coords;
+          setSelectedCoordinates({ latitude, longitude });
           setLocationAccuracy(accuracy);
 
           // Reverse geocode to get address details
@@ -357,20 +366,27 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
   };
 
   const handleSaveLocation = () => {
-    if (!pincode || !streetAddress) {
-      alert('Please enter both street address and pincode');
+    if (!streetAddress) {
+      alert('Please enter or select an address');
       return;
     }
 
-    if (!/^\d{6}$/.test(pincode)) {
+    if (pincode && !/^\d{6}$/.test(pincode)) {
       alert('Please enter a valid 6-digit pincode');
+      return;
+    }
+
+    if (!selectedCoordinates) {
+      alert('Please select an address from search results or use auto-detect location');
       return;
     }
 
     const locationData = {
       streetAddress,
       pincode,
-      locationName: selectedLocation || streetAddress
+      locationName: selectedLocation || streetAddress,
+      latitude: selectedCoordinates.latitude,
+      longitude: selectedCoordinates.longitude
     };
 
     localStorage.setItem('userStreetAddress', streetAddress);
@@ -390,18 +406,22 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       detail: locationData
     }));
 
-    alert(`Location set to: ${streetAddress}, ${pincode}`);
+    alert(`Location set to: ${streetAddress}`);
   };
 
   const handleLocationSelect = (location) => {
     const locationName = extractLocationName(location);
     const locationPincode = extractPincode(location);
+    const [longitude, latitude] = location.center || [];
 
     if (locationName && locationName !== 'Selected Location') {
       setSelectedLocation(locationName);
       setStreetAddress(locationName);
       if (locationPincode) {
         setPincode(locationPincode);
+      }
+      if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+        setSelectedCoordinates({ latitude, longitude });
       }
     }
   };
@@ -419,10 +439,26 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     { name: 'Hauz Khas, Delhi', pincode: '110016' }
   ];
 
-  const handleManualLocationSelect = (location) => {
-    setSelectedLocation(location.name);
-    setStreetAddress(location.name);
-    setPincode(location.pincode);
+  const handleManualLocationSelect = async (location) => {
+    try {
+      const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json?` +
+        `access_token=${token}&country=in&limit=1`
+      );
+      const data = await response.json();
+      const [longitude, latitude] = data.features?.[0]?.center || [];
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        throw new Error('Coordinates not found');
+      }
+      setSelectedLocation(location.name);
+      setStreetAddress(location.name);
+      setPincode(location.pincode);
+      setSelectedCoordinates({ latitude, longitude });
+      setLocationError('');
+    } catch {
+      setLocationError('Could not locate this address. Please use search or auto-detect.');
+    }
   };
 
   const displayLocation = isGettingLocation ? 'Detecting location...' : (selectedLocation || 'Select your location');
@@ -497,7 +533,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
             <div className="flex gap-2 mb-4">
               <button
                 onClick={handleSaveLocation}
-                disabled={!pincode || !streetAddress || pincode.length !== 6}
+                disabled={!streetAddress || !selectedCoordinates || (pincode && pincode.length !== 6)}
                 className="flex-1 bg-green-700 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-800 disabled:bg-green-300 disabled:cursor-not-allowed transition-colors"
               >
                 Save Location
@@ -600,7 +636,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
           <div className="bg-green-50 px-4 py-3 border-t border-green-100">
             <p className="text-xs text-green-500 text-center">
-              Products will be filtered based on your pincode
+              Products will be filtered by distance from your selected location
             </p>
           </div>
         </div>
