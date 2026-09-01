@@ -789,13 +789,18 @@ const CheckoutPage = () => {
       const token = localStorage.getItem('token');
       const breakdown = getAmountBreakdown();
       const orderAmount = breakdown.total + breakdown.gst;
+      const items = cartItems.map(item => ({
+        product: item.product?._id || item.product,
+        quantity: item.quantity || 1,
+        price: item.price || item.product?.effectivePrice || item.product?.price || 0
+      }));
       const res = await fetch('/proxy/api/admin/coupon/coupons/apply', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ code: promoCode.trim(), orderAmount })
+        body: JSON.stringify({ code: promoCode.trim(), orderAmount, items })
       });
       const data = await res.json();
       if (res.ok && data.valid) {
@@ -1468,6 +1473,11 @@ const CheckoutPage = () => {
                           <p className="text-xs text-gray-500 mt-0.5">{appliedPromoCoupon.code} — Save ₹{appliedPromoCoupon.discountAmount}</p>
                           {appliedPromoCoupon.description && (
                             <p className="text-xs text-gray-400 mt-0.5">{appliedPromoCoupon.description}</p>
+                          )}
+                          {appliedPromoCoupon.benefitType === 'free_quantity' && appliedPromoCoupon.appliedItems?.length > 0 && (
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              Applied on {appliedPromoCoupon.appliedItems.map(item => item.productName).join(', ')}
+                            </p>
                           )}
                         </div>
                         <button
