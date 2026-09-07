@@ -1476,7 +1476,7 @@ const CheckoutPage = () => {
                           )}
                           {appliedPromoCoupon.benefitType === 'free_quantity' && appliedPromoCoupon.appliedItems?.length > 0 && (
                             <p className="text-xs text-gray-400 mt-0.5">
-                              Applied on {appliedPromoCoupon.appliedItems.map(item => item.productName).join(', ')}
+                              Applied on {appliedPromoCoupon.appliedItems.map(item => item.productName || item.name).join(', ')}
                             </p>
                           )}
                         </div>
