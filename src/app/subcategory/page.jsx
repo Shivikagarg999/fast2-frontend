@@ -3,6 +3,28 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const MIN_SUBCATEGORIES_FOR_OWN_ROW = 3;
+
+const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+
+const SubcategoryTile = ({ subcategory }) => (
+  <Link href={`/subcategory/${subcategory._id}`} className="flex-shrink-0 w-24 group">
+    <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100 group-hover:border-gray-300 transition-colors">
+      <Image
+        src={subcategory.image || fallbackImage}
+        alt={subcategory.name}
+        fill
+        sizes="96px"
+        className="object-cover group-hover:scale-105 transition-transform duration-300"
+        onError={(e) => { e.target.src = fallbackImage; }}
+      />
+    </div>
+    <p className="mt-2 text-xs font-semibold text-gray-800 text-center leading-tight line-clamp-2">
+      {subcategory.name}
+    </p>
+  </Link>
+);
+
 export default function SubcategorySection() {
   const [isLoading, setIsLoading] = useState(true);
   const [groups, setGroups] = useState([]);
@@ -42,7 +64,10 @@ export default function SubcategorySection() {
     fetchSubcategories();
   }, []);
 
-  const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+  const richGroups = groups.filter((g) => g.subcategories.length >= MIN_SUBCATEGORIES_FOR_OWN_ROW);
+  const moreSubcategories = groups
+    .filter((g) => g.subcategories.length < MIN_SUBCATEGORIES_FOR_OWN_ROW)
+    .flatMap((g) => g.subcategories);
 
   return (
     <div className="bg-white">
@@ -77,10 +102,10 @@ export default function SubcategorySection() {
           </div>
         )}
 
-        {/* Category-wise subcategory rows */}
+        {/* Category-wise subcategory rows (only for categories with enough subcategories to fill a row) */}
         {!isLoading && !error && groups.length > 0 && (
           <div className="space-y-8">
-            {groups.map(({ category, subcategories }) => (
+            {richGroups.map(({ category, subcategories }) => (
               <div key={category._id}>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
@@ -94,29 +119,23 @@ export default function SubcategorySection() {
 
                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
                   {subcategories.map((subcategory) => (
-                    <Link
-                      key={subcategory._id}
-                      href={`/subcategory/${subcategory._id}`}
-                      className="flex-shrink-0 w-24 group"
-                    >
-                      <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-50 border border-gray-100 group-hover:border-gray-300 transition-colors">
-                        <Image
-                          src={subcategory.image || fallbackImage}
-                          alt={subcategory.name}
-                          fill
-                          sizes="96px"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => { e.target.src = fallbackImage; }}
-                        />
-                      </div>
-                      <p className="mt-2 text-xs font-semibold text-gray-800 text-center leading-tight line-clamp-2">
-                        {subcategory.name}
-                      </p>
-                    </Link>
+                    <SubcategoryTile key={subcategory._id} subcategory={subcategory} />
                   ))}
                 </div>
               </div>
             ))}
+
+            {/* Categories with too few subcategories for their own row share a compact grid instead */}
+            {moreSubcategories.length > 0 && (
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3">More to explore</h3>
+                <div className="flex flex-wrap gap-x-3 gap-y-4">
+                  {moreSubcategories.map((subcategory) => (
+                    <SubcategoryTile key={subcategory._id} subcategory={subcategory} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
