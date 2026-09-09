@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Footer from "./components/footer/page";
 import CategorySection from "./category/page";
+import SubcategorySection from "./subcategory/page";
 import ProductListingSection from "./pages/productListing/page";
 import Banner from "./components/banner/page";
 import PopupManager from "./components/popup/PopupManager";
@@ -28,10 +29,13 @@ function HomeContent() {
         <>
           <Banner />
           <CategorySection />
+          <SubcategorySection />
         </>
       )}
 
-      <ProductListingSection searchQuery={searchQuery} />
+      {hasSearchQuery && (
+        <ProductListingSection searchQuery={searchQuery} />
+      )}
 
       <Footer />
     </>
