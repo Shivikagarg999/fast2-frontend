@@ -49,6 +49,13 @@ const SubcategoryProductsComponent = () => {
 
   const fallbackImage = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 
+  useEffect(() => {
+    // Scroll to top when component mounts
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
   // Authentication check
   useEffect(() => {
     const checkAuth = () => {
