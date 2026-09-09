@@ -332,6 +332,25 @@ const CheckoutPage = () => {
     return Number(appliedPromoCoupon?.discountAmount) || 0;
   };
 
+  const getFreebieText = (coupon) => {
+    if (coupon?.benefitType !== 'free_quantity') return '';
+    const labels = (coupon.appliedItems || [])
+      .map(item => item.benefitLabel || `${item.displayFreeQuantity || item.freeQuantity}${item.displayFreeUnit || item.freeUnit} free`)
+      .filter(Boolean);
+
+    if (labels.length > 0) return labels.join(', ');
+
+    const rule = coupon.freebieRule || {};
+    if (rule.freeQuantity && rule.freeUnit) return `${rule.freeQuantity}${rule.freeUnit} free`;
+    return 'Free item applied';
+  };
+
+  const getCouponSavingsText = (coupon) => {
+    const freebieText = getFreebieText(coupon);
+    if (freebieText) return freebieText;
+    return `Save ₹${Number(coupon?.discountAmount) || 0}`;
+  };
+
   const getAmountBreakdown = () => {
     const subtotal = calculateTotal();
     const deliveryCharges = calculateDeliveryFee();
@@ -694,6 +713,7 @@ const CheckoutPage = () => {
         finalAmount: Number(orderResponse.finalAmount) || 0,
         walletDeduction: Number(orderResponse.walletDeduction) || 0,
         cashOnDelivery: Number(orderResponse.cashOnDelivery) || 0,
+        coupon: orderResponse.coupon || null,
         couponDiscount:
           Number(orderResponse.couponDiscount) ||
           Number(orderResponse.couponApplied?.discountAmount) ||
@@ -1470,7 +1490,7 @@ const CheckoutPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-xs font-semibold text-green-700">🏷️ Coupon Applied</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{appliedPromoCoupon.code} — Save ₹{appliedPromoCoupon.discountAmount}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{appliedPromoCoupon.code} — {getCouponSavingsText(appliedPromoCoupon)}</p>
                           {appliedPromoCoupon.description && (
                             <p className="text-xs text-gray-400 mt-0.5">{appliedPromoCoupon.description}</p>
                           )}
@@ -1562,8 +1582,10 @@ const CheckoutPage = () => {
 
                   {amountBreakdown.regularCouponDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
-                      <span>Coupon Discount</span>
-                      <span className="font-medium">-₹{amountBreakdown.regularCouponDiscount}</span>
+                      <span>{appliedPromoCoupon?.benefitType === 'free_quantity' ? `Coupon (${getFreebieText(appliedPromoCoupon)})` : 'Coupon Discount'}</span>
+                      <span className="font-medium">
+                        {appliedPromoCoupon?.benefitType === 'free_quantity' ? `- ${getFreebieText(appliedPromoCoupon)}` : `-₹${amountBreakdown.regularCouponDiscount}`}
+                      </span>
                     </div>
                   )}
 

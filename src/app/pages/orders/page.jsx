@@ -93,6 +93,7 @@ const MyOrdersPage = () => {
             totalGst, subtotal, deliveryFee, handlingCharge,
             numberOfShops: Number(order.numberOfShops) || 0,
             couponDiscount, scratchCouponDiscount,
+            coupon: order.coupon || null,
             items: order.items?.map(item => ({
               _id: item._id,
               product: {
@@ -268,6 +269,12 @@ const MyOrdersPage = () => {
     const pill = getStatusPill(order.status);
     const estDate = new Date(new Date(order.createdAt).getTime() + 24 * 3600000);
     const estLabel = estDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    const freebieText = order.coupon?.benefitType === 'free_quantity'
+      ? (order.coupon.appliedItems || [])
+        .map(item => item.benefitLabel || `${item.displayFreeQuantity || item.freeQuantity}${item.displayFreeUnit || item.freeUnit} free`)
+        .filter(Boolean)
+        .join(', ')
+      : '';
 
     const handleScratch = async () => {
       setScratching(true);
@@ -366,6 +373,12 @@ const MyOrdersPage = () => {
             <span className="text-gray-500">Total</span>
             <span className="font-medium text-gray-900">₹{order.finalAmount}</span>
           </div>
+          {order.couponDiscount > 0 && (
+            <div className="flex justify-between text-sm text-green-600">
+              <span>{order.coupon?.code ? `Coupon (${order.coupon.code})` : 'Coupon'}</span>
+              <span className="font-medium">{freebieText ? `- ${freebieText}` : `-₹${order.couponDiscount}`}</span>
+            </div>
+          )}
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Payment</span>
             <span className="font-medium text-gray-900">{getPaymentMethodDisplay(order)}</span>
