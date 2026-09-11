@@ -1,6 +1,6 @@
 import CategoryProductsClient from './CategoryProductsClient';
 
-const API_BASE = 'https://api.fast2.in/api';
+const API_BASE = 'https://api.gmkart.com/api';
 const SITE_URL = 'https://www.gmkart.com';
 
 async function fetchCategory(id) {
