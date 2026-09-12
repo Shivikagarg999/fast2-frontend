@@ -29,9 +29,19 @@ async function getCategoryEntries() {
   const categories = await safeFetchJson(`${API_BASE}/category/getall`);
   if (!Array.isArray(categories)) return [];
   return categories.map((c) => ({
-    url: `${SITE_URL}/category/${c._id}`,
+    url: `${SITE_URL}/category/${c.slug || c._id}`,
     changeFrequency: 'weekly',
     priority: 0.8,
+  }));
+}
+
+async function getSubcategoryEntries() {
+  const subcategories = await safeFetchJson(`${API_BASE}/subcategory/getall`);
+  if (!Array.isArray(subcategories)) return [];
+  return subcategories.map((s) => ({
+    url: `${SITE_URL}/subcategory/${s.slug || s._id}`,
+    changeFrequency: 'weekly',
+    priority: 0.7,
   }));
 }
 
@@ -62,11 +72,12 @@ export default async function sitemap() {
     { url: `${SITE_URL}/refund-policy`, changeFrequency: 'yearly', priority: 0.3 },
   ];
 
-  const [products, categories, shops] = await Promise.all([
+  const [products, categories, subcategories, shops] = await Promise.all([
     getProductEntries(),
     getCategoryEntries(),
+    getSubcategoryEntries(),
     getShopEntries(),
   ]);
 
-  return [...staticEntries, ...categories, ...shops, ...products];
+  return [...staticEntries, ...categories, ...subcategories, ...shops, ...products];
 }

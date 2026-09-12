@@ -8,7 +8,7 @@ const MIN_SUBCATEGORIES_FOR_OWN_ROW = 3;
 const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
 
 const SubcategoryTile = ({ subcategory }) => (
-  <Link href={`/subcategory/${subcategory._id}`} className="flex-shrink-0 w-36 sm:w-40 group">
+  <Link href={`/subcategory/${subcategory.slug || subcategory._id}`} className="flex-shrink-0 w-36 sm:w-40 group">
     <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 group-hover:border-gray-300 transition-colors">
       <Image
         src={subcategory.image || fallbackImage}
@@ -110,7 +110,7 @@ export default function SubcategorySection() {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
                   <Link
-                    href={`/category/${category._id}`}
+                    href={`/category/${category.slug || category._id}`}
                     className="text-sm font-semibold text-[#1a3a1a] hover:text-[#0f2510] flex items-center gap-1 transition-colors flex-shrink-0"
                   >
                     See all <span className="text-base">→</span>

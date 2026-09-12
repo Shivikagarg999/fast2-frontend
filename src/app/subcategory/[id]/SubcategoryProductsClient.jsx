@@ -101,7 +101,7 @@ const SubcategoryProductsComponent = () => {
           longitude: String(location.longitude)
         });
         const productsResponse = await fetch(
-          `/proxy/api/product/subcategory/${subcategoryId}?${locationParams}`
+          `/proxy/api/product/subcategory/${subcategoryData._id}?${locationParams}`
         );
 
         if (!productsResponse.ok) {
@@ -385,7 +385,7 @@ const SubcategoryProductsComponent = () => {
                 <>
                   <li>
                     <Link
-                      href={`/category/${subcategory.category._id}`}
+                      href={`/category/${subcategory.category.slug || subcategory.category._id}`}
                       className="text-green-600 hover:text-green-800 font-medium transition-colors"
                     >
                       {subcategory.category.name || "Category"}

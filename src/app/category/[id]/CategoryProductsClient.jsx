@@ -94,7 +94,7 @@ const CategoryProductsComponent = () => {
           longitude: String(location.longitude)
         });
         const productsResponse = await fetch(
-          `/proxy/api/product/category/${categoryId}?${locationParams}`
+          `/proxy/api/product/category/${categoryData._id}?${locationParams}`
         );
         
         if (!productsResponse.ok) {

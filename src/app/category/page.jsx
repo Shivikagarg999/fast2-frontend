@@ -90,7 +90,7 @@ export default function CategoryPage() {
                 <div className="hidden md:flex gap-3 mb-3" style={{ height: '420px' }}>
                   {/* Large featured card */}
                   <Link
-                    href={`/category/${categories[0]._id}`}
+                    href={`/category/${categories[0].slug || categories[0]._id}`}
                     className="flex-1 relative rounded-2xl overflow-hidden group block"
                     onClick={() => handleCategorySelect(categories[0]._id)}
                   >
@@ -114,7 +114,7 @@ export default function CategoryPage() {
                     {categories.slice(1, 4).map((category) => (
                       <Link
                         key={category._id}
-                        href={`/category/${category._id}`}
+                        href={`/category/${category.slug || category._id}`}
                         className="flex-1 relative rounded-2xl overflow-hidden group block"
                         onClick={() => handleCategorySelect(category._id)}
                       >
@@ -140,7 +140,7 @@ export default function CategoryPage() {
                   {categories.slice(0, 4).map((category) => (
                     <Link
                       key={category._id}
-                      href={`/category/${category._id}`}
+                      href={`/category/${category.slug || category._id}`}
                       className="relative block rounded-2xl overflow-hidden"
                       style={{ height: '130px' }}
                       onClick={() => handleCategorySelect(category._id)}
@@ -169,7 +169,7 @@ export default function CategoryPage() {
                 {(categories.length >= 4 ? categories.slice(4) : categories).map((category) => (
                   <Link
                     key={category._id}
-                    href={`/category/${category._id}`}
+                    href={`/category/${category.slug || category._id}`}
                     className="block rounded-xl overflow-hidden group relative transition-transform duration-200 hover:scale-[1.03]"
                     onClick={() => handleCategorySelect(category._id)}
                   >
