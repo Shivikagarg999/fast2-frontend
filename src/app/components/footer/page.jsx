@@ -28,12 +28,12 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-green-300 text-black py-10 px-4 md:px-8">
+    <footer className="bg-green-300 text-black py-8 md:py-10 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Main footer content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-8 md:gap-8 mb-6 md:mb-8">
           {/* Company info */}
-          <div className="lg:col-span-2">
+          <div className="col-span-2">
             <div className="flex items-center mb-4">
               <Image
                 src={Logo}
@@ -155,7 +155,7 @@ export default function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div>
+          <div className="col-span-2 lg:col-span-1">
             <h4 className="font-semibold mb-4 text-black">Contact Us</h4>
             <ul className="space-y-2 text-sm text-black">
               <li className="flex items-start">
