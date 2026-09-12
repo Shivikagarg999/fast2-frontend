@@ -848,9 +848,11 @@ function HeaderContent() {
     cartEvents.publish();
   };
 
-  const handleCategoryClick = (categoryName) => {
+  const handleCategoryClick = (category) => {
+    const target = category.slug || category._id;
+    if (!target) return;
     closeMenu();
-    router.push(`/category/${encodeURIComponent(categoryName.toLowerCase())}`);
+    router.push(`/category/${target}`);
   };
 
   const toggleProfileDropdown = () => {
@@ -1143,7 +1145,7 @@ function HeaderContent() {
                     <div
                       key={index}
                       className="flex min-h-11 items-center space-x-3 py-2 text-green-600 transition-colors hover:text-green-600 cursor-pointer"
-                      onClick={() => handleCategoryClick(category.name)}
+                      onClick={() => handleCategoryClick(category)}
                     >
                       {category.image && (
                         <img
