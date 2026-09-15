@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useMemo, Suspense } from 'react'; 
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
 import { getProductPath } from '../../utils/productSlug';
@@ -109,6 +109,9 @@ const ProductListingComponent = () => {
         params.append('latitude', saved.latitude);
         params.append('longitude', saved.longitude);
       }
+      if (searchQuery) {
+        params.append('search', searchQuery);
+      }
       // The backend defaults to limit=20 per request, which — once grouped by
       // category for this "browse all" view — starves categories with many
       // products (e.g. a 43-item category showing only 2) because only the
@@ -162,7 +165,7 @@ const ProductListingComponent = () => {
       setLoading(false);
       setShowLocationPrompt(true);
     }
-  }, [userCoordinates]);
+  }, [userCoordinates, searchQuery]);
 
   useEffect(() => {
     const fetchCartQuantities = async () => {
@@ -343,14 +346,10 @@ const ProductListingComponent = () => {
     }
   });
 
-  const searchedProducts = useMemo(() => {
-    if (!searchQuery) {
-      return products;
-    }
-    return products.filter(product =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [products, searchQuery]);
+  // Search is now applied server-side (name/description/brand) via the
+  // `search` param in fetchProducts, so `products` already reflects the
+  // current searchQuery - no client-side re-filtering needed here.
+  const searchedProducts = products;
 
   const filteredProducts = selectedCategory === 'All' 
     ? searchedProducts 

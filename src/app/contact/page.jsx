@@ -36,8 +36,8 @@ const ContactPage = () => {
     },
     {
       title: 'Phone Number',
-      description: '+91 9981306588',
-      href: 'tel:+919981306588',
+      description: '+91 9479467874',
+      href: 'tel:+919479467874',
       icon: PhoneIcon,
       color: 'text-green-600',
       bgColor: 'bg-green-50'
@@ -460,7 +460,7 @@ const handleSubmit = async (e) => {
               },
               {
                 question: 'Do you offer phone support?',
-                answer: 'Yes, we offer phone support for urgent matters. You can reach us at +91 9981306588 during business hours.'
+                answer: 'Yes, we offer phone support for urgent matters. You can reach us at +91 9479467874 during business hours.'
               }
             ].map((faq, index) => (
               <div key={index} className="bg-white rounded-lg border border-gray-200 p-6">

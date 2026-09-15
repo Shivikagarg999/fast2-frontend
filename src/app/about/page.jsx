@@ -360,8 +360,8 @@ export default function About() {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Customer Care</p>
-                            <a href="tel:+919981306588" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
-                              +91 99813 06588
+                            <a href="tel:+919479467874" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                              +91 94794 67874
                             </a>
                           </div>
                         </div>
