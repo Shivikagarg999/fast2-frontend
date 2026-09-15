@@ -238,7 +238,9 @@ export default function Footer() {
         {/* Copyright and bottom links */}
         <div className="border-t border-gray-300 pt-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
           <p className="text-sm text-black mb-2 md:mb-0">
-            © {new Date().getFullYear()} Fast2market Digital Solutions Inc. GMKart.com. All Rights Reserved.
+            © {new Date().getFullYear()} GMKart.com. All Rights Reserved.
+            <br />
+            Powered by Fast2Market Digital Solutions.
           </p>
           <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-1 text-sm text-black">
             {POLICY_PAGES.map((p) => (
