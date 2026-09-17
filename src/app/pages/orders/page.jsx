@@ -373,10 +373,10 @@ const MyOrdersPage = () => {
             <span className="text-gray-500">Total</span>
             <span className="font-medium text-gray-900">₹{order.finalAmount}</span>
           </div>
-          {order.couponDiscount > 0 && (
+          {(order.couponDiscount > 0 || freebieText) && (
             <div className="flex justify-between text-sm text-green-600">
               <span>{order.coupon?.code ? `Coupon (${order.coupon.code})` : 'Coupon'}</span>
-              <span className="font-medium">{freebieText ? `- ${freebieText}` : `-₹${order.couponDiscount}`}</span>
+              <span className="font-medium">{freebieText ? `🎁 ${freebieText}` : `-₹${order.couponDiscount}`}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">

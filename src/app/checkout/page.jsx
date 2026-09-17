@@ -1580,11 +1580,11 @@ const CheckoutPage = () => {
                     </div>
                   )}
 
-                  {amountBreakdown.regularCouponDiscount > 0 && (
+                  {(amountBreakdown.regularCouponDiscount > 0 || appliedPromoCoupon?.benefitType === 'free_quantity') && (
                     <div className="flex justify-between text-green-600">
-                      <span>{appliedPromoCoupon?.benefitType === 'free_quantity' ? `Coupon (${getFreebieText(appliedPromoCoupon)})` : 'Coupon Discount'}</span>
+                      <span>{appliedPromoCoupon?.benefitType === 'free_quantity' ? 'Coupon Bonus' : 'Coupon Discount'}</span>
                       <span className="font-medium">
-                        {appliedPromoCoupon?.benefitType === 'free_quantity' ? `- ${getFreebieText(appliedPromoCoupon)}` : `-₹${amountBreakdown.regularCouponDiscount}`}
+                        {appliedPromoCoupon?.benefitType === 'free_quantity' ? `🎁 ${getFreebieText(appliedPromoCoupon)}` : `-₹${amountBreakdown.regularCouponDiscount}`}
                       </span>
                     </div>
                   )}
