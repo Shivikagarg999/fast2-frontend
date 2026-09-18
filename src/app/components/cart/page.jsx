@@ -24,6 +24,8 @@ const Cart = () => {
   const [scratchError, setScratchError] = useState('');
   const [appliedScratchCoupon, setAppliedScratchCoupon] = useState(null);
 
+  const [serverDeliveryPricing, setServerDeliveryPricing] = useState(null);
+
   const updateHeaderCartCount = () => {
     window.dispatchEvent(new CustomEvent('cartUpdated'));
   };
@@ -90,6 +92,61 @@ const Cart = () => {
 
     return response.json();
   };
+
+  useEffect(() => {
+    if (!isLoggedIn || !cartItems.length) {
+      setServerDeliveryPricing(null);
+      return;
+    }
+
+    let savedLocation = null;
+    try {
+      savedLocation = JSON.parse(localStorage.getItem('userLocationData') || 'null');
+    } catch {
+      savedLocation = null;
+    }
+
+    if (savedLocation?.latitude == null || savedLocation?.longitude == null) {
+      setServerDeliveryPricing(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchDeliveryPricing = async () => {
+      try {
+        const items = cartItems.map(item => {
+          const product = item.product || item;
+          return {
+            product: product._id || product.id,
+            quantity: item.quantity || 1,
+            price: item.price || product.effectivePrice || product.price || 0
+          };
+        });
+
+        const data = await makeAuthenticatedRequest('/proxy/api/order/calculate-total', {
+          method: 'POST',
+          body: JSON.stringify({
+            items,
+            paymentMethod: 'cod',
+            useWallet: false,
+            latitude: savedLocation.latitude,
+            longitude: savedLocation.longitude
+          })
+        });
+
+        if (!cancelled && data.success) {
+          setServerDeliveryPricing(data.data);
+        }
+      } catch {
+        // Preview call failing shouldn't block the cart — local estimate stays as fallback.
+      }
+    };
+
+    fetchDeliveryPricing();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, cartItems]);
 
   const fetchCartItems = async () => {
     if (!isLoggedIn) return;
@@ -200,6 +257,10 @@ const Cart = () => {
   };
 
   const calculateDeliveryFee = () => {
+    if (typeof serverDeliveryPricing?.deliveryCharges === 'number') {
+      return serverDeliveryPricing.deliveryCharges;
+    }
+
     const subtotal = calculateTotal();
 
     // Global Free Delivery Threshold - same as backend logic
@@ -516,9 +577,6 @@ const Cart = () => {
                             {product.oldPrice > productPrice && (
                               <span className="text-xs text-gray-400 line-through">₹{product.oldPrice}</span>
                             )}
-                            {product.delivery?.deliveryCharges > 0 && (
-                              <span className="text-[10px] text-gray-500">+ ₹{product.delivery.deliveryCharges} del.</span>
-                            )}
                           </div>
 
                           {/* Quantity Control Pill */}
@@ -639,7 +697,7 @@ const Cart = () => {
                   <div className="flex justify-between items-center text-gray-600">
                     <div className="flex items-center">
                       <span>Delivery Fee</span>
-                      {deliveryFee === 0 && (
+                      {(subTotal > 199 || (serverDeliveryPricing && deliveryFee === 0)) && (
                         <span className="ml-2 bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded font-bold">FREE</span>
                       )}
                     </div>
@@ -652,8 +710,10 @@ const Cart = () => {
                           }, 0)}</span>
                           <span className="text-green-600 ml-2 font-medium">₹0</span>
                         </div>
-                      ) : (
+                      ) : serverDeliveryPricing ? (
                         <span>{deliveryFee > 0 ? `₹${deliveryFee}` : '₹0'}</span>
+                      ) : (
+                        <span className="text-xs text-gray-500">Calculated at checkout</span>
                       )}
                     </div>
                   </div>

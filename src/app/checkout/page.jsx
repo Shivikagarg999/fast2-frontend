@@ -60,6 +60,7 @@ const CheckoutPage = () => {
     cashfreeMode: 'production'
   });
   const [placedOrderSummary, setPlacedOrderSummary] = useState(null);
+  const [serverDeliveryPricing, setServerDeliveryPricing] = useState(null);
   const [prescriptionImage, setPrescriptionImage] = useState(null);
   const [prescriptionPreview, setPrescriptionPreview] = useState(null);
   const router = useRouter();
@@ -278,6 +279,10 @@ const CheckoutPage = () => {
   };
 
   const calculateDeliveryFee = () => {
+    if (typeof serverDeliveryPricing?.deliveryCharges === 'number') {
+      return serverDeliveryPricing.deliveryCharges;
+    }
+
     const subtotal = calculateTotal();
 
     if (subtotal > 199) {
@@ -377,6 +382,50 @@ const CheckoutPage = () => {
       payableAmount
     };
   };
+
+  useEffect(() => {
+    if (!cartItems.length || shippingInfo.lat == null || shippingInfo.lng == null) {
+      setServerDeliveryPricing(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchDeliveryPricing = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const items = cartItems.map(item => ({
+          product: item.product?._id || item.product,
+          quantity: item.quantity || 1,
+          price: item.price || item.product?.effectivePrice || item.product?.price || 0
+        }));
+
+        const res = await fetch('/proxy/api/order/calculate-total', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            items,
+            paymentMethod: 'cod',
+            useWallet: false,
+            latitude: shippingInfo.lat,
+            longitude: shippingInfo.lng
+          })
+        });
+        const data = await res.json();
+        if (!cancelled && res.ok && data.success) {
+          setServerDeliveryPricing(data.data);
+        }
+      } catch {
+        // Preview call failing shouldn't block checkout — local estimate stays as fallback.
+      }
+    };
+
+    fetchDeliveryPricing();
+    return () => { cancelled = true; };
+  }, [cartItems, shippingInfo.lat, shippingInfo.lng]);
 
   const calculateWalletDeduction = () => {
     return getAmountBreakdown().walletDeduction;
