@@ -14,6 +14,16 @@ const Cart = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
+  const [promoCode, setPromoCode] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState('');
+  const [appliedPromoCoupon, setAppliedPromoCoupon] = useState(null);
+
+  const [scratchCode, setScratchCode] = useState('');
+  const [scratchLoading, setScratchLoading] = useState(false);
+  const [scratchError, setScratchError] = useState('');
+  const [appliedScratchCoupon, setAppliedScratchCoupon] = useState(null);
+
   const updateHeaderCartCount = () => {
     window.dispatchEvent(new CustomEvent('cartUpdated'));
   };
@@ -231,13 +241,95 @@ const Cart = () => {
     setError(null);
   };
 
+  const getFreebieText = (coupon) => {
+    if (coupon?.benefitType !== 'free_quantity') return '';
+    const labels = (coupon.appliedItems || [])
+      .map(item => item.benefitLabel || `${item.displayFreeQuantity || item.freeQuantity}${item.displayFreeUnit || item.freeUnit} free`)
+      .filter(Boolean);
+    return labels.join(', ');
+  };
+
   const itemCount = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
 
   const deliveryFee = calculateDeliveryFee();
   const subTotal = calculateTotal();
   const gstTotal = calculateGst();
   const handlingCharge = calculateHandlingCharge();
-  const finalTotal = subTotal + deliveryFee + gstTotal + handlingCharge;
+  const promoDiscount = appliedPromoCoupon?.discountAmount || 0;
+  const scratchDiscount = appliedScratchCoupon?.discountAmount || 0;
+  const preDiscountTotal = subTotal + deliveryFee + gstTotal + handlingCharge;
+  const finalTotal = Math.max(0, preDiscountTotal - promoDiscount - scratchDiscount);
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setPromoLoading(true);
+    setPromoError('');
+    try {
+      const token = localStorage.getItem('token');
+      const items = cartItems.map(item => ({
+        product: item.product?._id || item.product,
+        quantity: item.quantity || 1,
+        price: item.price || item.product?.effectivePrice || item.product?.price || 0
+      }));
+      const res = await fetch('/proxy/api/admin/coupon/coupons/apply', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code: promoCode.trim().toUpperCase(), orderAmount: preDiscountTotal, items })
+      });
+      const data = await res.json();
+      if (res.ok && data.valid) {
+        setAppliedPromoCoupon({ ...data.coupon, discountAmount: data.discount });
+        setPromoCode('');
+      } else {
+        setPromoError(data.message || 'Invalid coupon code');
+      }
+    } catch {
+      setPromoError('Could not apply coupon. Please try again.');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromoCoupon(null);
+    setPromoError('');
+  };
+
+  const handleApplyScratch = async () => {
+    if (!scratchCode.trim()) return;
+    setScratchLoading(true);
+    setScratchError('');
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/proxy/api/order/redeem-scratch-coupon', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ couponCode: scratchCode.trim().toUpperCase(), orderAmount: preDiscountTotal })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAppliedScratchCoupon({ code: scratchCode.trim().toUpperCase(), discountAmount: data.discount || 0 });
+        setScratchCode('');
+      } else {
+        setScratchError(data.message || 'Invalid scratch coupon');
+      }
+    } catch {
+      setScratchError('Could not apply coupon. Please try again.');
+    } finally {
+      setScratchLoading(false);
+    }
+  };
+
+  const handleRemoveScratch = () => {
+    setAppliedScratchCoupon(null);
+    setScratchError('');
+  };
 
   // Helper to format weight from product
   const getProductWeight = (product) => {
@@ -421,6 +513,9 @@ const Cart = () => {
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex flex-col">
                             <span className="text-sm font-bold text-gray-900">₹{productPrice}</span>
+                            {product.oldPrice > productPrice && (
+                              <span className="text-xs text-gray-400 line-through">₹{product.oldPrice}</span>
+                            )}
                             {product.delivery?.deliveryCharges > 0 && (
                               <span className="text-[10px] text-gray-500">+ ₹{product.delivery.deliveryCharges} del.</span>
                             )}
@@ -449,6 +544,88 @@ const Cart = () => {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Promo Coupon Section */}
+              <div className="border border-dashed border-gray-300 rounded-xl p-3 mt-6">
+                {appliedPromoCoupon ? (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-green-700">🏷️ Coupon "{appliedPromoCoupon.code}" applied</p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {getFreebieText(appliedPromoCoupon)
+                          ? `🎁 ${getFreebieText(appliedPromoCoupon)}`
+                          : `You saved ₹${promoDiscount.toFixed(0)}`}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleRemovePromo}
+                      className="text-xs text-red-500 hover:text-red-600 font-medium ml-3"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                        placeholder="Coupon code"
+                        className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase"
+                      />
+                      <button
+                        onClick={handleApplyPromo}
+                        disabled={promoLoading || !promoCode.trim()}
+                        className="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                      >
+                        {promoLoading ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                    {promoError && <p className="text-red-500 text-xs mt-2">{promoError}</p>}
+                  </div>
+                )}
+              </div>
+
+              {/* Scratch Coupon Section */}
+              <div className="border border-dashed border-gray-300 rounded-xl p-3 mt-3">
+                {appliedScratchCoupon ? (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-orange-700">🎟️ Scratch coupon "{appliedScratchCoupon.code}" applied</p>
+                      <p className="text-xs text-gray-500 mt-0.5">You saved ₹{scratchDiscount.toFixed(0)}</p>
+                    </div>
+                    <button
+                      onClick={handleRemoveScratch}
+                      className="text-xs text-red-500 hover:text-red-600 font-medium ml-3"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={scratchCode}
+                        onChange={(e) => { setScratchCode(e.target.value.toUpperCase()); setScratchError(''); }}
+                        onKeyDown={(e) => e.key === 'Enter' && handleApplyScratch()}
+                        placeholder="Scratch card code"
+                        className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300 uppercase"
+                      />
+                      <button
+                        onClick={handleApplyScratch}
+                        disabled={scratchLoading || !scratchCode.trim()}
+                        className="bg-orange-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 whitespace-nowrap"
+                      >
+                        {scratchLoading ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                    {scratchError && <p className="text-red-500 text-xs mt-2">{scratchError}</p>}
+                  </div>
+                )}
               </div>
 
               {/* Bill Details */}
@@ -498,6 +675,20 @@ const Cart = () => {
                     <div className="flex justify-between items-center text-gray-600">
                       <span>Handling Charge</span>
                       <span>₹{handlingCharge.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {appliedPromoCoupon && (
+                    <div className="flex justify-between items-center text-green-600">
+                      <span>{getFreebieText(appliedPromoCoupon) ? 'Coupon Bonus' : 'Coupon Discount'}</span>
+                      <span className="font-medium">
+                        {getFreebieText(appliedPromoCoupon) ? `🎁 ${getFreebieText(appliedPromoCoupon)}` : `-₹${promoDiscount.toFixed(2)}`}
+                      </span>
+                    </div>
+                  )}
+                  {appliedScratchCoupon && (
+                    <div className="flex justify-between items-center text-orange-600">
+                      <span>Scratch Coupon</span>
+                      <span className="font-medium">-₹{scratchDiscount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 my-2 pt-2 flex justify-between items-center font-bold text-gray-900">

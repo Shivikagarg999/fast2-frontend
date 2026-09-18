@@ -26,13 +26,14 @@ const ProductCard = ({
   const campaignDiscountPercent = getNumber(product?.campaignDiscountPercentage);
   const hasDiscount = campaignDiscountPercent > 0;
   const displayPrice = hasDiscount ? effectivePrice : originalPrice;
-  const savings = Math.max(originalPrice - effectivePrice, 0);
 
   // Overall discount vs MRP (oldPrice), covering both a marked-up list price and any
-  // active campaign discount — this is the number shown on the badge, not just the campaign %.
+  // active campaign discount - this drives the badge AND the struck-through price shown
+  // on the card, so a plain price markdown (no active campaign) still shows crossed out.
   const mrp = getNumber(product?.oldPrice);
   const hasMrpDiscount = mrp > displayPrice;
   const mrpDiscountPercent = hasMrpDiscount ? Math.round(((mrp - displayPrice) / mrp) * 100) : 0;
+  const mrpSavings = Math.max(mrp - displayPrice, 0);
 
   const formatDisplayPrice = (price) => {
     const roundedPrice = Math.round(getNumber(price));
@@ -157,24 +158,24 @@ const ProductCard = ({
 
         <div className="mb-3">
           <div className="flex items-center space-x-2 mb-1">
-            {/* DISCOUNTED PRICE as main price */}
+            {/* Selling price as main price */}
             <span className="text-sm font-bold text-gray-900">
               {formatDisplayPrice(displayPrice)}
             </span>
 
-            {/* Show ORIGINAL price crossed out if there's discount */}
-            {hasDiscount && (
+            {/* MRP crossed out whenever it's higher than the selling price */}
+            {hasMrpDiscount && (
               <span className="text-xs text-gray-400 line-through">
-                {formatDisplayPrice(originalPrice)}
+                {formatDisplayPrice(mrp)}
               </span>
             )}
           </div>
 
-          {/* Show savings if there's discount */}
-          {hasDiscount && savings > 0 && (
+          {/* Savings vs MRP */}
+          {hasMrpDiscount && mrpSavings > 0 && (
             <div className="flex items-center space-x-1">
               <span className="text-xs text-green-600 font-semibold">
-                Save {formatDisplayPrice(savings)}
+                Save {formatDisplayPrice(mrpSavings)}
               </span>
             </div>
           )}
