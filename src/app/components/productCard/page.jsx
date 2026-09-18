@@ -103,11 +103,11 @@ const ProductCard = ({
       )}
 
       {/* Product Image */}
-      <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
+      <div className="relative h-32 bg-gray-50 flex items-center justify-center">
         <img
           src={getProductImage()}
           alt={product?.name || "Product"}
-          className={`object-contain h-full w-full transition-transform duration-300 hover:scale-105 ${
+          className={`object-cover h-full w-full transition-transform duration-300 hover:scale-105 ${
             product?.stockStatus === 'out-of-stock' ? 'opacity-80' : ''
           }`}
           onError={(e) => {
@@ -130,18 +130,6 @@ const ProductCard = ({
       {/* Product Details */}
       <div className="p-3 flex-grow flex flex-col">
         <div className="flex-grow">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              {product?.delivery?.deliveryCharges > 0 ? (
-                <span className="text-xs text-gray-600">
-                  Delivery: ₹{product.delivery.deliveryCharges}
-                </span>
-              ) : (
-                <span className="text-xs text-green-600 font-medium">Free Delivery</span>
-              )}
-            </div>
-          </div>
-
           <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
             {product?.name || "Unnamed Product"}
           </h3>
