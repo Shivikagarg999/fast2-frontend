@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import AddressPinPicker from '../../components/maps/addressPinPicker';
 import { 
   MapPinIcon, 
   PlusIcon,
@@ -43,8 +44,21 @@ const AddressPage = () => {
     state: '',
     pincode: '',
     country: 'India',
-    isDefault: false
+    isDefault: false,
+    lat: null,
+    lng: null
   });
+
+  const handleLocationChange = useCallback(({ lat, lng, city, state, pinCode }) => {
+    setAddressForm(prev => ({
+      ...prev,
+      lat,
+      lng,
+      city: city || prev.city,
+      state: state || prev.state,
+      pincode: pinCode || prev.pincode
+    }));
+  }, []);
 
   // Check authentication status
   const getToken = () => {
@@ -225,6 +239,11 @@ const AddressPage = () => {
   };
 
   const saveAddress = async () => {
+    if (addressForm.lat == null || addressForm.lng == null) {
+      setError('Please pin your exact location on the map before saving.');
+      return;
+    }
+    setError('');
     if (editingAddress) {
       await updateAddress();
     } else {
@@ -243,7 +262,9 @@ const AddressPage = () => {
       state: '',
       pincode: '',
       country: 'India',
-      isDefault: false
+      isDefault: false,
+      lat: null,
+      lng: null
     });
     setShowAddForm(false);
     setEditingAddress(null);
@@ -261,7 +282,9 @@ const AddressPage = () => {
       state: address.state || '',
       pincode: address.pincode || '',
       country: address.country || 'India',
-      isDefault: address.isDefault || false
+      isDefault: address.isDefault || false,
+      lat: address.lat ?? null,
+      lng: address.lng ?? null
     });
     setShowAddForm(true);
   };
@@ -407,6 +430,17 @@ const AddressPage = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Exact location pin */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Pin your exact location *</label>
+              <AddressPinPicker
+                key={editingAddress?._id || 'new-address'}
+                lat={addressForm.lat}
+                lng={addressForm.lng}
+                onLocationChange={handleLocationChange}
+              />
             </div>
 
             {/* Name Field */}

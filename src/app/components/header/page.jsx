@@ -21,7 +21,7 @@ import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoiZmFzdDIiLCJhIjoiY21mbW9qbzZlMDQ5dzJpcXhlOW82ODdlcSJ9.HYJxZbPDCZHD8_Q5faa6ig';
+import { searchPlaces, getPlaceDetails, reverseGeocode } from '../../utils/googleMaps';
 
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();
@@ -155,22 +155,8 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
     setIsSearching(true);
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
-        `access_token=${MAPBOX_TOKEN}` +
-        `&country=in` +
-        `&types=address,poi,place,locality,neighborhood,postcode` +
-        `&autocomplete=true` +
-        `&limit=10` +
-        (selectedCoordinates ? `&proximity=${selectedCoordinates.longitude},${selectedCoordinates.latitude}` : '')
-      );
-
-      if (!response.ok) {
-        throw new Error(`Search failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSearchResults(data.features || []);
+      const results = await searchPlaces(query, selectedCoordinates);
+      setSearchResults(results);
     } catch (error) {
       // console.error('Location search error:', error);
       setSearchResults([]);
@@ -190,75 +176,6 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
-
-  const extractLocationName = (feature) => {
-    if (!feature) return null;
-
-    if (feature.place_name && !feature.place_name.includes(',')) {
-      return feature.place_name;
-    }
-
-    const { text, context } = feature;
-
-    if (text && context) {
-      const localityContext = context.find(ctx => ctx.id.includes('locality'));
-      const placeContext = context.find(ctx => ctx.id.includes('place'));
-      const regionContext = context.find(ctx => ctx.id.includes('region'));
-      const postcodeContext = context.find(ctx => ctx.id.includes('postcode'));
-
-      const locality = localityContext?.text;
-      const place = placeContext?.text;
-      const region = regionContext?.text;
-      const pincode = postcodeContext?.text;
-
-      if (locality && region && locality !== region) {
-        return `${locality}, ${region}`;
-      } else if (place && region && place !== region) {
-        return `${place}, ${region}`;
-      } else if (locality) {
-        return locality;
-      } else if (place) {
-        return place;
-      } else if (region) {
-        return region;
-      } else if (text) {
-        return text;
-      }
-    }
-
-    if (text) {
-      return text;
-    }
-
-    return null;
-  };
-
-  const extractPincode = (feature) => {
-    if (!feature) return '';
-
-    const postcodeContext = feature.context?.find(ctx => ctx.id.includes('postcode'));
-    return postcodeContext?.text || '';
-  };
-
-  const reverseGeocode = async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?` +
-        `access_token=${MAPBOX_TOKEN}` +
-        `&country=in`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Reverse geocoding failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data.features && data.features.length > 0 ? data.features[0] : null;
-    } catch (error) {
-      // console.error('Reverse geocoding error:', error);
-      throw error;
-    }
-  };
 
   const persistLocation = ({ address, locationName, locationPincode = '', latitude, longitude, accuracy }) => {
     const locationData = {
@@ -312,13 +229,9 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
           const locationData = await reverseGeocode(latitude, longitude);
 
           if (locationData) {
-            const locationName = extractLocationName(locationData);
-            const locationPincode = extractPincode(locationData);
-
-            // Extract street address from place_name
-            let address = locationData.place_name || '';
-            // Remove country name from address
-            address = address.replace(/, India$/, '');
+            const locationName = locationData.locationName;
+            const locationPincode = locationData.pinCode;
+            const address = locationData.formattedAddress;
 
             if (locationName) {
               setSelectedLocation(locationName);
@@ -389,25 +302,24 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
     });
   };
 
-  const getDisplayAddress = (location) => {
-    return (location?.place_name || location?.text || '').replace(/, India$/, '');
-  };
+  const handleLocationSelect = async (suggestion) => {
+    try {
+      const details = await getPlaceDetails(suggestion.placeId);
+      const locationName = details.formattedAddress || suggestion.description;
 
-  const handleLocationSelect = (location) => {
-    const locationName = getDisplayAddress(location) || extractLocationName(location);
-    const locationPincode = extractPincode(location);
-    const [longitude, latitude] = location.center || [];
-
-    if (locationName && locationName !== 'Selected Location') {
-      setSelectedLocation(locationName);
-      setStreetAddress(locationName);
-      if (locationPincode) {
-        setPincode(locationPincode);
+      if (locationName) {
+        setSelectedLocation(locationName);
+        setStreetAddress(locationName);
+        if (details.pinCode) {
+          setPincode(details.pinCode);
+        }
+        if (Number.isFinite(details.lat) && Number.isFinite(details.lng)) {
+          setSelectedCoordinates({ latitude: details.lat, longitude: details.lng });
+        }
+        setLocationError('');
       }
-      if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
-        setSelectedCoordinates({ latitude, longitude });
-      }
-      setLocationError('');
+    } catch (error) {
+      setLocationError('Could not load that place. Please try another result.');
     }
   };
 
@@ -512,9 +424,9 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
                 </h4>
                 <div className="space-y-1">
                   {searchResults.map((location, index) => {
-                    const locationName = getDisplayAddress(location) || extractLocationName(location);
-                    const locationPincode = extractPincode(location);
-                    if (locationName && locationName !== 'Selected Location') {
+                    const locationName = location.description;
+                    const locationPincode = '';
+                    if (locationName) {
                       return (
                         <div
                           key={location.id || index}

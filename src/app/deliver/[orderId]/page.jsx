@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { io } from 'socket.io-client';
+import { loadGoogleMaps } from '../../utils/googleMaps';
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZmFzdDIiLCJhIjoiY21mbW9qbzZlMDQ5dzJpcXhlOW82ODdlcSJ9.HYJxZbPDCZHD8_Q5faa6ig';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const STATUS_LABEL = {
@@ -24,7 +24,6 @@ export default function TrackOrderPage() {
 
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
-  const mapboxglRef = useRef(null);
   const driverMarkerRef = useRef(null);
   const destinationMarkerRef = useRef(null);
   const socketRef = useRef(null);
@@ -37,72 +36,86 @@ export default function TrackOrderPage() {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const updateDriverMarker = useCallback((lat, lng) => {
-    if (!mapRef.current || !mapReadyRef.current) return;
-    const mapboxgl = mapboxglRef.current;
-    if (!mapboxgl) return;
+    if (!mapRef.current || !mapReadyRef.current || !window.google?.maps) return;
+    const position = { lat, lng };
 
     if (driverMarkerRef.current) {
-      driverMarkerRef.current.setLngLat([lng, lat]);
-      mapRef.current.easeTo({ center: [lng, lat], duration: 800 });
+      driverMarkerRef.current.setPosition(position);
+      mapRef.current.panTo(position);
     } else {
-      const el = document.createElement('div');
-      el.style.cssText = 'font-size:32px;line-height:1;cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
-      el.textContent = '🛵';
-      driverMarkerRef.current = new mapboxgl.Marker({ element: el })
-        .setLngLat([lng, lat])
-        .addTo(mapRef.current);
-      mapRef.current.flyTo({ center: [lng, lat], zoom: 15, duration: 1200 });
+      driverMarkerRef.current = new window.google.maps.Marker({
+        position,
+        map: mapRef.current,
+        icon: { path: window.google.maps.SymbolPath.CIRCLE, scale: 0 },
+        label: { text: '🛵', fontSize: '32px' },
+        zIndex: 2,
+      });
+      mapRef.current.setZoom(15);
+      mapRef.current.panTo(position);
     }
   }, []);
 
   const placeDestinationMarker = useCallback((lat, lng, address) => {
-    if (!mapRef.current || !mapReadyRef.current || destinationMarkerRef.current) return;
-    const mapboxgl = mapboxglRef.current;
-    if (!mapboxgl) return;
+    if (!mapRef.current || !mapReadyRef.current || destinationMarkerRef.current || !window.google?.maps) return;
 
-    const el = document.createElement('div');
-    el.style.cssText = 'font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
-    el.textContent = '📍';
-    destinationMarkerRef.current = new mapboxgl.Marker({ element: el })
-      .setLngLat([lng, lat])
-      .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(
-        `<p class="font-semibold text-sm">Delivery Address</p><p class="text-xs text-gray-500 mt-1">${address || ''}</p>`
-      ))
-      .addTo(mapRef.current);
+    const marker = new window.google.maps.Marker({
+      position: { lat, lng },
+      map: mapRef.current,
+      icon: { path: window.google.maps.SymbolPath.CIRCLE, scale: 0 },
+      label: { text: '📍', fontSize: '28px' },
+      zIndex: 1,
+    });
+
+    const content = document.createElement('div');
+    const title = document.createElement('p');
+    title.className = 'font-semibold text-sm';
+    title.textContent = 'Delivery Address';
+    const detail = document.createElement('p');
+    detail.className = 'text-xs text-gray-500 mt-1';
+    detail.textContent = address || '';
+    content.append(title, detail);
+
+    const infoWindow = new window.google.maps.InfoWindow({ content });
+    marker.addListener('click', () => infoWindow.open({ anchor: marker, map: mapRef.current }));
+    destinationMarkerRef.current = marker;
   }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    import('mapbox-gl').then((mod) => {
-      if (cancelled || !mapContainer.current || mapRef.current) return;
-      const mapboxgl = mod.default;
-      mapboxglRef.current = mapboxgl;
-      mapboxgl.accessToken = MAPBOX_TOKEN;
+    (async () => {
+      try {
+        const maps = await loadGoogleMaps();
+        const [{ Map }] = await Promise.all([maps.importLibrary('maps'), maps.importLibrary('marker')]);
+        if (cancelled || !mapContainer.current || mapRef.current) return;
 
-      const map = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [78.9629, 20.5937],
-        zoom: 12,
-      });
-      mapRef.current = map;
-      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-      map.on('load', () => {
-        mapReadyRef.current = true;
-      });
-    });
+        const map = new Map(mapContainer.current, {
+          center: { lat: 20.5937, lng: 78.9629 },
+          zoom: 12,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+        });
+        mapRef.current = map;
+        maps.event.addListenerOnce(map, 'idle', () => {
+          mapReadyRef.current = true;
+        });
+      } catch {
+        setError('Could not load the map. Please try again later.');
+      }
+    })();
 
     return () => {
       cancelled = true;
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-        mapReadyRef.current = false;
-        driverMarkerRef.current = null;
-        destinationMarkerRef.current = null;
+      if (driverMarkerRef.current) driverMarkerRef.current.setMap(null);
+      if (destinationMarkerRef.current) destinationMarkerRef.current.setMap(null);
+      if (mapRef.current && window.google?.maps?.event) {
+        window.google.maps.event.clearInstanceListeners(mapRef.current);
       }
+      mapRef.current = null;
+      mapReadyRef.current = false;
+      driverMarkerRef.current = null;
+      destinationMarkerRef.current = null;
     };
   }, []);
 

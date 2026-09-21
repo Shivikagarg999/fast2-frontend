@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import MapboxGeocoderComponent from '../components/mapbox/mapboxGeocoder';
+import AddressPinPicker from '../components/maps/addressPinPicker';
 import {
   ArrowLeftIcon,
   CheckBadgeIcon,
@@ -231,7 +231,9 @@ const CheckoutPage = () => {
       firstName: address.fullName?.split(' ')[0] || '',
       lastName: address.fullName?.split(' ').slice(1).join(' ') || '',
       email: '',
-      addressType: address.label || 'home'
+      addressType: address.label || 'home',
+      lat: address.lat ?? null,
+      lng: address.lng ?? null
     });
   };
 
@@ -461,28 +463,17 @@ const CheckoutPage = () => {
     setShippingInfo(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleMapSelect = useCallback((result) => {
-    const [lng, lat] = result.center;
-    const ctx = result.context || [];
-    const get = (prefix) => ctx.find(c => c.id.startsWith(prefix))?.text || '';
+  const handleMapSelect = useCallback(({ lat, lng, city, state, pinCode }) => {
     setShippingInfo(prev => ({
       ...prev,
-      city: get('place') || get('locality') || get('neighborhood'),
-      state: get('region'),
-      pinCode: get('postcode'),
+      city: city || prev.city,
+      state: state || prev.state,
+      pinCode: pinCode || prev.pinCode,
       lat,
       lng,
       locationSelected: true,
     }));
   }, []);
-
-  const handleResetLocation = () => {
-    setShippingInfo(prev => ({
-      ...prev,
-      city: '', state: '', pinCode: '',
-      lat: null, lng: null, locationSelected: false,
-    }));
-  };
 
   const validateShipping = () => {
     const requiredFields = ['firstName', 'lastName', 'phone', 'addressLine', 'city', 'state', 'pinCode'];
@@ -1193,22 +1184,17 @@ const CheckoutPage = () => {
 
                         {/* Map location picker */}
                         <div>
-                          <label className="block text-sm font-semibold text-gray-900 mb-2">Search Location on Map *</label>
-                          {!shippingInfo.locationSelected ? (
-                            <MapboxGeocoderComponent
-                              key="checkout-geocoder"
-                              onSelectLocation={handleMapSelect}
-                              placeholder="Search area, street, locality..."
-                            />
-                          ) : (
-                            <div className="flex items-center justify-between px-4 py-3 bg-green-50 border border-green-300 rounded-lg">
-                              <div className="flex items-center gap-2 text-green-700 text-sm font-medium">
-                                <MapPinIcon className="w-4 h-4" />
-                                {shippingInfo.city}{shippingInfo.state ? `, ${shippingInfo.state}` : ''} - {shippingInfo.pinCode}
-                              </div>
-                              <button type="button" onClick={handleResetLocation} className="text-xs text-red-500 hover:text-red-700 font-medium">
-                                Change
-                              </button>
+                          <label className="block text-sm font-semibold text-gray-900 mb-2">Pin Your Exact Location *</label>
+                          <AddressPinPicker
+                            key="checkout-pin-picker"
+                            lat={shippingInfo.lat}
+                            lng={shippingInfo.lng}
+                            onLocationChange={handleMapSelect}
+                          />
+                          {shippingInfo.locationSelected && (
+                            <div className="mt-3 flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-300 rounded-lg text-green-700 text-sm font-medium">
+                              <MapPinIcon className="w-4 h-4" />
+                              {shippingInfo.city}{shippingInfo.state ? `, ${shippingInfo.state}` : ''} - {shippingInfo.pinCode}
                             </div>
                           )}
                         </div>
