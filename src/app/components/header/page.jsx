@@ -21,7 +21,7 @@ import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
-import { searchPlaces, getPlaceDetails, reverseGeocode } from '../../utils/googleMaps';
+import { searchPlaces, getPlaceDetails, reverseGeocode } from '../../utils/mapService';
 
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();

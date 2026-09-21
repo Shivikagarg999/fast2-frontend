@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { getPlaceDetails, searchPlaces } from "../../utils/googleMaps";
+import { getPlaceDetails, searchPlaces } from "../../utils/mapService";
 
-// Address search box with Google Places suggestions. Calls onSelectLocation with
+// Address search box with map-provider suggestions. Calls onSelectLocation with
 // { lat, lng, city, state, pinCode, formattedAddress, ... } once a suggestion is picked.
-const GooglePlaceSearch = ({
+const PlaceSearch = ({
   onSelectLocation,
   placeholder = "Search area, street, landmark...",
 }) => {
@@ -55,11 +55,7 @@ const GooglePlaceSearch = ({
       } catch (err) {
         if (id === requestId.current) {
           setSuggestions([]);
-          setError(
-            String(err.message).includes("API_KEY")
-              ? "Google Maps key is not configured"
-              : "Search is unavailable right now"
-          );
+          setError("Search is unavailable right now");
         }
       } finally {
         if (id === requestId.current) setLoading(false);
@@ -121,4 +117,4 @@ const GooglePlaceSearch = ({
   );
 };
 
-export default GooglePlaceSearch;
+export default PlaceSearch;

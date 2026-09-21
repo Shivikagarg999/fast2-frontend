@@ -476,6 +476,7 @@ const CheckoutPage = () => {
   }, []);
 
   const validateShipping = () => {
+
     const requiredFields = ['firstName', 'lastName', 'phone', 'addressLine', 'city', 'state', 'pinCode'];
     for (const field of requiredFields) {
       if (!shippingInfo[field]?.trim()) {

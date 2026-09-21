@@ -1,9 +1,11 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import GooglePlaceSearch from "./googlePlaceSearch";
-import { isGoogleMapsConfigured, loadGoogleMaps, reverseGeocode } from "../../utils/googleMaps";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import PlaceSearch from "./placeSearch";
+import { GWALIOR_CENTER, MAPBOX_TOKEN, reverseGeocode } from "../../utils/mapService";
 
-const INDIA_CENTER = { lat: 20.5937, lng: 78.9629 };
+const DEFAULT_CENTER = [GWALIOR_CENTER.longitude, GWALIOR_CENTER.latitude];
 
 const toCoord = (value) => {
   const n = Number(value);
@@ -19,92 +21,80 @@ const AddressPinPicker = ({ lat, lng, onLocationChange }) => {
   const onChangeRef = useRef(onLocationChange);
   const [locating, setLocating] = useState(false);
   const [message, setMessage] = useState("");
-  const configured = isGoogleMapsConfigured();
+  const [approximate, setApproximate] = useState(false);
+  const [satellite, setSatellite] = useState(false);
 
   useEffect(() => {
     onChangeRef.current = onLocationChange;
   }, [onLocationChange]);
 
-  const placePin = useCallback(async (pLat, pLng, { reverse = true, fly = true, parts } = {}) => {
+  const placePin = useCallback(async (pLat, pLng, { reverse = true, fly = true, parts, isApproximate = false } = {}) => {
     const map = mapRef.current;
     if (!map) return;
-    const position = { lat: pLat, lng: pLng };
 
     if (!markerRef.current) {
-      const marker = new window.google.maps.Marker({ position, map, draggable: true });
-      marker.addListener("dragend", () => {
-        const p = marker.getPosition();
-        placePin(p.lat(), p.lng(), { fly: false });
+      const marker = new mapboxgl.Marker({ draggable: true, color: "#16a34a" })
+        .setLngLat([pLng, pLat])
+        .addTo(map);
+      marker.on("dragend", () => {
+        const p = marker.getLngLat();
+        placePin(p.lat, p.lng, { fly: false });
       });
       markerRef.current = marker;
     } else {
-      markerRef.current.setPosition(position);
+      markerRef.current.setLngLat([pLng, pLat]);
     }
 
-    if (fly) {
-      map.panTo(position);
-      if ((map.getZoom() || 0) < 17) map.setZoom(17);
-    }
+    if (fly) map.flyTo({ center: [pLng, pLat], zoom: Math.max(map.getZoom(), 17) });
 
     let resolved = parts;
     if (!resolved && reverse) {
       resolved = await reverseGeocode(pLat, pLng).catch(() => null);
     }
+    setApproximate(isApproximate);
     onChangeRef.current?.({
       lat: pLat,
       lng: pLng,
       city: resolved?.city,
       state: resolved?.state,
       pinCode: resolved?.pinCode,
+      approximate: isApproximate,
     });
   }, []);
 
   useEffect(() => {
-    if (!configured || !containerRef.current) return;
-    let cancelled = false;
-    let map = null;
+    if (!containerRef.current || mapRef.current) return;
 
-    (async () => {
-      try {
-        const maps = await loadGoogleMaps();
-        const [{ Map }] = await Promise.all([maps.importLibrary("maps"), maps.importLibrary("marker")]);
-        if (cancelled || !containerRef.current) return;
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+    const initLat = toCoord(lat);
+    const initLng = toCoord(lng);
+    const hasCoords = initLat != null && initLng != null;
 
-        const initLat = toCoord(lat);
-        const initLng = toCoord(lng);
-        const hasCoords = initLat != null && initLng != null;
-
-        map = new Map(containerRef.current, {
-          center: hasCoords ? { lat: initLat, lng: initLng } : INDIA_CENTER,
-          zoom: hasCoords ? 17 : 5,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-          gestureHandling: "greedy",
-        });
-        mapRef.current = map;
-        map.addListener("click", (e) => placePin(e.latLng.lat(), e.latLng.lng()));
-
-        if (hasCoords) placePin(initLat, initLng, { reverse: false, fly: false });
-      } catch {
-        setMessage("Could not load Google Maps. Check the API key.");
-      }
-    })();
+    const map = new mapboxgl.Map({
+      container: containerRef.current,
+      style: "mapbox://styles/mapbox/streets-v12",
+      center: hasCoords ? [initLng, initLat] : DEFAULT_CENTER,
+      zoom: hasCoords ? 17 : 12,
+    });
+    map.addControl(new mapboxgl.NavigationControl(), "top-right");
+    map.on("click", (e) => placePin(e.lngLat.lat, e.lngLat.lng));
+    map.on("load", () => {
+      if (hasCoords) placePin(initLat, initLng, { reverse: false, fly: false });
+    });
+    mapRef.current = map;
 
     return () => {
-      cancelled = true;
-      if (markerRef.current) markerRef.current.setMap(null);
-      if (map && window.google?.maps?.event) window.google.maps.event.clearInstanceListeners(map);
+      map.remove();
       mapRef.current = null;
       markerRef.current = null;
     };
     // The map is created once; later coordinate changes come from the pin itself.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configured]);
+  }, []);
 
   const handleSearchResult = useCallback(
     (details) => {
-      placePin(details.lat, details.lng, { parts: details });
+      placePin(details.lat, details.lng, { parts: details, isApproximate: !details.precise });
     },
     [placePin]
   );
@@ -119,7 +109,13 @@ const AddressPinPicker = ({ lat, lng, onLocationChange }) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocating(false);
-        placePin(pos.coords.latitude, pos.coords.longitude);
+        const weakFix = pos.coords.accuracy > 100;
+        if (weakFix) {
+          setMessage(
+            `GPS is only accurate to about ${Math.round(pos.coords.accuracy)} m here. Drag the pin to your exact spot.`
+          );
+        }
+        placePin(pos.coords.latitude, pos.coords.longitude, { isApproximate: weakFix });
       },
       () => {
         setLocating(false);
@@ -129,20 +125,22 @@ const AddressPinPicker = ({ lat, lng, onLocationChange }) => {
     );
   };
 
+  const toggleSatellite = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    const next = !satellite;
+    map.setStyle(
+      next ? "mapbox://styles/mapbox/satellite-streets-v12" : "mapbox://styles/mapbox/streets-v12"
+    );
+    setSatellite(next);
+  };
+
   const pinLat = toCoord(lat);
   const pinLng = toCoord(lng);
 
-  if (!configured) {
-    return (
-      <p className="text-sm text-red-600">
-        Google Maps is not configured. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY.
-      </p>
-    );
-  }
-
   return (
     <div className="space-y-3">
-      <GooglePlaceSearch onSelectLocation={handleSearchResult} />
+      <PlaceSearch onSelectLocation={handleSearchResult} />
 
       <button
         type="button"
@@ -153,10 +151,25 @@ const AddressPinPicker = ({ lat, lng, onLocationChange }) => {
         {locating ? "Getting your location..." : "Use my current location"}
       </button>
 
-      <div
-        ref={containerRef}
-        className="w-full h-64 rounded-lg overflow-hidden border border-gray-200"
-      />
+      <div className="relative">
+        <div
+          ref={containerRef}
+          className="w-full h-72 rounded-lg overflow-hidden border border-gray-200"
+        />
+        <button
+          type="button"
+          onClick={toggleSatellite}
+          className="absolute bottom-2 left-2 z-10 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-gray-800 shadow border border-gray-200"
+        >
+          {satellite ? "Map view" : "Satellite view"}
+        </button>
+      </div>
+
+      {approximate && (
+        <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
+          This is only an approximate spot. For accurate delivery, zoom in and drag the pin onto your exact building or gate.
+        </p>
+      )}
 
       <p className="text-xs text-gray-500">
         Tap the map or drag the pin to your exact door / gate — delivery charge is calculated
