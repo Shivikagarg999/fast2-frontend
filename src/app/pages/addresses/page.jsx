@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import AddressPinPicker from '../../components/maps/addressPinPicker';
 import { 
   MapPinIcon, 
@@ -19,9 +19,9 @@ import {
   HomeIcon as HomeSolidIcon,
   BuildingOfficeIcon as OfficeSolidIcon
 } from '@heroicons/react/24/solid';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-const AddressPage = () => {
+const AddressPageContent = () => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -32,6 +32,9 @@ const AddressPage = () => {
   const [deleting, setDeleting] = useState(null);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
+  const returnTo = searchParams.get('return');
 
   // Form state for adding/editing addresses
   const [addressForm, setAddressForm] = useState({
@@ -116,7 +119,12 @@ const AddressPage = () => {
 
       const data = await response.json();
       if (data.success) {
-        setAddresses(data.addresses || []);
+        const list = data.addresses || [];
+        setAddresses(list);
+        if (editId) {
+          const match = list.find(a => a._id === editId);
+          if (match) startEdit(match);
+        }
       } else {
         throw new Error(data.message || 'Failed to fetch addresses');
       }
@@ -178,6 +186,10 @@ const AddressPage = () => {
 
       setSuccess('Address updated successfully!');
       resetForm();
+      if (returnTo === 'checkout') {
+        router.push('/checkout');
+        return;
+      }
       fetchAddresses(); // Refresh the list
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -665,5 +677,11 @@ const AddressPage = () => {
     </div>
   );
 };
+
+const AddressPage = () => (
+  <Suspense fallback={null}>
+    <AddressPageContent />
+  </Suspense>
+);
 
 export default AddressPage;

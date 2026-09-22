@@ -10,6 +10,7 @@ import {
   MapPinIcon,
   PlusIcon,
   PencilIcon,
+  TrashIcon,
   HomeIcon,
   BuildingOfficeIcon,
   XMarkIcon,
@@ -252,6 +253,35 @@ const CheckoutPage = () => {
         setSelectedAddress(defaultAddress);
         populateFormFromAddress(defaultAddress);
       }
+    }
+  };
+
+  const handleEditAddress = (address, e) => {
+    e.stopPropagation();
+    router.push(`/pages/addresses?edit=${address._id}&return=checkout`);
+  };
+
+  const handleDeleteAddress = async (addressId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this address?')) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/proxy/api/user/addresses/delete/${addressId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to delete address');
+      }
+
+      setSavedAddresses(prev => prev.filter(a => a._id !== addressId));
+      if (selectedAddress?._id === addressId) {
+        setSelectedAddress(null);
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -1067,9 +1097,27 @@ const CheckoutPage = () => {
                                     {address.city}, {address.state} - {address.pincode}
                                   </p>
                                 </div>
-                                {selectedAddress?._id === address._id && (
-                                  <CheckCircleSolidIcon className="w-5 h-5 text-green-600 flex-shrink-0 ml-2" />
-                                )}
+                                <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleEditAddress(address, e)}
+                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                                    aria-label="Edit address"
+                                  >
+                                    <PencilIcon className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleDeleteAddress(address._id, e)}
+                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                    aria-label="Delete address"
+                                  >
+                                    <TrashIcon className="w-4 h-4" />
+                                  </button>
+                                  {selectedAddress?._id === address._id && (
+                                    <CheckCircleSolidIcon className="w-5 h-5 text-green-600" />
+                                  )}
+                                </div>
                               </div>
                             </div>
                           );
