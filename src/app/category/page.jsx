@@ -3,8 +3,30 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+
+const CategoryTile = ({ category }) => (
+  <Link
+    href={`/category/${category.slug || category._id}`}
+    className="group flex flex-col items-center text-center"
+  >
+    <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-brand-50 border border-brand-100 shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:-translate-y-0.5 group-hover:border-brand-300">
+      <Image
+        src={category.image || fallbackImage}
+        alt={category.name}
+        fill
+        sizes="(max-width: 640px) 25vw, (max-width: 1024px) 16vw, 12vw"
+        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        onError={(e) => { e.target.src = fallbackImage; }}
+      />
+    </div>
+    <p className="mt-2 text-xs sm:text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+      {category.name}
+    </p>
+  </Link>
+);
+
 export default function CategoryPage() {
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
@@ -30,6 +52,7 @@ export default function CategoryPage() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setCategories(data);
+        setError(null);
       } catch (err) {
         console.error('Error fetching categories:', err);
         setError('Failed to load categories. Please try again later.');
@@ -43,29 +66,11 @@ export default function CategoryPage() {
     return () => window.removeEventListener('locationUpdated', fetchCategories);
   }, []);
 
-  const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId);
-  };
-
-  const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
-
   return (
     <div className="bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
 
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold mb-1">Explore our store</p>
-            <h2 className="text-2xl font-bold text-gray-900">Browse Categories</h2>
-          </div>
-          <Link
-            href="/"
-            className="text-sm font-semibold text-[#1a3a1a] hover:text-[#0f2510] flex items-center gap-1 transition-colors"
-          >
-            View all categories <span className="text-base">→</span>
-          </Link>
-        </div>
+        <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-4">Shop by category</h2>
 
         {/* Error State */}
         {error && (
@@ -77,140 +82,28 @@ export default function CategoryPage() {
           </div>
         )}
 
-        {/* Loading State */}
+        {/* Loading State - same grid as the loaded tiles so nothing jumps */}
         {isLoading && (
-          <div>
-            <div className="flex gap-3 mb-3" style={{ height: '400px' }}>
-              <div className="flex-1 bg-gray-100 rounded-2xl animate-pulse"></div>
-              <div className="flex-1 flex flex-col gap-3">
-                <div className="flex-1 bg-gray-100 rounded-2xl animate-pulse"></div>
-                <div className="flex-1 bg-gray-100 rounded-2xl animate-pulse"></div>
-                <div className="flex-1 bg-gray-100 rounded-2xl animate-pulse"></div>
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-x-3 gap-y-5">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="flex flex-col items-center animate-pulse">
+                <div className="w-full aspect-square rounded-2xl bg-gray-100"></div>
+                <div className="h-3 w-4/5 bg-gray-100 rounded mt-2"></div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="rounded-2xl aspect-square bg-gray-100 animate-pulse"></div>
-              ))}
-            </div>
+            ))}
           </div>
         )}
 
-        {/* Categories - Editorial Layout */}
+        {/* Categories - compact, scannable grid */}
         {!isLoading && !error && categories.length > 0 && (
-          <div>
-            {/* Featured grid: first 4 categories */}
-            {categories.length >= 4 && (
-              <>
-                {/* Desktop editorial layout */}
-                <div className="hidden md:flex gap-3 mb-3" style={{ height: '420px' }}>
-                  {/* Large featured card */}
-                  <Link
-                    href={`/category/${categories[0].slug || categories[0]._id}`}
-                    className="flex-1 relative rounded-2xl overflow-hidden group block"
-                    onClick={() => handleCategorySelect(categories[0]._id)}
-                  >
-                    <Image
-                      src={categories[0].image || fallbackImage}
-                      alt={categories[0].name}
-                      fill
-                      sizes="35vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => { e.target.src = fallbackImage; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-5 left-5">
-                      <h3 className="font-bold text-white text-xl leading-tight">{categories[0].name}</h3>
-                      <p className="text-white/60 text-sm mt-1">Shop now →</p>
-                    </div>
-                  </Link>
-
-                  {/* Stack of 3 smaller cards */}
-                  <div className="flex-1 flex flex-col gap-3">
-                    {categories.slice(1, 4).map((category) => (
-                      <Link
-                        key={category._id}
-                        href={`/category/${category.slug || category._id}`}
-                        className="flex-1 relative rounded-2xl overflow-hidden group block"
-                        onClick={() => handleCategorySelect(category._id)}
-                      >
-                        <Image
-                          src={category.image || fallbackImage}
-                          alt={category.name}
-                          fill
-                          sizes="30vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          onError={(e) => { e.target.src = fallbackImage; }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <div className="absolute bottom-3 left-4">
-                          <h3 className="font-bold text-white text-base leading-tight">{category.name}</h3>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mobile: simple 2-col grid for first 4 */}
-                <div className="md:hidden grid grid-cols-2 gap-3 mb-3">
-                  {categories.slice(0, 4).map((category) => (
-                    <Link
-                      key={category._id}
-                      href={`/category/${category.slug || category._id}`}
-                      className="relative block rounded-2xl overflow-hidden"
-                      style={{ height: '130px' }}
-                      onClick={() => handleCategorySelect(category._id)}
-                    >
-                      <Image
-                        src={category.image || fallbackImage}
-                        alt={category.name}
-                        fill
-                        sizes="50vw"
-                        className="object-cover"
-                        onError={(e) => { e.target.src = fallbackImage; }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
-                      <div className="absolute bottom-3 left-3">
-                        <h3 className="font-bold text-white text-sm leading-tight">{category.name}</h3>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {/* Remaining categories in regular grid */}
-            {categories.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                {(categories.length >= 4 ? categories.slice(4) : categories).map((category) => (
-                  <Link
-                    key={category._id}
-                    href={`/category/${category.slug || category._id}`}
-                    className="block rounded-xl overflow-hidden group relative transition-transform duration-200 hover:scale-[1.03]"
-                    onClick={() => handleCategorySelect(category._id)}
-                  >
-                    <div className="relative aspect-square bg-gray-100">
-                      <Image
-                        src={category.image || fallbackImage}
-                        alt={category.name}
-                        fill
-                        sizes="(max-width: 768px) 50vw, 16vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => { e.target.src = fallbackImage; }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute bottom-2 left-2 right-2">
-                        <h3 className="font-bold text-white text-xs leading-tight line-clamp-2">{category.name}</h3>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-x-3 gap-y-5">
+            {categories.map((category) => (
+              <CategoryTile key={category._id} category={category} />
+            ))}
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Empty State (hidden when a location filter is active - the product section below explains it) */}
         {!isLoading && !error && categories.length === 0 && !locationApplied && (
           <div className="text-center py-12">
             <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
@@ -225,15 +118,6 @@ export default function CategoryPage() {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
     </div>
   );
 }
