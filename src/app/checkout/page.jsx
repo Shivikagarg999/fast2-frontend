@@ -973,6 +973,20 @@ const CheckoutPage = () => {
         ? displaySummary.cashOnDelivery
         : amountBreakdown.payableAmount);
 
+  useEffect(() => {
+    if (step !== 2) return;
+    const paymentLabel = paymentMethod === 'online'
+      ? (useWallet ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} online` : `₹${displayPayableAmount} online`)
+      : (useWallet ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} COD` : 'Cash on Delivery');
+    try {
+      sessionStorage.setItem('orderConfirmation', JSON.stringify({ orderId, paymentMethod, paymentLabel, scratchCard }));
+    } catch {
+      // storage unavailable - the confirmation page falls back to the orders list
+    }
+    router.replace('/order-confirmed');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -1725,117 +1739,8 @@ const CheckoutPage = () => {
       </div>
     </div>
 
-    {/* Order Confirmed Popup */}
-    {step === 2 && (
-      <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[80px] lg:pt-[80px] px-4 pb-4 overflow-y-auto">
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-
-        {/* Modal Card */}
-        <div className="relative bg-white rounded-2xl shadow-2xl max-w-xs w-full p-5 text-center">
-
-          {/* Success Icon */}
-          <div className="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <div className="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Title */}
-          <h2 className="text-lg font-bold text-gray-900 mb-0.5">
-            {paymentMethod === 'online' ? 'Payment Successful!' : 'Order Confirmed!'}
-          </h2>
-          <p className="text-gray-400 text-xs mb-4">
-            {paymentMethod === 'online' ? 'Payment processed successfully.' : 'Your order has been placed.'}
-          </p>
-
-          {/* Order ID + Payment Info row */}
-          <div className="flex gap-2 mb-4">
-            {orderId && orderId !== 'N/A' && (
-              <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2 border border-gray-100 text-left">
-                <p className="text-[9px] text-gray-400 uppercase tracking-widest font-semibold">Order ID</p>
-                <p className="text-sm font-bold text-gray-800">#{orderId}</p>
-              </div>
-            )}
-            <div className="flex-1 bg-brand-50 border border-brand-100 rounded-xl px-3 py-2 text-left">
-              <p className="text-[9px] text-brand-600 uppercase tracking-widest font-semibold">
-                {paymentMethod === 'online' ? 'Payment' : 'Method'}
-              </p>
-              <p className="text-xs text-brand-700 font-medium leading-tight">
-                {paymentMethod === 'online'
-                  ? useWallet
-                    ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} online`
-                    : `₹${displayPayableAmount} online`
-                  : useWallet
-                    ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} COD`
-                    : 'Cash on Delivery'}
-              </p>
-            </div>
-          </div>
-
-          {/* Scratch Card */}
-          {scratchCard?.isEligible && (
-            <div className="mb-4">
-              {(scratchCard.isScratched || scratchRevealed) ? (
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-3 text-center">
-                  <p className="text-xs font-semibold text-yellow-900 mb-1.5">🎉 Scratch Card Reward</p>
-                  <div className="bg-white rounded-lg px-3 py-2 inline-flex items-center gap-2 shadow-sm">
-                    <code className="text-sm font-bold text-gray-900 tracking-widest">{scratchCard.couponCode}</code>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(scratchCard.couponCode);
-                        setScratchCopied(true);
-                        setTimeout(() => setScratchCopied(false), 2000);
-                      }}
-                      className="text-xs text-brand-600 font-semibold hover:text-brand-700 transition-colors"
-                    >
-                      {scratchCopied ? '✓ Copied!' : 'Copy'}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-300 via-amber-300 to-orange-300 p-4 text-center">
-                  <p className="text-yellow-900 font-bold text-xs mb-1">🎟️ You earned a Scratch Card!</p>
-                  <button
-                    onClick={handleScratch}
-                    disabled={scratching}
-                    className="bg-white text-amber-700 font-bold text-xs px-5 py-2 rounded-lg hover:bg-amber-50 active:scale-95 transition-all shadow-md disabled:opacity-70"
-                  >
-                    {scratching ? (
-                      <span className="flex items-center gap-1.5">
-                        <span className="animate-spin inline-block w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full" />
-                        Scratching...
-                      </span>
-                    ) : '✨ Scratch to Reveal'}
-                  </button>
-                  {scratchError && (
-                    <p className="text-red-700 text-xs mt-1.5 bg-white/60 rounded px-2 py-0.5">{scratchError}</p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => router.push('/pages/orders')}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2.5 rounded-xl font-semibold text-sm transition-colors"
-            >
-              View Orders
-            </button>
-            <button
-              onClick={() => router.push('/')}
-              className="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors"
-            >
-              Shop More
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
+    {/* Order confirmed: hand off to the dedicated page */}
+    {step === 2 && <div className="fixed inset-0 z-[200] bg-white" />}
     </>
   );
 };

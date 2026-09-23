@@ -46,3 +46,14 @@ canvas,
 svg {
   max-width: 100%;
 }
+
+/* Order-confirmed tick animation */
+@keyframes oc-ring { 0% { transform: scale(0.6); opacity: 0.6; } 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes oc-pop { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes oc-draw { to { stroke-dashoffset: 0; } }
+@keyframes oc-rise { 0% { transform: translateY(14px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+.oc-ring { animation: oc-ring 1.6s ease-out 0.5s 2; }
+.oc-pop { animation: oc-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.oc-circle { stroke-dasharray: 166; stroke-dashoffset: 166; animation: oc-draw 0.6s ease-out 0.15s forwards; }
+.oc-check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: oc-draw 0.35s ease-out 0.7s forwards; }
+.oc-rise { animation: oc-rise 0.5s ease-out both; }
