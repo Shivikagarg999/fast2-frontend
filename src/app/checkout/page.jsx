@@ -954,9 +954,9 @@ const CheckoutPage = () => {
 
   const getAddressTypeColor = (type) => {
     switch (type) {
-      case 'home': return 'text-green-600 bg-green-50 border-green-200';
-      case 'work': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-green-600 bg-green-50 border-green-200';
+      case 'home': return 'text-brand-600 bg-brand-50 border-brand-200';
+      case 'work': return 'text-brand-600 bg-brand-50 border-brand-200';
+      default: return 'text-brand-600 bg-brand-50 border-brand-200';
     }
   };
 
@@ -976,7 +976,7 @@ const CheckoutPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
       </div>
     );
   }
@@ -988,7 +988,7 @@ const CheckoutPage = () => {
           <h1 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h1>
           <button
             onClick={() => router.push('/')}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+            className="bg-brand-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-brand-700 transition-colors"
           >
             Continue Shopping
           </button>
@@ -1003,7 +1003,7 @@ const CheckoutPage = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <button
           onClick={() => step > 1 ? setStep(step - 1) : router.back()}
-          className="flex items-center text-green-600 hover:text-green-800 mb-6"
+          className="flex items-center text-brand-600 hover:text-brand-800 mb-6"
         >
           <ArrowLeftIcon className="w-5 h-5 mr-1" />
           Back
@@ -1013,18 +1013,18 @@ const CheckoutPage = () => {
           <div className="border-b border-gray-100 bg-gray-50/70 px-6 py-5">
             <div className="flex justify-center items-center max-w-sm mx-auto">
               <div className={`flex items-center gap-2.5 ${step >= 1 ? 'text-gray-900' : 'text-gray-400'}`}>
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${step >= 1 ? 'bg-green-600 text-white shadow-sm' : 'bg-gray-200 text-gray-500'}`}>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${step >= 1 ? 'bg-brand-600 text-white shadow-sm' : 'bg-gray-200 text-gray-500'}`}>
                   {step > 1 ? <CheckCircleSolidIcon className="w-5 h-5" /> : '1'}
                 </div>
                 <span className="text-sm font-semibold whitespace-nowrap">Shipping Details</span>
               </div>
 
               <div className="flex-1 h-0.5 bg-gray-200 mx-3 min-w-10 rounded-full overflow-hidden">
-                <div className={`h-0.5 transition-all duration-300 ${step >= 2 ? 'bg-green-600 w-full' : 'w-0'}`}></div>
+                <div className={`h-0.5 transition-all duration-300 ${step >= 2 ? 'bg-brand-600 w-full' : 'w-0'}`}></div>
               </div>
 
               <div className={`flex items-center gap-2.5 ${step >= 2 ? 'text-gray-900' : 'text-gray-400'}`}>
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${step >= 2 ? 'bg-green-600 text-white shadow-sm' : 'bg-gray-200 text-gray-500'}`}>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${step >= 2 ? 'bg-brand-600 text-white shadow-sm' : 'bg-gray-200 text-gray-500'}`}>
                   2
                 </div>
                 <span className="text-sm font-semibold whitespace-nowrap">Confirmation</span>
@@ -1055,7 +1055,7 @@ const CheckoutPage = () => {
                         <h3 className="text-lg font-semibold text-gray-800">Saved Addresses</h3>
                         <button
                           onClick={handleAddNewAddress}
-                          className="text-green-600 hover:text-green-700 font-medium flex items-center"
+                          className="text-brand-600 hover:text-brand-700 font-medium flex items-center"
                         >
                           <PlusIcon className="w-4 h-4 mr-1" />
                           Add New Address
@@ -1070,7 +1070,7 @@ const CheckoutPage = () => {
                               key={address._id}
                               onClick={() => handleAddressSelect(address)}
                               className={`border-2 rounded-2xl p-4 cursor-pointer transition-all ${selectedAddress?._id === address._id
-                                ? 'border-green-500 bg-green-50/60 shadow-sm'
+                                ? 'border-brand-500 bg-brand-50/60 shadow-sm'
                                 : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                                 }`}
                             >
@@ -1082,7 +1082,7 @@ const CheckoutPage = () => {
                                       <span className="capitalize">{address.label}</span>
                                     </span>
                                     {address.isDefault && (
-                                      <span className="ml-2 bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+                                      <span className="ml-2 bg-brand-100 text-brand-700 text-xs px-2 py-1 rounded-full">
                                         Default
                                       </span>
                                     )}
@@ -1101,7 +1101,7 @@ const CheckoutPage = () => {
                                   <button
                                     type="button"
                                     onClick={(e) => handleEditAddress(address, e)}
-                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                                    className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors"
                                     aria-label="Edit address"
                                   >
                                     <PencilIcon className="w-4 h-4" />
@@ -1115,7 +1115,7 @@ const CheckoutPage = () => {
                                     <TrashIcon className="w-4 h-4" />
                                   </button>
                                   {selectedAddress?._id === address._id && (
-                                    <CheckCircleSolidIcon className="w-5 h-5 text-green-600" />
+                                    <CheckCircleSolidIcon className="w-5 h-5 text-brand-600" />
                                   )}
                                 </div>
                               </div>
@@ -1130,9 +1130,9 @@ const CheckoutPage = () => {
                     <div className="mb-8">
                       <div
                         onClick={handleAddNewAddress}
-                        className="border-2 border-dashed border-green-300 rounded-xl p-8 text-center cursor-pointer hover:border-green-400 transition-colors bg-green-50"
+                        className="border-2 border-dashed border-brand-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand-400 transition-colors bg-brand-50"
                       >
-                        <PlusIcon className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                        <PlusIcon className="w-8 h-8 text-brand-600 mx-auto mb-2" />
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">Add Delivery Address</h3>
                         <p className="text-gray-600">Save your address for faster checkout</p>
                       </div>
@@ -1148,7 +1148,7 @@ const CheckoutPage = () => {
                         {savedAddresses.length > 0 && (
                           <button
                             onClick={handleUseSavedAddress}
-                            className="text-green-600 hover:text-green-700 font-medium"
+                            className="text-brand-600 hover:text-brand-700 font-medium"
                           >
                             Use Saved Address
                           </button>
@@ -1169,7 +1169,7 @@ const CheckoutPage = () => {
                                 type="button"
                                 onClick={() => setShippingInfo({ ...shippingInfo, addressType: value })}
                                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${shippingInfo.addressType === value
-                                  ? 'border-green-500 bg-green-50 text-green-700'
+                                  ? 'border-brand-500 bg-brand-50 text-brand-700'
                                   : 'border-gray-200 hover:border-gray-300 text-gray-700'
                                   }`}
                               >
@@ -1188,7 +1188,7 @@ const CheckoutPage = () => {
                               name="firstName"
                               value={shippingInfo.firstName}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
                               required
                             />
                           </div>
@@ -1199,7 +1199,7 @@ const CheckoutPage = () => {
                               name="lastName"
                               value={shippingInfo.lastName}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
                               required
                             />
                           </div>
@@ -1213,7 +1213,7 @@ const CheckoutPage = () => {
                               name="email"
                               value={shippingInfo.email}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
                               required
                             />
                           </div>
@@ -1224,7 +1224,7 @@ const CheckoutPage = () => {
                               name="phone"
                               value={shippingInfo.phone}
                               onChange={handleShippingChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
                               required
                               maxLength="10"
                             />
@@ -1241,7 +1241,7 @@ const CheckoutPage = () => {
                             onLocationChange={handleMapSelect}
                           />
                           {shippingInfo.locationSelected && (
-                            <div className="mt-3 flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-300 rounded-lg text-green-700 text-sm font-medium">
+                            <div className="mt-3 flex items-center gap-2 px-4 py-3 bg-brand-50 border border-brand-300 rounded-lg text-brand-700 text-sm font-medium">
                               <MapPinIcon className="w-4 h-4" />
                               {shippingInfo.city}{shippingInfo.state ? `, ${shippingInfo.state}` : ''} - {shippingInfo.pinCode}
                             </div>
@@ -1258,7 +1258,7 @@ const CheckoutPage = () => {
                               value={shippingInfo.city}
                               onChange={handleShippingChange}
                               readOnly={shippingInfo.locationSelected}
-                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'}`}
+                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
                               required
                             />
                           </div>
@@ -1270,7 +1270,7 @@ const CheckoutPage = () => {
                               value={shippingInfo.state}
                               onChange={handleShippingChange}
                               readOnly={shippingInfo.locationSelected}
-                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'}`}
+                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
                               required
                             />
                           </div>
@@ -1282,7 +1282,7 @@ const CheckoutPage = () => {
                               value={shippingInfo.pinCode}
                               onChange={handleShippingChange}
                               readOnly={shippingInfo.locationSelected}
-                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500'}`}
+                              className={`w-full px-4 py-3 border rounded-lg bg-white ${shippingInfo.locationSelected ? 'border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500'}`}
                               required
                               maxLength="6"
                             />
@@ -1296,7 +1296,7 @@ const CheckoutPage = () => {
                             name="addressLine"
                             value={shippingInfo.addressLine}
                             onChange={handleShippingChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
                             rows="2"
                             placeholder="e.g. Flat 12B, Green Apartments, Near City Hospital"
                             required
@@ -1357,29 +1357,29 @@ const CheckoutPage = () => {
 
                   <div className="space-y-4 mb-6">
                     {walletBalance > 0 && (
-                      <div className={`border rounded-2xl p-6 transition-colors ${useWallet ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+                      <div className={`border rounded-2xl p-6 transition-colors ${useWallet ? 'bg-brand-50 border-brand-200' : 'bg-white border-gray-200'}`}>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
                             <button
                               onClick={() => setUseWallet(!useWallet)}
                               className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-colors ${useWallet
-                                ? 'border-green-600 bg-green-600'
-                                : 'border-gray-300 hover:border-green-400'
+                                ? 'border-brand-600 bg-brand-600'
+                                : 'border-gray-300 hover:border-brand-400'
                                 }`}
                             >
                               {useWallet && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                             </button>
                             <div className="flex items-center">
-                              {useWallet ? <WalletSolidIcon className="w-5 h-5 text-green-600 mr-2" /> : <WalletIcon className="w-5 h-5 text-gray-500 mr-2" />}
-                              <span className={`font-semibold ${useWallet ? 'text-green-800' : 'text-gray-800'}`}>Use Wallet Balance</span>
+                              {useWallet ? <WalletSolidIcon className="w-5 h-5 text-brand-600 mr-2" /> : <WalletIcon className="w-5 h-5 text-gray-500 mr-2" />}
+                              <span className={`font-semibold ${useWallet ? 'text-brand-800' : 'text-gray-800'}`}>Use Wallet Balance</span>
                             </div>
                           </div>
-                          <span className={`font-semibold ${useWallet ? 'text-green-700' : 'text-gray-700'}`}>₹{walletBalance}</span>
+                          <span className={`font-semibold ${useWallet ? 'text-brand-700' : 'text-gray-700'}`}>₹{walletBalance}</span>
                         </div>
 
                         {useWallet && (
-                          <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
-                            <p className="text-sm text-green-700">
+                          <div className="mt-3 p-3 bg-white rounded-lg border border-brand-200">
+                            <p className="text-sm text-brand-700">
                               ₹{amountBreakdown.walletDeduction} will be deducted from your wallet balance.
                               {amountBreakdown.walletDeduction < amountBreakdown.afterDiscounts && (
                                 <span className="block mt-1">
@@ -1397,30 +1397,30 @@ const CheckoutPage = () => {
                       <div
                         onClick={() => setPaymentMethod('cod')}
                         className={`cursor-pointer border-2 rounded-2xl p-6 transition-all ${paymentMethod === 'cod'
-                          ? 'border-green-500 bg-green-50/60 shadow-sm'
+                          ? 'border-brand-500 bg-brand-50/60 shadow-sm'
                           : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                           }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${paymentMethod === 'cod'
-                              ? 'border-green-600 bg-green-600'
+                              ? 'border-brand-600 bg-brand-600'
                               : 'border-gray-300'
                               }`}>
                               {paymentMethod === 'cod' && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                             </div>
                             <div className="flex items-center">
-                              <BanknotesIcon className={`w-5 h-5 ${paymentMethod === 'cod' ? 'text-green-600' : 'text-gray-600'} mr-2`} />
-                              <span className={`font-semibold ${paymentMethod === 'cod' ? 'text-green-800' : 'text-gray-800'}`}>
+                              <BanknotesIcon className={`w-5 h-5 ${paymentMethod === 'cod' ? 'text-brand-600' : 'text-gray-600'} mr-2`} />
+                              <span className={`font-semibold ${paymentMethod === 'cod' ? 'text-brand-800' : 'text-gray-800'}`}>
                                 Cash on Delivery
                               </span>
                             </div>
                           </div>
-                          <span className={`font-medium ${paymentMethod === 'cod' ? 'text-green-700' : 'text-gray-700'}`}>
+                          <span className={`font-medium ${paymentMethod === 'cod' ? 'text-brand-700' : 'text-gray-700'}`}>
                             {useWallet && walletBalance > 0 ? `₹${amountBreakdown.payableAmount} to pay` : 'Pay with cash'}
                           </span>
                         </div>
-                        <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'cod' ? 'text-green-600' : 'text-gray-600'}`}>
+                        <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'cod' ? 'text-brand-600' : 'text-gray-600'}`}>
                           Pay with cash when your order is delivered. Exact change is appreciated.
                         </p>
                       </div>
@@ -1429,21 +1429,21 @@ const CheckoutPage = () => {
                         <div
                           onClick={() => setPaymentMethod('online')}
                           className={`cursor-pointer border-2 rounded-2xl p-6 transition-all ${paymentMethod === 'online'
-                            ? 'border-green-500 bg-green-50/60 shadow-sm'
+                            ? 'border-brand-500 bg-brand-50/60 shadow-sm'
                             : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                             }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
                               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${paymentMethod === 'online'
-                                ? 'border-green-600 bg-green-600'
+                                ? 'border-brand-600 bg-brand-600'
                                 : 'border-gray-300'
                                 }`}>
                                 {paymentMethod === 'online' && <CheckCircleSolidIcon className="w-4 h-4 text-white" />}
                               </div>
                               <div className="flex items-center">
-                                <CreditCardIcon className={`w-5 h-5 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'} mr-2`} />
-                                <span className={`font-semibold ${paymentMethod === 'online' ? 'text-green-800' : 'text-gray-800'}`}>
+                                <CreditCardIcon className={`w-5 h-5 ${paymentMethod === 'online' ? 'text-brand-600' : 'text-gray-600'} mr-2`} />
+                                <span className={`font-semibold ${paymentMethod === 'online' ? 'text-brand-800' : 'text-gray-800'}`}>
                                   Pay Online
                                 </span>
                               </div>
@@ -1456,7 +1456,7 @@ const CheckoutPage = () => {
                               <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" className="h-6" />
                             )}
                           </div>
-                          <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'online' ? 'text-green-600' : 'text-gray-600'}`}>
+                          <p className={`text-sm mt-3 ml-9 ${paymentMethod === 'online' ? 'text-brand-600' : 'text-gray-600'}`}>
                             Pay instantly with UPI, Cards, Net Banking or Wallets &middot; 100% secure
                           </p>
                         </div>
@@ -1467,7 +1467,7 @@ const CheckoutPage = () => {
                   <button
                     onClick={handlePlaceOrder}
                     disabled={processing || !shippingInfo.addressLine}
-                    className="w-full bg-green-600 text-white py-4 px-6 rounded-xl hover:bg-green-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md transition-all shadow-md"
+                    className="w-full bg-brand-600 text-white py-4 px-6 rounded-xl hover:bg-brand-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md transition-all shadow-md"
                   >
                     {processing ? (
                       <div className="flex items-center justify-center">
@@ -1505,7 +1505,7 @@ const CheckoutPage = () => {
 
               {step === 2 && (
                 <div className="py-16 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
                 </div>
               )}
             </div>
@@ -1543,8 +1543,8 @@ const CheckoutPage = () => {
                     <div className="text-right">
                       {amountBreakdown.subtotal > 199 ? (
                         <div>
-                          <span className="font-medium text-green-600 line-through text-sm">₹{amountBreakdown.deliveryCharges}</span>
-                          <span className="font-medium text-green-600 ml-2">FREE</span>
+                          <span className="font-medium text-brand-600 line-through text-sm">₹{amountBreakdown.deliveryCharges}</span>
+                          <span className="font-medium text-brand-600 ml-2">FREE</span>
                         </div>
                       ) : (
                         <span className="font-medium text-gray-900">₹{amountBreakdown.deliveryCharges}</span>
@@ -1561,8 +1561,8 @@ const CheckoutPage = () => {
                   </div>
 
                   {amountBreakdown.subtotal > 199 && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
-                      <p className="text-sm text-green-700 font-medium">
+                    <div className="bg-brand-50 border border-brand-200 rounded-lg p-3 text-center">
+                      <p className="text-sm text-brand-700 font-medium">
                         🎉 Free delivery applied! Your order exceeds ₹199
                       </p>
                     </div>
@@ -1573,7 +1573,7 @@ const CheckoutPage = () => {
                     {appliedPromoCoupon ? (
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs font-semibold text-green-700">🏷️ Coupon Applied</p>
+                          <p className="text-xs font-semibold text-brand-700">🏷️ Coupon Applied</p>
                           <p className="text-xs text-gray-500 mt-0.5">{appliedPromoCoupon.code} — {getCouponSavingsText(appliedPromoCoupon)}</p>
                           {appliedPromoCoupon.description && (
                             <p className="text-xs text-gray-400 mt-0.5">{appliedPromoCoupon.description}</p>
@@ -1600,12 +1600,12 @@ const CheckoutPage = () => {
                             onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); }}
                             onKeyDown={(e) => e.key === 'Enter' && handleApplyPromoCoupon()}
                             placeholder="Coupon code"
-                            className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase"
+                            className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300 uppercase"
                           />
                           <button
                             onClick={handleApplyPromoCoupon}
                             disabled={promoLoading || !promoCode.trim()}
-                            className="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                            className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 whitespace-nowrap"
                           >
                             {promoLoading ? '...' : 'Apply'}
                           </button>
@@ -1620,7 +1620,7 @@ const CheckoutPage = () => {
                     {appliedCoupon ? (
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xs font-semibold text-green-700">🎟️ Scratch Coupon Applied</p>
+                          <p className="text-xs font-semibold text-brand-700">🎟️ Scratch Coupon Applied</p>
                           <p className="text-xs text-gray-500 mt-0.5">{couponCode.toUpperCase()} — Save ₹{appliedCoupon.discountAmount}</p>
                           {appliedCoupon.description && (
                             <p className="text-xs text-gray-400 mt-0.5">{appliedCoupon.description}</p>
@@ -1642,12 +1642,12 @@ const CheckoutPage = () => {
                             onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponError(''); }}
                             onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                             placeholder="Coupon code"
-                            className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase"
+                            className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300 uppercase"
                           />
                           <button
                             onClick={handleApplyCoupon}
                             disabled={couponLoading || !couponCode.trim()}
-                            className="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                            className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 whitespace-nowrap"
                           >
                             {couponLoading ? '...' : 'Apply'}
                           </button>
@@ -1665,7 +1665,7 @@ const CheckoutPage = () => {
                   )}
 
                   {(amountBreakdown.regularCouponDiscount > 0 || appliedPromoCoupon?.benefitType === 'free_quantity') && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-brand-600">
                       <span>{appliedPromoCoupon?.benefitType === 'free_quantity' ? 'Coupon Bonus' : 'Coupon Discount'}</span>
                       <span className="font-medium">
                         {appliedPromoCoupon?.benefitType === 'free_quantity' ? `🎁 ${getFreebieText(appliedPromoCoupon)}` : `-₹${amountBreakdown.regularCouponDiscount}`}
@@ -1674,14 +1674,14 @@ const CheckoutPage = () => {
                   )}
 
                   {appliedCoupon && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-brand-600">
                       <span>Scratch Coupon ({couponCode.toUpperCase()})</span>
                       <span className="font-medium">-₹{amountBreakdown.scratchCouponDiscount}</span>
                     </div>
                   )}
 
                   {useWallet && walletBalance > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-brand-600">
                       <span>Wallet Deduction</span>
                       <span className="font-medium">-₹{amountBreakdown.walletDeduction}</span>
                     </div>
@@ -1689,7 +1689,7 @@ const CheckoutPage = () => {
 
                   <div className="flex justify-between items-center mt-2 pt-4 pb-1 px-1 -mx-1 border-t-2 border-dashed border-gray-200">
                     <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-xl font-bold text-green-600">₹{amountBreakdown.payableAmount}</span>
+                    <span className="text-xl font-bold text-brand-600">₹{amountBreakdown.payableAmount}</span>
                   </div>
 
                   {useWallet && walletBalance > 0 && (
@@ -1735,8 +1735,8 @@ const CheckoutPage = () => {
         <div className="relative bg-white rounded-2xl shadow-2xl max-w-xs w-full p-5 text-center">
 
           {/* Success Icon */}
-          <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+          <div className="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
@@ -1759,11 +1759,11 @@ const CheckoutPage = () => {
                 <p className="text-sm font-bold text-gray-800">#{orderId}</p>
               </div>
             )}
-            <div className="flex-1 bg-green-50 border border-green-100 rounded-xl px-3 py-2 text-left">
-              <p className="text-[9px] text-green-600 uppercase tracking-widest font-semibold">
+            <div className="flex-1 bg-brand-50 border border-brand-100 rounded-xl px-3 py-2 text-left">
+              <p className="text-[9px] text-brand-600 uppercase tracking-widest font-semibold">
                 {paymentMethod === 'online' ? 'Payment' : 'Method'}
               </p>
-              <p className="text-xs text-green-700 font-medium leading-tight">
+              <p className="text-xs text-brand-700 font-medium leading-tight">
                 {paymentMethod === 'online'
                   ? useWallet
                     ? `₹${displayWalletDeduction} wallet + ₹${displayPayableAmount} online`
@@ -1789,7 +1789,7 @@ const CheckoutPage = () => {
                         setScratchCopied(true);
                         setTimeout(() => setScratchCopied(false), 2000);
                       }}
-                      className="text-xs text-green-600 font-semibold hover:text-green-700 transition-colors"
+                      className="text-xs text-brand-600 font-semibold hover:text-brand-700 transition-colors"
                     >
                       {scratchCopied ? '✓ Copied!' : 'Copy'}
                     </button>
@@ -1828,7 +1828,7 @@ const CheckoutPage = () => {
             </button>
             <button
               onClick={() => router.push('/')}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors"
+              className="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-2.5 rounded-xl font-semibold text-sm transition-colors"
             >
               Shop More
             </button>

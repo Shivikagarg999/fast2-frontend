@@ -306,16 +306,16 @@ const AddressPageContent = () => {
       (label === 'home' ? HomeSolidIcon : label === 'work' ? OfficeSolidIcon : MapPinSolidIcon) :
       (label === 'home' ? HomeIcon : label === 'work' ? BuildingOfficeIcon : MapPinIcon);
     
-    const colorClass = label === 'home' ? 'text-green-600' : 
-                      label === 'work' ? 'text-green-600' : 'text-green-600';
+    const colorClass = label === 'home' ? 'text-brand-600' : 
+                      label === 'work' ? 'text-brand-600' : 'text-brand-600';
     
     return <IconComponent className={`w-5 h-5 ${colorClass}`} />;
   };
 
   const getAddressBadgeColor = (label) => {
-    return label === 'home' ? 'bg-green-100 text-green-800' : 
-           label === 'work' ? 'bg-green-100 text-green-800' : 
-           'bg-green-100 text-green-800';
+    return label === 'home' ? 'bg-brand-100 text-brand-800' : 
+           label === 'work' ? 'bg-brand-100 text-brand-800' : 
+           'bg-brand-100 text-brand-800';
   };
 
   const handleLoginRedirect = () => {
@@ -325,7 +325,7 @@ const AddressPageContent = () => {
   if (loading && addresses.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
       </div>
     );
   }
@@ -334,14 +334,14 @@ const AddressPageContent = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <MapPinIcon className="w-12 h-12 text-green-600" />
+          <div className="w-24 h-24 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <MapPinIcon className="w-12 h-12 text-brand-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Please log in to view addresses</h2>
           <p className="text-gray-600 mb-6">Manage your delivery addresses</p>
           <button 
             onClick={handleLoginRedirect}
-            className="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors shadow-md"
+            className="bg-brand-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-brand-700 transition-colors shadow-md"
           >
             Login to Continue
           </button>
@@ -382,10 +382,10 @@ const AddressPageContent = () => {
         )}
         
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div className="bg-brand-50 border border-brand-200 text-brand-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
             <div className="flex justify-between items-center">
               <span>{success}</span>
-              <button onClick={() => setSuccess('')} className="text-green-800 font-bold text-lg">×</button>
+              <button onClick={() => setSuccess('')} className="text-brand-800 font-bold text-lg">×</button>
             </div>
           </div>
         )}
@@ -394,7 +394,7 @@ const AddressPageContent = () => {
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full bg-white border-2 border-dashed border-green-600 text-green-600 rounded-xl p-6 mb-6 hover:bg-green-50 transition-colors"
+            className="w-full bg-white border-2 border-dashed border-brand-600 text-brand-600 rounded-xl p-6 mb-6 hover:bg-brand-50 transition-colors"
           >
             <div className="flex items-center justify-center">
               <PlusIcon className="w-6 h-6 mr-2" />
@@ -433,7 +433,7 @@ const AddressPageContent = () => {
                     onClick={() => setAddressForm({...addressForm, label: value})}
                     className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
                       addressForm.label === value
-                        ? 'border-green-600 bg-green-50 text-green-600'
+                        ? 'border-brand-600 bg-brand-50 text-brand-600'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -462,7 +462,7 @@ const AddressPageContent = () => {
                 type="text"
                 value={addressForm.fullName}
                 onChange={(e) => setAddressForm({...addressForm, fullName: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                 placeholder="Enter your full name"
               />
             </div>
@@ -474,7 +474,7 @@ const AddressPageContent = () => {
                 type="tel"
                 value={addressForm.phoneNumber}
                 onChange={(e) => setAddressForm({...addressForm, phoneNumber: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                 placeholder="Enter your phone number"
               />
             </div>
@@ -485,7 +485,7 @@ const AddressPageContent = () => {
               <textarea
                 value={addressForm.addressLine1}
                 onChange={(e) => setAddressForm({...addressForm, addressLine1: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                 placeholder="House no., Building, Street, Area"
                 rows={2}
               />
@@ -498,7 +498,7 @@ const AddressPageContent = () => {
                 type="text"
                 value={addressForm.addressLine2}
                 onChange={(e) => setAddressForm({...addressForm, addressLine2: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                 placeholder="Landmark, Nearby location"
               />
             </div>
@@ -511,7 +511,7 @@ const AddressPageContent = () => {
                   type="text"
                   value={addressForm.city}
                   onChange={(e) => setAddressForm({...addressForm, city: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                   placeholder="City"
                 />
               </div>
@@ -521,7 +521,7 @@ const AddressPageContent = () => {
                   type="text"
                   value={addressForm.state}
                   onChange={(e) => setAddressForm({...addressForm, state: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                   placeholder="State"
                 />
               </div>
@@ -531,7 +531,7 @@ const AddressPageContent = () => {
                   type="text"
                   value={addressForm.pincode}
                   onChange={(e) => setAddressForm({...addressForm, pincode: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                   placeholder="Pincode"
                 />
               </div>
@@ -544,7 +544,7 @@ const AddressPageContent = () => {
                 type="text"
                 value={addressForm.country}
                 onChange={(e) => setAddressForm({...addressForm, country: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
                 placeholder="Country"
               />
             </div>
@@ -556,7 +556,7 @@ const AddressPageContent = () => {
                 id="defaultAddress"
                 checked={addressForm.isDefault}
                 onChange={(e) => setAddressForm({...addressForm, isDefault: e.target.checked})}
-                className="h-4 w-4 text-green-600 focus:ring-green-600 border-gray-300 rounded"
+                className="h-4 w-4 text-brand-600 focus:ring-brand-600 border-gray-300 rounded"
               />
               <label htmlFor="defaultAddress" className="ml-2 block text-sm text-gray-900">
                 Set as default address
@@ -568,7 +568,7 @@ const AddressPageContent = () => {
               <button
                 onClick={saveAddress}
                 disabled={saving}
-                className="flex-1 bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                className="flex-1 bg-brand-600 text-white py-3 rounded-lg font-medium hover:bg-brand-700 disabled:opacity-50 transition-colors"
               >
                 {saving ? 'Saving...' : (editingAddress ? 'Update Address' : 'Save Address')}
               </button>
@@ -587,7 +587,7 @@ const AddressPageContent = () => {
           {addresses.length > 0 ? (
             addresses.map((address) => (
               <div key={address._id} className={`bg-white rounded-xl shadow-sm p-5 border-l-4 ${
-                address.isDefault ? 'border-green-500' : 'border-gray-300'
+                address.isDefault ? 'border-brand-500' : 'border-gray-300'
               }`}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -597,7 +597,7 @@ const AddressPageContent = () => {
                         <span className="ml-1 capitalize">{address.label}</span>
                       </span>
                       {address.isDefault && (
-                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
+                        <span className="ml-2 bg-brand-100 text-brand-800 text-xs px-2 py-1 rounded-full flex items-center">
                           <CheckIcon className="w-3 h-3 mr-1" />
                           Default
                         </span>
@@ -619,7 +619,7 @@ const AddressPageContent = () => {
                   <div className="flex flex-col space-y-2 ml-3">
                     <button
                       onClick={() => startEdit(address)}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                      className="p-2 text-brand-600 hover:bg-brand-50 rounded-full transition-colors"
                     >
                       <PencilIcon className="w-5 h-5" />
                     </button>
@@ -641,13 +641,13 @@ const AddressPageContent = () => {
                   {!address.isDefault ? (
                     <button
                       onClick={() => setDefaultAddress(address._id)}
-                      className="text-green-600 font-medium hover:text-green-700 transition-colors flex items-center"
+                      className="text-brand-600 font-medium hover:text-brand-700 transition-colors flex items-center"
                     >
                       <CheckIcon className="w-4 h-4 mr-1" />
                       Set as Default
                     </button>
                   ) : (
-                    <span className="text-green-600 font-medium flex items-center">
+                    <span className="text-brand-600 font-medium flex items-center">
                       <CheckIcon className="w-4 h-4 mr-1" />
                       Default Address
                     </span>
@@ -663,7 +663,7 @@ const AddressPageContent = () => {
                 <p className="text-gray-500 mb-6">Add your first address to get started with deliveries</p>
                 <button
                   onClick={() => setShowAddForm(true)}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                  className="bg-brand-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-brand-700 transition-colors"
                 >
                   <PlusIcon className="w-5 h-5 mr-1 inline" />
                   Add New Address

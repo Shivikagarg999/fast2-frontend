@@ -28,7 +28,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-green-300 text-black py-8 md:py-10 px-4 md:px-8">
+    <footer className="bg-brand-300 text-black py-8 md:py-10 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Main footer content */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-8 md:gap-8 mb-6 md:mb-8">

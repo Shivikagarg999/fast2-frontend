@@ -87,10 +87,10 @@ const PlaceSearch = ({
         onFocus={() => suggestions.length > 0 && setOpen(true)}
         placeholder={placeholder}
         autoComplete="off"
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
       />
       {loading && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-green-600 border-t-transparent" />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
       )}
 
       {open && suggestions.length > 0 && (
@@ -100,7 +100,7 @@ const PlaceSearch = ({
               <button
                 type="button"
                 onClick={() => handleSelect(s)}
-                className="w-full text-left px-4 py-2.5 hover:bg-green-50 border-b border-gray-50 last:border-b-0"
+                className="w-full text-left px-4 py-2.5 hover:bg-brand-50 border-b border-gray-50 last:border-b-0"
               >
                 <span className="block text-sm font-medium text-gray-900">{s.mainText}</span>
                 {s.secondaryText && (

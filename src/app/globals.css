@@ -10,6 +10,20 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand palette - deep, saturated green (replaces stock Tailwind green-* site-wide).
+     Richer/darker than the old green-600 so CTAs and accents read as intentional
+     instead of pale/washed out. */
+  --color-brand-50: #eafbf0;
+  --color-brand-100: #cdf4d9;
+  --color-brand-200: #9de8b6;
+  --color-brand-300: #62d38c;
+  --color-brand-400: #34b869;
+  --color-brand-500: #189a4e;
+  --color-brand-600: #0c831f;
+  --color-brand-700: #096619;
+  --color-brand-800: #0a4f16;
+  --color-brand-900: #094014;
 }
 
 body {

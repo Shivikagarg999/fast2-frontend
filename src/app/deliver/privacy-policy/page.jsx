@@ -10,11 +10,11 @@ export default function DriverPrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <DeliverHeader />
-      <section className="py-12 bg-gradient-to-b from-green-50 to-white">
+      <section className="py-12 bg-gradient-to-b from-brand-50 to-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <div className="flex flex-wrap items-center gap-2 mb-8 text-sm">
-            <Link href="/deliver" className="text-green-700 hover:underline font-medium">
+            <Link href="/deliver" className="text-brand-700 hover:underline font-medium">
               Become a Delivery Partner
             </Link>
             <span className="text-gray-400">/</span>
@@ -171,7 +171,7 @@ export default function DriverPrivacyPolicyPage() {
               </div>
 
               {/* Contact Information */}
-              <div className="mt-8 bg-gradient-to-r from-gray-50 to-green-50 rounded-2xl p-6">
+              <div className="mt-8 bg-gradient-to-r from-gray-50 to-brand-50 rounded-2xl p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Questions About This Policy?
                 </h3>

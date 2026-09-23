@@ -150,7 +150,7 @@ const ProductCard = ({
           {/* Savings vs MRP */}
           {hasMrpDiscount && mrpSavings > 0 && (
             <div className="flex items-center space-x-1">
-              <span className="text-xs text-green-700 font-bold">
+              <span className="text-xs text-brand-700 font-bold">
                 Save {formatDisplayPrice(mrpSavings)}
               </span>
             </div>
@@ -168,7 +168,7 @@ const ProductCard = ({
             </button>
           ) : cartQuantity === 0 ? (
             <button
-              className={`w-full bg-green-600 text-white hover:bg-green-700 py-2 px-3 rounded-xl text-sm font-extrabold tracking-wide transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-full bg-brand-600 text-white hover:bg-brand-700 py-2 px-3 rounded-xl text-sm font-extrabold tracking-wide transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
@@ -183,9 +183,9 @@ const ProductCard = ({
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-green-600 text-white rounded-xl shadow-sm h-9">
+            <div className="flex items-center justify-between bg-brand-600 text-white rounded-xl shadow-sm h-9">
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-l-xl transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-brand-700 rounded-l-xl transition-colors"
                 onClick={handleRemove}
               >
                 <MinusIcon className="w-4 h-4 font-bold" />
@@ -196,7 +196,7 @@ const ProductCard = ({
               </span>
 
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-r-xl transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-brand-700 rounded-r-xl transition-colors"
                 onClick={handleIncrement}
               >
                 <PlusIcon className="w-4 h-4 font-bold" />

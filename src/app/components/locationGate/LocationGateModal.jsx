@@ -146,7 +146,7 @@ const LocationGateModal = () => {
         </button>
 
         <div className="flex items-center gap-2 mb-1">
-          <MapPinIcon className="w-6 h-6 text-green-600" />
+          <MapPinIcon className="w-6 h-6 text-brand-600" />
           <h2 className="text-lg font-bold text-gray-900">Set your delivery location</h2>
         </div>
         <p className="text-sm text-gray-500 mb-4">
@@ -156,14 +156,14 @@ const LocationGateModal = () => {
         <button
           onClick={handleUseCurrentLocation}
           disabled={locating}
-          className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl mb-4 transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl mb-4 transition-colors"
         >
           <MapPinIcon className="w-5 h-5" />
           {locating ? "Detecting your location..." : "Use my current location"}
         </button>
 
         <div className="relative mb-2">
-          <div className="flex items-center border border-gray-200 rounded-xl px-3 py-2.5 focus-within:border-green-500 transition-colors">
+          <div className="flex items-center border border-gray-200 rounded-xl px-3 py-2.5 focus-within:border-brand-500 transition-colors">
             <MagnifyingGlassIcon className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
             <input
               type="text"
@@ -184,7 +184,7 @@ const LocationGateModal = () => {
                   <button
                     key={s.placeId}
                     onClick={() => handlePickSuggestion(s)}
-                    className="w-full text-left px-4 py-2.5 hover:bg-green-50 flex items-start gap-2 border-b border-gray-50 last:border-b-0"
+                    className="w-full text-left px-4 py-2.5 hover:bg-brand-50 flex items-start gap-2 border-b border-gray-50 last:border-b-0"
                   >
                     <MapPinIcon className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                     <span className="text-sm text-gray-700 truncate">{s.description}</span>

@@ -8,15 +8,13 @@ import SubcategorySection from "./subcategory/page";
 import ProductListingSection from "./pages/productListing/page";
 import Banner from "./components/banner/page";
 import PopupManager from "./components/popup/PopupManager";
+import ProductGridSkeleton from "./components/skeletons/ProductGridSkeleton";
 
-const LoadingProducts = () => {
-  return (
-    <div className="text-center p-10">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-      <p className="mt-4 text-gray-600">Loading products...</p>
-    </div>
-  );
-};
+const LoadingProducts = () => (
+  <div className="max-w-7xl mx-auto px-4 py-6">
+    <ProductGridSkeleton count={12} />
+  </div>
+);
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -30,12 +28,14 @@ function HomeContent() {
           <Banner />
           <CategorySection />
           <SubcategorySection />
+          <div className="max-w-7xl mx-auto px-4 pt-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">Available near you</h2>
+            <p className="text-sm text-gray-500 mb-4">Products from shops close to your location</p>
+          </div>
         </>
       )}
 
-      {hasSearchQuery && (
-        <ProductListingSection searchQuery={searchQuery} />
-      )}
+      <ProductListingSection searchQuery={searchQuery} />
 
       <Footer />
     </>

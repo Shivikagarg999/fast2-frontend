@@ -6,6 +6,7 @@ import Link from "next/link";
 import Footer from "@/app/components/footer/page";
 import ProductCard from "@/app/components/productCard/page";
 import { getProductPath } from "@/app/utils/productSlug";
+import ProductGridSkeleton from "@/app/components/skeletons/ProductGridSkeleton";
 
 const CustomImage = ({ src, alt, fallback, ...props }) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -330,10 +331,9 @@ const SubcategoryProductsComponent = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
+      <div className="bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <ProductGridSkeleton count={12} />
         </div>
       </div>
     );
@@ -343,8 +343,8 @@ const SubcategoryProductsComponent = () => {
     return (
       <div className="bg-white flex items-center justify-center min-h-screen">
         <div className="text-center max-w-sm px-6">
-          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -355,7 +355,7 @@ const SubcategoryProductsComponent = () => {
           </p>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('openLocationPrompt'))}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-6 rounded-xl"
+            className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 px-6 rounded-xl"
           >
             Set Location
           </button>
@@ -372,7 +372,7 @@ const SubcategoryProductsComponent = () => {
           <p className="text-gray-600 mb-4">We couldn't load this page. Please try again.</p>
           <button
             onClick={() => router.push("/subcategory")}
-            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
+            className="bg-brand-600 hover:bg-brand-700 text-white py-2 px-4 rounded-lg"
           >
             Return to Subcategories
           </button>
@@ -385,7 +385,7 @@ const SubcategoryProductsComponent = () => {
     <>
       <div className="bg-white">
         {showLoginPrompt && (
-          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg z-50">
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-brand-600 text-white px-6 py-3 rounded-lg z-50">
             <p className="text-sm font-medium">Please login to add items to cart</p>
           </div>
         )}
@@ -397,7 +397,7 @@ const SubcategoryProductsComponent = () => {
               <li>
                 <Link
                   href="/"
-                  className="text-green-600 hover:text-green-800 font-medium transition-colors"
+                  className="text-brand-600 hover:text-brand-800 font-medium transition-colors"
                 >
                   Home
                 </Link>
@@ -420,7 +420,7 @@ const SubcategoryProductsComponent = () => {
                   <li>
                     <Link
                       href={`/category/${subcategory.category.slug || subcategory.category._id}`}
-                      className="text-green-600 hover:text-green-800 font-medium transition-colors"
+                      className="text-brand-600 hover:text-brand-800 font-medium transition-colors"
                     >
                       {subcategory.category.name || "Category"}
                     </Link>
@@ -525,7 +525,7 @@ const SubcategoryProductsComponent = () => {
                 </p>
                 <Link
                   href="/subcategory"
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                  className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors"
                 >
                   Back to Subcategories
                 </Link>
@@ -543,10 +543,9 @@ const SubcategoryProductsComponent = () => {
 // Suspense wrapper
 const SubcategoryProductsClient = () => {
   const fallback = (
-    <div className="bg-white min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading products...</p>
+    <div className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <ProductGridSkeleton count={12} />
       </div>
     </div>
   );

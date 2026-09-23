@@ -14,7 +14,7 @@ import {
 
 const ShopCard = ({ shop = {} }) => {
     const getRatingColor = (avg) => {
-        if (avg >= 4) return 'bg-green-500';
+        if (avg >= 4) return 'bg-brand-500';
         if (avg >= 3) return 'bg-yellow-500';
         return 'bg-orange-500';
     };
@@ -71,7 +71,7 @@ const ShopCard = ({ shop = {} }) => {
 
     return (
         <Link href={`/shops/${shop.shopSlug}`}>
-            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+            <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-brand-200 hover:shadow-lg transition-all duration-300 cursor-pointer group">
 
                 {/* Cover image with overlay + text */}
                 <div className="relative h-28 overflow-hidden">
@@ -82,7 +82,7 @@ const ShopCard = ({ shop = {} }) => {
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                     ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-green-600 to-emerald-800" />
+                        <div className="w-full h-full bg-gradient-to-br from-brand-600 to-emerald-800" />
                     )}
 
                     {/* Dark overlay */}
@@ -91,7 +91,7 @@ const ShopCard = ({ shop = {} }) => {
                     {/* Badges top-right */}
                     <div className="absolute top-2 right-2 flex flex-col gap-1 items-end z-10">
                         {shop.isVerified && (
-                            <span className="flex items-center gap-1 bg-green-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span className="flex items-center gap-1 bg-brand-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                                 <CheckBadgeIcon className="w-3 h-3" />
                                 Verified
                             </span>
@@ -102,7 +102,7 @@ const ShopCard = ({ shop = {} }) => {
                             </span>
                         )}
                         <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            isShopOpen() ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'
+                            isShopOpen() ? 'bg-brand-500/90 text-white' : 'bg-red-500/90 text-white'
                         }`}>
                             <div className="w-1.5 h-1.5 rounded-full bg-white" />
                             {isShopOpen() ? 'Open' : 'Closed'}

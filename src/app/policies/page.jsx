@@ -41,7 +41,7 @@ export default function PoliciesLandingPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <section className="py-12 bg-gradient-to-b from-green-50 to-white">
+      <section className="py-12 bg-gradient-to-b from-brand-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -54,7 +54,7 @@ export default function PoliciesLandingPage() {
 
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mb-4"></div>
               <p className="text-gray-600">Loading policies...</p>
             </div>
           )}
@@ -70,7 +70,7 @@ export default function PoliciesLandingPage() {
               <p className="text-gray-600 mb-4">{error}</p>
               <button
                 onClick={fetchAllPolicies}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                className="bg-brand-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-brand-700 transition-colors"
               >
                 Try Again
               </button>
@@ -104,7 +104,7 @@ export default function PoliciesLandingPage() {
                         </div>
                         <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
                           policy.isActive
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-brand-100 text-brand-800'
                             : 'bg-gray-100 text-gray-800'
                         }`}>
                           {policy.isActive ? '✓ Active' : 'Inactive'}

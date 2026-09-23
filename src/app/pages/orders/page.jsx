@@ -182,7 +182,7 @@ const MyOrdersPage = () => {
       case 'confirmed': return { label: 'Confirmed',    cls: 'bg-blue-100 text-blue-700' };
       case 'accepted':  return { label: 'Confirmed',    cls: 'bg-blue-100 text-blue-700' };
       case 'picked-up': return { label: 'In Transit',   cls: 'bg-purple-100 text-purple-700' };
-      case 'delivered': return { label: 'Delivered',    cls: 'bg-green-100 text-green-700' };
+      case 'delivered': return { label: 'Delivered',    cls: 'bg-brand-100 text-brand-700' };
       case 'cancelled': return { label: 'Cancelled',    cls: 'bg-red-100 text-red-600' };
       default:          return { label: status,          cls: 'bg-gray-100 text-gray-600' };
     }
@@ -330,16 +330,16 @@ const MyOrdersPage = () => {
               <div key={step.label} className="flex gap-3">
                 {/* Icon + connector */}
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${step.done ? 'bg-green-600' : 'bg-gray-100'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${step.done ? 'bg-brand-600' : 'bg-gray-100'}`}>
                     <StepIcon icon={step.icon} done={step.done} />
                   </div>
                   {i < steps.length - 1 && (
-                    <div className={`w-0.5 flex-1 min-h-[32px] ${step.done ? 'bg-green-500' : 'bg-gray-200'}`} />
+                    <div className={`w-0.5 flex-1 min-h-[32px] ${step.done ? 'bg-brand-500' : 'bg-gray-200'}`} />
                   )}
                 </div>
                 {/* Text */}
                 <div className="pb-5 pt-1">
-                  <p className={`text-sm font-semibold leading-tight ${step.done ? 'text-green-700' : 'text-gray-500'}`}>{step.label}</p>
+                  <p className={`text-sm font-semibold leading-tight ${step.done ? 'text-brand-700' : 'text-gray-500'}`}>{step.label}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
                   {step.done && step.time && <p className="text-xs text-gray-400 mt-0.5">{step.time}</p>}
                   {step.label === 'Delivered' && !step.done && (
@@ -374,7 +374,7 @@ const MyOrdersPage = () => {
             <span className="font-medium text-gray-900">₹{order.finalAmount}</span>
           </div>
           {(order.couponDiscount > 0 || freebieText) && (
-            <div className="flex justify-between text-sm text-green-600">
+            <div className="flex justify-between text-sm text-brand-600">
               <span>{order.coupon?.code ? `Coupon (${order.coupon.code})` : 'Coupon'}</span>
               <span className="font-medium">{freebieText ? `🎁 ${freebieText}` : `-₹${order.couponDiscount}`}</span>
             </div>
@@ -386,7 +386,7 @@ const MyOrdersPage = () => {
           {order.secretCode && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Secret Code</span>
-              <span className="font-bold text-green-700">{order.secretCode}</span>
+              <span className="font-bold text-brand-700">{order.secretCode}</span>
             </div>
           )}
         </div>
@@ -395,14 +395,14 @@ const MyOrdersPage = () => {
         {order.secretCode && (
           <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
             <div className="flex items-center gap-2 mb-1">
-              <KeyIcon className="w-4 h-4 text-green-600" />
+              <KeyIcon className="w-4 h-4 text-brand-600" />
               <p className="text-sm font-semibold text-gray-800">Secret Code</p>
             </div>
             <p className="text-xs text-gray-400 mb-3">Share this code with delivery partner at the time of delivery.</p>
             <div className="flex items-center justify-between">
-              <span className="text-3xl font-bold text-green-700 tracking-wider">{order.secretCode}</span>
+              <span className="text-3xl font-bold text-brand-700 tracking-wider">{order.secretCode}</span>
               <button onClick={() => { navigator.clipboard.writeText(String(order.secretCode)); setCopied2(true); setTimeout(() => setCopied2(false), 2000); }}>
-                <DocumentDuplicateIcon className={`w-5 h-5 ${copied2 ? 'text-green-600' : 'text-gray-400'}`} />
+                <DocumentDuplicateIcon className={`w-5 h-5 ${copied2 ? 'text-brand-600' : 'text-gray-400'}`} />
               </button>
             </div>
           </div>
@@ -424,7 +424,7 @@ const MyOrdersPage = () => {
                 <div className="bg-white rounded-lg px-4 py-2 inline-flex items-center gap-3 shadow-sm">
                   <code className="text-base font-bold text-gray-900 tracking-widest">{scratchCard.couponCode}</code>
                   <button onClick={() => { navigator.clipboard.writeText(scratchCard.couponCode); }}>
-                    <DocumentDuplicateIcon className="w-4 h-4 text-green-600" />
+                    <DocumentDuplicateIcon className="w-4 h-4 text-brand-600" />
                   </button>
                 </div>
                 <p className="text-xs text-yellow-900/80 mt-2">Apply at checkout on your next order</p>
@@ -457,7 +457,7 @@ const MyOrdersPage = () => {
           </button>
           <button
             onClick={() => router.push('/contact')}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 rounded-xl text-sm font-medium text-white hover:bg-green-700"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-600 rounded-xl text-sm font-medium text-white hover:bg-brand-700"
           >
             <ChatBubbleOvalLeftEllipsisIcon className="w-4 h-4" />
             Need Help?
@@ -506,7 +506,7 @@ const MyOrdersPage = () => {
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-sm text-gray-500">Order ID: <span className="font-medium text-gray-700">{order.orderId}</span></p>
                 <button onClick={() => copyToClipboard(order.orderId, `id-${order._id}`)}>
-                  <DocumentDuplicateIcon className={`w-4 h-4 ${copiedId === `id-${order._id}` ? 'text-green-600' : 'text-gray-400'}`} />
+                  <DocumentDuplicateIcon className={`w-4 h-4 ${copiedId === `id-${order._id}` ? 'text-brand-600' : 'text-gray-400'}`} />
                 </button>
               </div>
             </div>
@@ -534,7 +534,7 @@ const MyOrdersPage = () => {
             {order.secretCode && (
               <div>
                 <p className="text-xs text-gray-400 mb-1">Secret Code</p>
-                <p className="text-sm font-bold text-green-700 tracking-wider">{order.secretCode}</p>
+                <p className="text-sm font-bold text-brand-700 tracking-wider">{order.secretCode}</p>
               </div>
             )}
           </div>
@@ -552,12 +552,12 @@ const MyOrdersPage = () => {
               onClick={() => handleDownloadInvoice(order.orderId || order._id)}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              <DocumentArrowDownIcon className="w-4 h-4 text-green-600" />
+              <DocumentArrowDownIcon className="w-4 h-4 text-brand-600" />
               Download Invoice
             </button>
             <button
               onClick={() => router.push('/contact')}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 rounded-xl text-sm font-medium text-white hover:bg-green-700 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-600 rounded-xl text-sm font-medium text-white hover:bg-brand-700 transition-colors"
             >
               <ChatBubbleOvalLeftEllipsisIcon className="w-4 h-4" />
               Need Help?
@@ -624,10 +624,10 @@ const MyOrdersPage = () => {
               <div key={i} className="flex gap-3">
                 <div className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    update.red ? 'bg-red-100' : update.green ? 'bg-green-100' : 'bg-yellow-100'
+                    update.red ? 'bg-red-100' : update.green ? 'bg-brand-100' : 'bg-yellow-100'
                   }`}>
                     {update.green ? (
-                      <CheckCircleIcon className="w-4 h-4 text-green-600" />
+                      <CheckCircleIcon className="w-4 h-4 text-brand-600" />
                     ) : update.red ? (
                       <XCircleIcon className="w-4 h-4 text-red-500" />
                     ) : (
@@ -637,7 +637,7 @@ const MyOrdersPage = () => {
                   {i < updates.length - 1 && <div className="w-0.5 flex-1 min-h-[24px] bg-gray-200" />}
                 </div>
                 <div className="pb-5 pt-1">
-                  <p className={`text-sm font-semibold ${update.green ? 'text-green-700' : update.red ? 'text-red-600' : 'text-gray-900'}`}>
+                  <p className={`text-sm font-semibold ${update.green ? 'text-brand-700' : update.red ? 'text-red-600' : 'text-gray-900'}`}>
                     {update.title}
                   </p>
                   <p className="text-xs text-gray-500">{update.desc}</p>
@@ -650,8 +650,8 @@ const MyOrdersPage = () => {
 
 
         {/* Need Help card */}
-        <div className="bg-green-50 rounded-xl border border-green-100 p-4 flex items-center gap-4">
-          <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+        <div className="bg-brand-50 rounded-xl border border-brand-100 p-4 flex items-center gap-4">
+          <div className="w-12 h-12 bg-brand-600 rounded-full flex items-center justify-center flex-shrink-0">
             <ChatBubbleOvalLeftEllipsisIcon className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -660,7 +660,7 @@ const MyOrdersPage = () => {
           </div>
           <button
             onClick={() => router.push('/contact')}
-            className="flex items-center gap-2 px-4 py-2 border border-green-600 text-green-700 rounded-xl text-sm font-medium hover:bg-green-100 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2 border border-brand-600 text-brand-700 rounded-xl text-sm font-medium hover:bg-brand-100 transition-colors whitespace-nowrap"
           >
             <ChatBubbleOvalLeftEllipsisIcon className="w-4 h-4" />
             Contact Support
@@ -676,8 +676,8 @@ const MyOrdersPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-14 h-14 mx-auto mb-4 relative">
-            <div className="animate-spin rounded-full h-14 w-14 border-4 border-green-100 border-t-green-600" />
-            <ShoppingBagIcon className="w-6 h-6 text-green-600 absolute inset-0 m-auto" />
+            <div className="animate-spin rounded-full h-14 w-14 border-4 border-brand-100 border-t-brand-600" />
+            <ShoppingBagIcon className="w-6 h-6 text-brand-600 absolute inset-0 m-auto" />
           </div>
           <h2 className="text-lg font-semibold text-gray-900">Loading Your Orders</h2>
           <p className="text-gray-400 text-sm mt-1">Fetching your order history...</p>
@@ -696,7 +696,7 @@ const MyOrdersPage = () => {
           <p className="text-gray-400 mb-6 text-sm">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="w-full bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+            className="w-full bg-brand-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-700 transition-colors"
           >
             Try Again
           </button>
@@ -750,7 +750,7 @@ const MyOrdersPage = () => {
                   placeholder="Search by order ID, item..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 w-60"
+                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 w-60"
                 />
               </div>
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 transition-colors">
@@ -770,7 +770,7 @@ const MyOrdersPage = () => {
                   onClick={() => { setActiveTab(tab.id); setViewMode('list'); }}
                   className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
                     activeTab === tab.id
-                      ? 'border-green-600 text-green-600'
+                      ? 'border-brand-600 text-brand-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -778,7 +778,7 @@ const MyOrdersPage = () => {
                   {tab.label}
                   {tab.count > 0 && (
                     <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${
-                      activeTab === tab.id ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      activeTab === tab.id ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-500'
                     }`}>
                       {tab.count}
                     </span>
@@ -811,7 +811,7 @@ const MyOrdersPage = () => {
                 </p>
                 <button
                   onClick={() => router.push('/')}
-                  className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+                  className="bg-brand-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-brand-700 transition-colors"
                 >
                   Start Shopping
                 </button>
@@ -838,7 +838,7 @@ const MyOrdersPage = () => {
                       <div
                         key={order._id}
                         onClick={() => setSelectedOrder(order)}
-                        className={`grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr] gap-4 px-5 py-4 hover:bg-gray-50 cursor-pointer transition-colors ${isSelected ? 'bg-green-50' : ''}`}
+                        className={`grid grid-cols-[2fr_1fr_1fr_1fr_1.2fr] gap-4 px-5 py-4 hover:bg-gray-50 cursor-pointer transition-colors ${isSelected ? 'bg-brand-50' : ''}`}
                       >
                         {/* Order & Items */}
                         <div className="flex items-center gap-3 min-w-0">
@@ -872,7 +872,7 @@ const MyOrdersPage = () => {
                         {/* Amount */}
                         <div className="flex flex-col justify-center">
                           <p className="text-sm font-semibold text-gray-900">₹{order.finalAmount}</p>
-                          <p className={`text-xs font-medium ${order.paymentMethod === 'cod' ? 'text-orange-500' : 'text-green-600'}`}>
+                          <p className={`text-xs font-medium ${order.paymentMethod === 'cod' ? 'text-orange-500' : 'text-brand-600'}`}>
                             {order.paymentMethod === 'cod' ? 'COD' : 'Paid'}
                           </p>
                         </div>
@@ -894,7 +894,7 @@ const MyOrdersPage = () => {
                           ) : (
                             <button
                               onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); setViewMode('detail'); }}
-                              className="text-xs font-medium text-green-700 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-50 transition-colors whitespace-nowrap"
+                              className="text-xs font-medium text-brand-700 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 transition-colors whitespace-nowrap"
                             >
                               Track Order
                             </button>

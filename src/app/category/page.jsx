@@ -13,7 +13,16 @@ export default function CategoryPage() {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/proxy/api/category/getall');
+        let url = '/proxy/api/category/getall';
+        try {
+          const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
+          if (location?.latitude != null && location?.longitude != null) {
+            url += `?latitude=${location.latitude}&longitude=${location.longitude}`;
+          }
+        } catch {
+          // ignore malformed saved location, fall back to the unfiltered list
+        }
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setCategories(data);
@@ -25,6 +34,9 @@ export default function CategoryPage() {
       }
     };
     fetchCategories();
+
+    window.addEventListener('locationUpdated', fetchCategories);
+    return () => window.removeEventListener('locationUpdated', fetchCategories);
   }, []);
 
   const handleCategorySelect = (categoryId) => {

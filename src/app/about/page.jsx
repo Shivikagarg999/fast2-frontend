@@ -77,7 +77,7 @@ export default function About() {
     <>
       <div className="bg-white">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-r from-green-600 to-green-800 overflow-hidden">
+        <div className="relative bg-gradient-to-r from-brand-600 to-brand-800 overflow-hidden">
           <div className="max-w-7xl mx-auto">
             <div className="relative z-10 pb-8 bg-transparent sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
               <div className="pt-10 px-4 sm:px-6 lg:px-8 lg:pt-16 lg:pr-0">
@@ -85,13 +85,13 @@ export default function About() {
                   <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
                     About <span className="block text-yellow-400">GMKART</span>
                   </h1>
-                  <p className="mt-5 text-xl text-green-100 max-w-xl">
+                  <p className="mt-5 text-xl text-brand-100 max-w-xl">
                     A technology-driven Quick Commerce platform redefining how India shops for everyday essentials.
                   </p>
                   <div className="mt-8 flex flex-col sm:flex-row gap-4">
                     <a
                       href="/"
-                      className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-white hover:bg-green-50"
+                      className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-brand-700 bg-white hover:bg-brand-50"
                     >
                       Start Shopping
                     </a>
@@ -118,13 +118,13 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Tab Navigation */}
             <div className="flex justify-center mb-12">
-              <div className="flex space-x-1 rounded-xl bg-green-900/10 p-1">
+              <div className="flex space-x-1 rounded-xl bg-brand-900/10 p-1">
                 <button
                   onClick={() => setActiveTab('about')}
                   className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
                     activeTab === 'about'
-                      ? 'bg-green-600 text-white shadow'
-                      : 'text-gray-600 hover:text-green-600'
+                      ? 'bg-brand-600 text-white shadow'
+                      : 'text-gray-600 hover:text-brand-600'
                   }`}
                 >
                   About Us
@@ -133,8 +133,8 @@ export default function About() {
                   onClick={() => setActiveTab('mission')}
                   className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
                     activeTab === 'mission'
-                      ? 'bg-green-600 text-white shadow'
-                      : 'text-gray-600 hover:text-green-600'
+                      ? 'bg-brand-600 text-white shadow'
+                      : 'text-gray-600 hover:text-brand-600'
                   }`}
                 >
                   Mission & Vision
@@ -143,8 +143,8 @@ export default function About() {
                   onClick={() => setActiveTab('corporate')}
                   className={`py-2.5 px-6 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-300 ${
                     activeTab === 'corporate'
-                      ? 'bg-green-600 text-white shadow'
-                      : 'text-gray-600 hover:text-green-600'
+                      ? 'bg-brand-600 text-white shadow'
+                      : 'text-gray-600 hover:text-brand-600'
                   }`}
                 >
                   Corporate Info
@@ -179,7 +179,7 @@ export default function About() {
                     </div>
 
                     {/* Tagline */}
-                    <div className="mt-10 bg-gradient-to-r from-green-600 to-green-800 rounded-2xl p-8 text-center">
+                    <div className="mt-10 bg-gradient-to-r from-brand-600 to-brand-800 rounded-2xl p-8 text-center">
                       <p className="text-xl font-semibold text-white italic">
                         "GMKART – Empowering Local Stores. Delivering Everyday Convenience."
                       </p>
@@ -193,9 +193,9 @@ export default function About() {
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       {whyChoose.map((item) => (
-                        <div key={item.text} className="flex items-start space-x-4 bg-green-50 rounded-xl p-4 border border-green-100">
+                        <div key={item.text} className="flex items-start space-x-4 bg-brand-50 rounded-xl p-4 border border-brand-100">
                           <div className="flex-shrink-0">
-                            <div className="h-9 w-9 rounded-lg bg-green-600 flex items-center justify-center">
+                            <div className="h-9 w-9 rounded-lg bg-brand-600 flex items-center justify-center">
                               <item.icon className="h-5 w-5 text-white" />
                             </div>
                           </div>
@@ -212,13 +212,13 @@ export default function About() {
                 <div className="space-y-12">
                   <div className="max-w-4xl mx-auto">
                     {/* Mission Card */}
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 mb-10 border border-green-200">
+                    <div className="bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl p-8 mb-10 border border-brand-200">
                       <div className="flex items-center mb-6">
-                        <div className="flex-shrink-0 h-12 w-12 bg-green-600 rounded-lg flex items-center justify-center">
+                        <div className="flex-shrink-0 h-12 w-12 bg-brand-600 rounded-lg flex items-center justify-center">
                           <RocketLaunchIcon className="h-7 w-7 text-white" />
                         </div>
                         <div className="ml-4">
-                          <h3 className="text-2xl font-bold text-green-900">Our Mission</h3>
+                          <h3 className="text-2xl font-bold text-brand-900">Our Mission</h3>
                         </div>
                       </div>
                       <p className="text-lg leading-relaxed text-gray-700">
@@ -227,13 +227,13 @@ export default function About() {
                     </div>
 
                     {/* Vision Card */}
-                    <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 mb-12 border border-green-200">
+                    <div className="bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl p-8 mb-12 border border-brand-200">
                       <div className="flex items-center mb-6">
-                        <div className="flex-shrink-0 h-12 w-12 bg-green-600 rounded-lg flex items-center justify-center">
+                        <div className="flex-shrink-0 h-12 w-12 bg-brand-600 rounded-lg flex items-center justify-center">
                           <SparklesIcon className="h-7 w-7 text-white" />
                         </div>
                         <div className="ml-4">
-                          <h3 className="text-2xl font-bold text-green-900">Our Vision</h3>
+                          <h3 className="text-2xl font-bold text-brand-900">Our Vision</h3>
                         </div>
                       </div>
                       <p className="text-lg leading-relaxed text-gray-700">
@@ -250,7 +250,7 @@ export default function About() {
                         {coreValues.map((value) => (
                           <div key={value.name} className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100">
                             <div className="flex justify-center mb-4">
-                              <div className="h-14 w-14 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
+                              <div className="h-14 w-14 rounded-full bg-gradient-to-r from-brand-500 to-brand-600 flex items-center justify-center">
                                 <value.icon className="h-7 w-7 text-white" />
                               </div>
                             </div>
@@ -266,7 +266,7 @@ export default function About() {
                     </div>
 
                     {/* Closing statement */}
-                    <div className="mt-12 bg-gradient-to-r from-green-50 to-indigo-50 rounded-2xl p-8">
+                    <div className="mt-12 bg-gradient-to-r from-brand-50 to-indigo-50 rounded-2xl p-8">
                       <p className="text-lg text-gray-700 leading-relaxed text-center">
                         At GMKART, we are building more than a shopping platform—we are shaping the future of neighborhood commerce. By connecting technology with trusted local retailers, we create lasting value for customers, empower businesses to grow, and strengthen the communities they serve.
                       </p>
@@ -284,13 +284,13 @@ export default function About() {
                     </h2>
 
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-10">
-                      <div className="bg-gradient-to-r from-green-600 to-green-800 px-8 py-6">
+                      <div className="bg-gradient-to-r from-brand-600 to-brand-800 px-8 py-6">
                         <h3 className="text-2xl font-bold text-white">Company Details</h3>
                       </div>
                       <div className="p-8 space-y-6">
                         <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <BuildingOffice2Icon className="h-6 w-6 text-green-600" />
+                          <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <BuildingOffice2Icon className="h-6 w-6 text-brand-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Brand Name</p>
@@ -299,8 +299,8 @@ export default function About() {
                         </div>
 
                         <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <ShieldCheckIcon className="h-6 w-6 text-green-600" />
+                          <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <ShieldCheckIcon className="h-6 w-6 text-brand-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Operated By</p>
@@ -309,8 +309,8 @@ export default function About() {
                         </div>
 
                         <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <MapPinIcon className="h-6 w-6 text-green-600" />
+                          <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <MapPinIcon className="h-6 w-6 text-brand-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Registered Office</p>
@@ -323,12 +323,12 @@ export default function About() {
                         </div>
 
                         <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <GlobeAltIcon className="h-6 w-6 text-green-600" />
+                          <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <GlobeAltIcon className="h-6 w-6 text-brand-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Website</p>
-                            <a href="https://www.gmkart.com" target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                            <a href="https://www.gmkart.com" target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-brand-700 hover:text-brand-900 transition-colors">
                               www.gmkart.com
                             </a>
                           </div>
@@ -338,29 +338,29 @@ export default function About() {
 
                     {/* Customer Support */}
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                      <div className="bg-gradient-to-r from-green-600 to-green-800 px-8 py-6">
+                      <div className="bg-gradient-to-r from-brand-600 to-brand-800 px-8 py-6">
                         <h3 className="text-2xl font-bold text-white">Customer Support</h3>
                       </div>
                       <div className="p-8 space-y-6">
                         <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <EnvelopeIcon className="h-6 w-6 text-green-600" />
+                          <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <EnvelopeIcon className="h-6 w-6 text-brand-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Email</p>
-                            <a href="mailto:support@gmkart.com" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                            <a href="mailto:support@gmkart.com" className="text-lg font-semibold text-brand-700 hover:text-brand-900 transition-colors">
                               support@gmkart.com
                             </a>
                           </div>
                         </div>
 
                         <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <PhoneIcon className="h-6 w-6 text-green-600" />
+                          <div className="flex-shrink-0 h-10 w-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <PhoneIcon className="h-6 w-6 text-brand-600" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-500">Customer Care</p>
-                            <a href="tel:+919479467874" className="text-lg font-semibold text-green-700 hover:text-green-900 transition-colors">
+                            <a href="tel:+919479467874" className="text-lg font-semibold text-brand-700 hover:text-brand-900 transition-colors">
                               +91 94794 67874
                             </a>
                           </div>
@@ -376,14 +376,14 @@ export default function About() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-gradient-to-r from-green-600 to-green-800">
+        <div className="bg-gradient-to-r from-brand-600 to-brand-800">
           <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
             <div>
               <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                 <span className="block">Experience the GMKART Difference</span>
                 <span className="block text-yellow-400">Fast, Reliable, Quality Shopping</span>
               </h2>
-              <p className="mt-4 text-lg text-green-100 max-w-3xl">
+              <p className="mt-4 text-lg text-brand-100 max-w-3xl">
                 Join thousands of satisfied customers who trust us for their daily shopping needs.
                 Fast delivery, quality products, and exceptional service await you.
               </p>
@@ -392,7 +392,7 @@ export default function About() {
               <div className="inline-flex rounded-lg shadow">
                 <a
                   href="/"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-green-700 bg-white hover:bg-green-50 transition-colors duration-300"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-brand-700 bg-white hover:bg-brand-50 transition-colors duration-300"
                 >
                   Start Shopping Now
                   <BoltIcon className="ml-2 h-5 w-5" />

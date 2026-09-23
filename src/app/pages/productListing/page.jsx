@@ -2,6 +2,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
+import ProductGridSkeleton from '../../components/skeletons/ProductGridSkeleton';
 import { getProductPath } from '../../utils/productSlug';
 import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline';
 
@@ -386,10 +387,9 @@ const ProductListingComponent = () => {
 
   if (loading) {
     return (
-      <div className="bg-white min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
+      <div className="bg-white min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <ProductGridSkeleton count={12} />
         </div>
       </div>
     );
@@ -403,7 +403,7 @@ const ProductListingComponent = () => {
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
             onClick={() => fetchProducts()}
-            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
+            className="bg-brand-600 hover:bg-brand-700 text-white py-2 px-4 rounded-lg"
           >
             Try Again
           </button>
@@ -415,7 +415,7 @@ const ProductListingComponent = () => {
   return (
     <div className="bg-white">
       {showLoginPrompt && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg z-50">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-brand-600 text-white px-6 py-3 rounded-lg z-50">
           <p className="text-sm font-medium">Please login to add items to cart</p>
         </div>
       )}
@@ -480,7 +480,7 @@ const ProductListingComponent = () => {
                   </div>
                 </div>
               ))
-            ) : (
+            ) : !searchQuery ? null : (
               <div className="text-center py-16">
                 <div className="text-gray-300 text-6xl mb-4">
                   <MagnifyingGlassIcon className="h-16 w-16 mx-auto" />
@@ -495,7 +495,7 @@ const ProductListingComponent = () => {
                     </p>
                     <button
                       onClick={handleSetLocation}
-                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+                      className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg"
                     >
                       Change Location
                     </button>
@@ -581,7 +581,7 @@ const ProductListingComponent = () => {
             </p>
             <button
               onClick={handleSetLocation}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+              className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg"
             >
               Try Different Location
             </button>
@@ -594,10 +594,9 @@ const ProductListingComponent = () => {
 
 const ProductListing = () => {
   const fallback = (
-    <div className="bg-white min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading products...</p>
+    <div className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <ProductGridSkeleton count={12} />
       </div>
     </div>
   );

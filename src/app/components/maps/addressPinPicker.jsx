@@ -146,7 +146,7 @@ const AddressPinPicker = ({ lat, lng, onLocationChange }) => {
         type="button"
         onClick={handleUseMyLocation}
         disabled={locating}
-        className="text-sm font-medium text-green-700 hover:text-green-800 disabled:opacity-50"
+        className="text-sm font-medium text-brand-700 hover:text-brand-800 disabled:opacity-50"
       >
         {locating ? "Getting your location..." : "Use my current location"}
       </button>
@@ -176,9 +176,7 @@ const AddressPinPicker = ({ lat, lng, onLocationChange }) => {
         from this pin.
       </p>
       {pinLat != null && pinLng != null && (
-        <p className="text-xs text-green-700 font-medium">
-          Pin saved at {pinLat.toFixed(6)}, {pinLng.toFixed(6)}
-        </p>
+        <p className="text-xs text-brand-700 font-medium">✓ Location pinned</p>
       )}
       {message && <p className="text-xs text-red-600">{message}</p>}
     </div>

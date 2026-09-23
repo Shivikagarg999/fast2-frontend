@@ -418,7 +418,7 @@ const Cart = () => {
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center p-8">
-            <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-3xl mb-4">
+            <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center text-3xl mb-4">
               🔒
             </div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">Login Required</h3>
@@ -428,7 +428,7 @@ const Cart = () => {
                 closeCart();
                 window.location.href = '/login';
               }}
-              className="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 transition-shadow shadow-lg shadow-green-200"
+              className="bg-brand-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-brand-700 transition-shadow shadow-lg shadow-brand-200"
             >
               Login to Proceed
             </button>
@@ -491,7 +491,7 @@ const Cart = () => {
         {/* Loading State */}
         {loading && (
           <div className="flex-1 flex justify-center items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
           </div>
         )}
 
@@ -506,7 +506,7 @@ const Cart = () => {
               <p className="text-gray-500 text-sm max-w-[200px]">Add items from the store to see them here</p>
               <button
                 onClick={closeCart}
-                className="mt-6 text-green-600 font-bold text-sm bg-green-50 px-6 py-2.5 rounded-xl hover:bg-green-100 transition-colors"
+                className="mt-6 text-brand-600 font-bold text-sm bg-brand-50 px-6 py-2.5 rounded-xl hover:bg-brand-100 transition-colors"
                 style={{ width: 'auto' }}
               >
                 Start Shopping
@@ -580,11 +580,11 @@ const Cart = () => {
                           </div>
 
                           {/* Quantity Control Pill */}
-                          <div className="flex items-center bg-green-600 rounded-lg shadow-sm shadow-green-100 p-1 h-8">
+                          <div className="flex items-center bg-brand-600 rounded-lg shadow-sm shadow-brand-100 p-1 h-8">
                             <button
                               onClick={() => quantity === 1 ? removeItem(itemId) : updateQuantity(itemId, quantity - 1)}
                               disabled={loading}
-                              className="w-7 h-full text-white flex items-center justify-center hover:bg-green-700 rounded-md transition-colors disabled:opacity-50"
+                              className="w-7 h-full text-white flex items-center justify-center hover:bg-brand-700 rounded-md transition-colors disabled:opacity-50"
                             >
                               -
                             </button>
@@ -592,7 +592,7 @@ const Cart = () => {
                             <button
                               onClick={() => updateQuantity(itemId, quantity + 1)}
                               disabled={loading}
-                              className="w-7 h-full text-white flex items-center justify-center hover:bg-green-700 rounded-md transition-colors disabled:opacity-50"
+                              className="w-7 h-full text-white flex items-center justify-center hover:bg-brand-700 rounded-md transition-colors disabled:opacity-50"
                             >
                               +
                             </button>
@@ -609,7 +609,7 @@ const Cart = () => {
                 {appliedPromoCoupon ? (
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-semibold text-green-700">🏷️ Coupon "{appliedPromoCoupon.code}" applied</p>
+                      <p className="text-xs font-semibold text-brand-700">🏷️ Coupon "{appliedPromoCoupon.code}" applied</p>
                       <p className="text-xs text-gray-500 mt-0.5">
                         {getFreebieText(appliedPromoCoupon)
                           ? `🎁 ${getFreebieText(appliedPromoCoupon)}`
@@ -632,12 +632,12 @@ const Cart = () => {
                         onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); }}
                         onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                         placeholder="Coupon code"
-                        className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300 uppercase"
+                        className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300 uppercase"
                       />
                       <button
                         onClick={handleApplyPromo}
                         disabled={promoLoading || !promoCode.trim()}
-                        className="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                        className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 whitespace-nowrap"
                       >
                         {promoLoading ? '...' : 'Apply'}
                       </button>
@@ -698,7 +698,7 @@ const Cart = () => {
                     <div className="flex items-center">
                       <span>Delivery Fee</span>
                       {(subTotal > 199 || (serverDeliveryPricing && deliveryFee === 0)) && (
-                        <span className="ml-2 bg-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded font-bold">FREE</span>
+                        <span className="ml-2 bg-brand-100 text-brand-700 text-[10px] px-1.5 py-0.5 rounded font-bold">FREE</span>
                       )}
                     </div>
                     <div className="text-right">
@@ -708,7 +708,7 @@ const Cart = () => {
                             const product = item.product || item;
                             return total + (product.delivery?.deliveryCharges || 0);
                           }, 0)}</span>
-                          <span className="text-green-600 ml-2 font-medium">₹0</span>
+                          <span className="text-brand-600 ml-2 font-medium">₹0</span>
                         </div>
                       ) : serverDeliveryPricing ? (
                         <span>{deliveryFee > 0 ? `₹${deliveryFee}` : '₹0'}</span>
@@ -719,8 +719,8 @@ const Cart = () => {
                   </div>
 
                   {subTotal > 199 && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-center">
-                      <p className="text-xs text-green-700 font-medium">
+                    <div className="bg-brand-50 border border-brand-200 rounded-lg p-2 text-center">
+                      <p className="text-xs text-brand-700 font-medium">
                         🎉 Free delivery applied! Your order exceeds ₹199
                       </p>
                     </div>
@@ -738,7 +738,7 @@ const Cart = () => {
                     </div>
                   )}
                   {appliedPromoCoupon && (
-                    <div className="flex justify-between items-center text-green-600">
+                    <div className="flex justify-between items-center text-brand-600">
                       <span>{getFreebieText(appliedPromoCoupon) ? 'Coupon Bonus' : 'Coupon Discount'}</span>
                       <span className="font-medium">
                         {getFreebieText(appliedPromoCoupon) ? `🎁 ${getFreebieText(appliedPromoCoupon)}` : `-₹${promoDiscount.toFixed(2)}`}
@@ -773,7 +773,7 @@ const Cart = () => {
                 closeCart();
                 router.push('/checkout');
               }}
-              className="w-full bg-green-600 text-white py-3.5 px-4 rounded-xl font-bold text-base shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-xl hover:-translate-y-0.5 transition-all flex justify-between items-center group disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-brand-600 text-white py-3.5 px-4 rounded-xl font-bold text-base shadow-lg shadow-brand-200 hover:bg-brand-700 hover:shadow-xl hover:-translate-y-0.5 transition-all flex justify-between items-center group disabled:opacity-70 disabled:cursor-not-allowed"
             >
               <div className="flex flex-col items-start px-2">
                 <span className="text-xs font-medium opacity-90">Total</span>

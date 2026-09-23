@@ -6,8 +6,8 @@ import Footer from '../footer/page';
 import PolicyService from '../../services/policyService';
 
 export const POLICY_PAGES = [
-  { type: 'terms', label: 'Terms & Conditions', icon: '📜', color: 'from-green-600 to-green-700', href: '/terms-and-conditions' },
-  { type: 'return', label: 'Return Policy', icon: '🔄', color: 'from-green-600 to-green-700', href: '/return-policy' },
+  { type: 'terms', label: 'Terms & Conditions', icon: '📜', color: 'from-brand-600 to-brand-700', href: '/terms-and-conditions' },
+  { type: 'return', label: 'Return Policy', icon: '🔄', color: 'from-brand-600 to-brand-700', href: '/return-policy' },
   { type: 'cancellation', label: 'Cancellation Policy', icon: '❌', color: 'from-red-600 to-red-700', href: '/cancellation-policy' },
   { type: 'refund', label: 'Refund Policy', icon: '💰', color: 'from-amber-600 to-amber-700', href: '/refund-policy' },
   { type: 'privacy', label: 'Privacy Policy', icon: '🔒', color: 'from-blue-600 to-blue-700', href: '/privacy-policy' },
@@ -51,11 +51,11 @@ export default function PolicyPageLayout({ policyType }) {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <section className="py-12 bg-gradient-to-b from-green-50 to-white">
+      <section className="py-12 bg-gradient-to-b from-brand-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb / policy switcher */}
           <div className="flex flex-wrap items-center gap-2 mb-8 text-sm">
-            <Link href="/policies" className="text-green-700 hover:underline font-medium">
+            <Link href="/policies" className="text-brand-700 hover:underline font-medium">
               All Policies
             </Link>
             <span className="text-gray-400">/</span>
@@ -75,7 +75,7 @@ export default function PolicyPageLayout({ policyType }) {
           {/* Loading State */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mb-4"></div>
               <p className="text-gray-600">Loading policy...</p>
             </div>
           )}
@@ -92,7 +92,7 @@ export default function PolicyPageLayout({ policyType }) {
               <p className="text-gray-600 mb-4">{error}</p>
               <button
                 onClick={fetchPolicy}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                className="bg-brand-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-brand-700 transition-colors"
               >
                 Try Again
               </button>
@@ -128,8 +128,8 @@ export default function PolicyPageLayout({ policyType }) {
                               Version {policy.version}
                             </span>
                             {policy.isActive && (
-                              <span className="bg-green-500/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                                <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                              <span className="bg-brand-500/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                                <span className="w-2 h-2 bg-brand-400 rounded-full mr-2"></span>
                                 Currently Active
                               </span>
                             )}
@@ -146,8 +146,8 @@ export default function PolicyPageLayout({ policyType }) {
                     {policy.metadata && (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                         {policy.metadata.returnPeriod && (
-                          <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                            <p className="text-sm text-green-600 font-medium mb-1">Return Period</p>
+                          <div className="bg-brand-50 border border-brand-100 rounded-xl p-4">
+                            <p className="text-sm text-brand-600 font-medium mb-1">Return Period</p>
                             <p className="text-lg font-semibold text-gray-900">{policy.metadata.returnPeriod} days</p>
                           </div>
                         )}
@@ -164,8 +164,8 @@ export default function PolicyPageLayout({ policyType }) {
                           </div>
                         )}
                         {policy.metadata.contactEmail && (
-                          <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                            <p className="text-sm text-green-600 font-medium mb-1">Contact Email</p>
+                          <div className="bg-brand-50 border border-brand-100 rounded-xl p-4">
+                            <p className="text-sm text-brand-600 font-medium mb-1">Contact Email</p>
                             <p className="text-lg font-semibold text-gray-900">{policy.metadata.contactEmail}</p>
                           </div>
                         )}
@@ -201,7 +201,7 @@ export default function PolicyPageLayout({ policyType }) {
                           }
                         </p>
                         <div className="flex items-center space-x-3 text-gray-700">
-                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                           </svg>
                           <span>This document is legally binding</span>
@@ -210,7 +210,7 @@ export default function PolicyPageLayout({ policyType }) {
                     </div>
 
                     {/* Contact Information */}
-                    <div className="mt-8 bg-gradient-to-r from-gray-50 to-green-50 rounded-2xl p-6">
+                    <div className="mt-8 bg-gradient-to-r from-gray-50 to-brand-50 rounded-2xl p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Questions About This Policy?</h3>
                       <p className="text-gray-600 mb-4">
                         If you have any questions regarding our {meta?.label.toLowerCase()}, please contact us:

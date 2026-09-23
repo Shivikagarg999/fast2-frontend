@@ -59,7 +59,7 @@ const ChatWidget = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-green-600 hover:bg-green-700 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
+          className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-brand-600 hover:bg-brand-700 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
           aria-label="Open chat"
         >
           <ChatBubbleLeftRightIcon className="w-7 h-7 text-white" />
@@ -68,7 +68,7 @@ const ChatWidget = () => {
 
       {isOpen && (
         <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] h-[520px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
-          <div className="bg-green-600 px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="bg-brand-600 px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
               <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
               <span className="text-white font-semibold text-sm">GMKart Assistant</span>
@@ -88,7 +88,7 @@ const ChatWidget = () => {
                 <div
                   className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === 'user'
-                      ? 'bg-green-600 text-white rounded-br-sm'
+                      ? 'bg-brand-600 text-white rounded-br-sm'
                       : 'bg-white text-gray-800 border border-gray-200 rounded-bl-sm'
                   }`}
                 >
@@ -113,13 +113,13 @@ const ChatWidget = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your question..."
-              className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
+              className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-800"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="w-9 h-9 bg-green-600 hover:bg-green-700 disabled:opacity-40 rounded-full flex items-center justify-center flex-shrink-0 transition-colors"
+              className="w-9 h-9 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 rounded-full flex items-center justify-center flex-shrink-0 transition-colors"
               aria-label="Send"
             >
               <PaperAirplaneIcon className="w-4 h-4 text-white" />

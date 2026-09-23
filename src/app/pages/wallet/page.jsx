@@ -64,7 +64,7 @@ export default function WalletPage() {
   const fmt = (n) => parseFloat(n || 0).toFixed(2);
 
   const statusColor = (s) => {
-    if (s === 'delivered') return 'text-green-600 bg-green-50';
+    if (s === 'delivered') return 'text-brand-600 bg-brand-50';
     if (s === 'cancelled') return 'text-red-500 bg-red-50';
     return 'text-yellow-600 bg-yellow-50';
   };
@@ -93,8 +93,8 @@ export default function WalletPage() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-4">
-              <BanknotesIcon className="w-5 h-5 text-green-200" />
-              <span className="text-green-100 text-sm font-medium">Wallet Balance</span>
+              <BanknotesIcon className="w-5 h-5 text-brand-200" />
+              <span className="text-brand-100 text-sm font-medium">Wallet Balance</span>
             </div>
 
             {loading ? (
@@ -102,7 +102,7 @@ export default function WalletPage() {
             ) : (
               <p className="text-4xl font-black mb-1">₹{fmt(balance)}</p>
             )}
-            <p className="text-green-200 text-sm">
+            <p className="text-brand-200 text-sm">
               {user?.name || ''}{user?.phone ? ` · ${user.phone}` : ''}
             </p>
           </div>
@@ -145,11 +145,11 @@ export default function WalletPage() {
                 <div
                   key={order._id}
                   onClick={() => router.push('/pages/orders')}
-                  className="bg-white rounded-xl p-4 border border-gray-100 hover:border-green-200 hover:shadow-sm transition-all cursor-pointer flex items-center justify-between gap-3"
+                  className="bg-white rounded-xl p-4 border border-gray-100 hover:border-brand-200 hover:shadow-sm transition-all cursor-pointer flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
-                      <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                    <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center flex-shrink-0">
+                      <CheckCircleIcon className="w-5 h-5 text-brand-500" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-900">
