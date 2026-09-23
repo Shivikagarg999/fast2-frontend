@@ -2,13 +2,16 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import SectionHeading from '../components/sectionHeading/SectionHeading';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
+
+const TILE_WIDTH = 'w-[calc((100%-2.25rem)/4)] sm:w-28 md:w-32';
 
 const CategoryTile = ({ category }) => (
   <Link
     href={`/category/${category.slug || category._id}`}
-    className="group flex flex-col items-center text-center"
+    className={`group flex flex-col items-center text-center ${TILE_WIDTH}`}
   >
     <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-brand-50 border border-brand-100 shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:-translate-y-0.5 group-hover:border-brand-300">
       <Image
@@ -26,7 +29,8 @@ const CategoryTile = ({ category }) => (
   </Link>
 );
 
-export default function CategoryPage() {
+// `limit` caps how many tiles show (home page); without it (the /category route) every category is listed.
+export default function CategoryPage({ limit } = {}) {
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
@@ -66,11 +70,18 @@ export default function CategoryPage() {
     return () => window.removeEventListener('locationUpdated', fetchCategories);
   }, []);
 
+  const typeLimit = Number.isInteger(limit) && limit > 0 ? limit : null;
+  const visible = typeLimit ? categories.slice(0, typeLimit) : categories;
+  const hasMore = typeLimit !== null && categories.length > typeLimit;
+
   return (
     <div className="bg-white">
       <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
 
-        <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-4">Shop by category</h2>
+        <SectionHeading
+          title="Shop by category"
+          href={hasMore ? '/category' : undefined}
+        />
 
         {/* Error State */}
         {error && (
@@ -84,9 +95,9 @@ export default function CategoryPage() {
 
         {/* Loading State - same grid as the loaded tiles so nothing jumps */}
         {isLoading && (
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-x-3 gap-y-5">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="flex flex-col items-center animate-pulse">
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-5">
+            {[...Array(typeLimit || 8)].map((_, i) => (
+              <div key={i} className={`flex flex-col items-center animate-pulse ${TILE_WIDTH}`}>
                 <div className="w-full aspect-square rounded-2xl bg-gray-100"></div>
                 <div className="h-3 w-4/5 bg-gray-100 rounded mt-2"></div>
               </div>
@@ -96,8 +107,8 @@ export default function CategoryPage() {
 
         {/* Categories - compact, scannable grid */}
         {!isLoading && !error && categories.length > 0 && (
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-x-3 gap-y-5">
-            {categories.map((category) => (
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-5">
+            {visible.map((category) => (
               <CategoryTile key={category._id} category={category} />
             ))}
           </div>

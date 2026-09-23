@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import SectionHeading from '../components/sectionHeading/SectionHeading';
 
 const MIN_SUBCATEGORIES_FOR_OWN_ROW = 3;
 
@@ -123,15 +124,7 @@ export default function SubcategorySection() {
           <div className="space-y-8">
             {richGroups.map(({ category, subcategories }) => (
               <div key={category._id}>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
-                  <Link
-                    href={`/category/${category.slug || category._id}`}
-                    className="text-sm font-semibold text-[#1a3a1a] hover:text-[#0f2510] flex items-center gap-1 transition-colors flex-shrink-0"
-                  >
-                    See all <span className="text-base">→</span>
-                  </Link>
-                </div>
+                <SectionHeading title={category.name} href={`/category/${category.slug || category._id}`} />
 
                 <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
                   {subcategories.map((subcategory) => (
@@ -144,7 +137,7 @@ export default function SubcategorySection() {
             {/* Categories with too few subcategories for their own row share a compact grid instead */}
             {moreSubcategories.length > 0 && (
               <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-3">More to explore</h3>
+                <SectionHeading title="More to explore" />
                 <div className="flex flex-wrap gap-x-4 gap-y-5">
                   {moreSubcategories.map((subcategory) => (
                     <SubcategoryTile key={subcategory._id} subcategory={subcategory} />

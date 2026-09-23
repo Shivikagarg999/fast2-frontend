@@ -453,7 +453,7 @@ const ProductListingComponent = () => {
               Object.entries(productsByCategory).map(([category, categoryProducts]) => (
                 <div key={category} className="bg-white rounded-xl overflow-hidden">
                   <div className="px-6 py-4">
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
                       {category}
                       <span className="ml-3 text-sm font-normal text-gray-500">
                         ({categoryProducts.length} items)
@@ -515,7 +515,7 @@ const ProductListingComponent = () => {
         ) : (
           <div className="bg-white rounded-xl overflow-hidden">
             <div className="px-6 py-4 border-b">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
                 {selectedCategory}
                 <span className="ml-3 text-sm font-normal text-gray-500">
                   ({filteredProducts.length} items)

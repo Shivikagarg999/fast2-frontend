@@ -6,6 +6,7 @@ import Footer from "./components/footer/page";
 import CategorySection from "./category/page";
 import SubcategorySection from "./subcategory/page";
 import ProductListingSection from "./pages/productListing/page";
+import SectionHeading from "./components/sectionHeading/SectionHeading";
 import Banner from "./components/banner/page";
 import PopupManager from "./components/popup/PopupManager";
 import ProductGridSkeleton from "./components/skeletons/ProductGridSkeleton";
@@ -26,11 +27,10 @@ function HomeContent() {
       {!hasSearchQuery && (
         <>
           <Banner />
-          <CategorySection />
+          <CategorySection limit={8} />
           <SubcategorySection />
           <div className="max-w-7xl mx-auto px-4 pt-2">
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Available near you</h2>
-            <p className="text-sm text-gray-500 mb-4">Products from shops close to your location</p>
+            <SectionHeading title="Available near you" subtitle="Products from shops close to your location" />
           </div>
         </>
       )}

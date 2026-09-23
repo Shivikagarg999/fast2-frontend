@@ -5,6 +5,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { cartEvents } from '../header/page';
 import { useRouter } from 'next/navigation';
 import { formatWeight } from '../../utils/formatWeight';
+import FreeDeliveryBar from './FreeDeliveryBar';
 
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +26,20 @@ const Cart = () => {
   const [appliedScratchCoupon, setAppliedScratchCoupon] = useState(null);
 
   const [serverDeliveryPricing, setServerDeliveryPricing] = useState(null);
+  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(199);
+
+  useEffect(() => {
+    fetch('/proxy/api/app-config?app=customer')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.freeDeliveryThreshold === 'number') {
+          setFreeDeliveryThreshold(data.freeDeliveryThreshold);
+        }
+      })
+      .catch(() => {
+        // keep the default threshold
+      });
+  }, []);
 
   const updateHeaderCartCount = () => {
     window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -514,6 +529,7 @@ const Cart = () => {
             </div>
           ) : (
             <>
+              <FreeDeliveryBar subtotal={calculateTotal()} threshold={freeDeliveryThreshold} />
               <div className="space-y-4">
                 {cartItems.map((item) => {
                   const product = item.product || item;
