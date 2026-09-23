@@ -690,22 +690,6 @@ const ProductDetailClient = ({ initialProduct }) => {
                 </div>
               )}
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
-                  <ShieldCheckIcon className="w-4 h-4 text-brand-600 mr-1" />
-                  <span>Quality Assured</span>
-                </div>
-                <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
-                  <TruckIcon className="w-4 h-4 text-brand-600 mr-1" />
-                  <span>Free Delivery</span>
-                </div>
-                <div className="flex items-center justify-center text-xs text-gray-600 bg-gray-50 px-2 py-2 rounded-lg">
-                  <ArrowPathIcon className="w-4 h-4 text-orange-600 mr-1" />
-                  <span>Easy Returns</span>
-                </div>
-              </div>
-
               {prescriptionRequired && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
                   <p className="font-semibold text-amber-800">Prescription Required</p>
