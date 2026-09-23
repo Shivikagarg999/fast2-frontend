@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
-import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import { formatWeight } from '../../utils/formatWeight';
 
 const ProductCard = ({
@@ -79,24 +78,15 @@ const ProductCard = ({
     return product.images[0].url;
   };
 
-  // Strip HTML tags for plain text preview
-  const getPlainTextDescription = (html) => {
-    if (!html) return "";
-    return html.replace(/<[^>]*>/g, '').substring(0, 100);
-  };
-
-
-  const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
-
   return (
     <div
-      className="bg-white rounded-lg overflow-hidden transition-all duration-200 hover:shadow-md flex flex-col h-full cursor-pointer border border-gray-100 hover:border-gray-200 relative"
+      className="bg-white rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex flex-col h-full cursor-pointer border border-gray-200 shadow-sm relative"
       onClick={handleCardClick}
     >
       {/* Discount Badge — overall % off vs MRP (oldPrice), covering any active campaign too */}
       {hasMrpDiscount && (
         <div className="absolute top-2 left-2 z-10">
-          <div className="px-2 py-1 rounded-full text-xs font-bold text-white shadow-lg bg-gradient-to-r from-purple-500 to-pink-500">
+          <div className="px-2 py-1 rounded-md text-xs font-extrabold text-white shadow-sm bg-red-600">
             {mrpDiscountPercent}% OFF
           </div>
         </div>
@@ -130,15 +120,13 @@ const ProductCard = ({
       {/* Product Details */}
       <div className="p-3 flex-grow flex flex-col">
         <div className="flex-grow">
-          <h3 className="font-medium text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
+          <h3 className="font-semibold text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
             {product?.name || "Unnamed Product"}
           </h3>
 
-
-
           {/* Product Weight */}
           {product?.weight && (
-            <p className="text-xs text-gray-500 mb-2 font-bold">
+            <p className="text-xs text-gray-500 mb-2 font-medium">
               {formatWeight(product.weight, product?.weightUnit)}
             </p>
           )}
@@ -147,7 +135,7 @@ const ProductCard = ({
         <div className="mb-3">
           <div className="flex items-center space-x-2 mb-1">
             {/* Selling price as main price */}
-            <span className="text-sm font-bold text-gray-900">
+            <span className="text-base font-extrabold text-gray-900">
               {formatDisplayPrice(displayPrice)}
             </span>
 
@@ -162,7 +150,7 @@ const ProductCard = ({
           {/* Savings vs MRP */}
           {hasMrpDiscount && mrpSavings > 0 && (
             <div className="flex items-center space-x-1">
-              <span className="text-xs text-green-600 font-semibold">
+              <span className="text-xs text-green-700 font-bold">
                 Save {formatDisplayPrice(mrpSavings)}
               </span>
             </div>
@@ -173,21 +161,21 @@ const ProductCard = ({
         <div className="mt-auto">
           {product?.stockStatus === 'out-of-stock' ? (
             <button
-              className="w-full bg-gray-100 text-gray-500 py-2 px-3 rounded-lg text-sm font-bold cursor-not-allowed border border-gray-200"
+              className="w-full bg-gray-100 text-gray-500 py-2 px-3 rounded-xl text-sm font-bold cursor-not-allowed border border-gray-200"
               disabled
             >
               Out of Stock
             </button>
           ) : cartQuantity === 0 ? (
             <button
-              className={`w-full bg-green-50 border border-green-600 text-green-700 hover:bg-green-600 hover:text-white py-2 px-3 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              className={`w-full bg-green-600 text-white hover:bg-green-700 py-2 px-3 rounded-xl text-sm font-extrabold tracking-wide transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
             >
               {isAddingToCart ? (
                 <span className="flex items-center justify-center">
-                  <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin mr-2"></span>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
                   ADDING
                 </span>
               ) : (
@@ -195,9 +183,9 @@ const ProductCard = ({
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-green-600 text-white rounded-lg shadow-md h-9">
+            <div className="flex items-center justify-between bg-green-600 text-white rounded-xl shadow-sm h-9">
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-l-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-l-xl transition-colors"
                 onClick={handleRemove}
               >
                 <MinusIcon className="w-4 h-4 font-bold" />
@@ -208,7 +196,7 @@ const ProductCard = ({
               </span>
 
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-r-lg transition-colors"
+                className="w-8 h-full flex items-center justify-center hover:bg-green-700 rounded-r-xl transition-colors"
                 onClick={handleIncrement}
               >
                 <PlusIcon className="w-4 h-4 font-bold" />
