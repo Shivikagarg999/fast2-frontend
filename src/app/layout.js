@@ -5,6 +5,7 @@ import Cart from "./components/cart/page";
 import PopupManager from "./components/popup/PopupManager";
 import ChatWidget from "./components/chatbot/page";
 import MainContent from "./components/MainContent";
+import LocationGateModal from "./components/locationGate/LocationGateModal";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -148,6 +149,7 @@ export default function RootLayout({ children }) {
         <Cart />
         <PopupManager />
         <ChatWidget />
+        <LocationGateModal />
       </body>
     </html>
   );

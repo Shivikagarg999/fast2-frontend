@@ -34,7 +34,16 @@ export default function SubcategorySection() {
     const fetchSubcategories = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/proxy/api/subcategory/getall');
+        let url = '/proxy/api/subcategory/getall';
+        try {
+          const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
+          if (location?.latitude != null && location?.longitude != null) {
+            url += `?latitude=${location.latitude}&longitude=${location.longitude}`;
+          }
+        } catch {
+          // ignore malformed saved location, fall back to the unfiltered list
+        }
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
 
@@ -62,6 +71,9 @@ export default function SubcategorySection() {
       }
     };
     fetchSubcategories();
+
+    window.addEventListener('locationUpdated', fetchSubcategories);
+    return () => window.removeEventListener('locationUpdated', fetchSubcategories);
   }, []);
 
   const richGroups = groups.filter((g) => g.subcategories.length >= MIN_SUBCATEGORIES_FOR_OWN_ROW);

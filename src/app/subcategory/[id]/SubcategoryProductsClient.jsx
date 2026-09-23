@@ -46,6 +46,7 @@ const SubcategoryProductsComponent = () => {
   const [addingToCart, setAddingToCart] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [needsLocation, setNeedsLocation] = useState(false);
 
   const fallbackImage = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 
@@ -91,11 +92,18 @@ const SubcategoryProductsComponent = () => {
         }
 
         const subcategoryData = await subcategoryResponse.json();
+        setSubcategory(subcategoryData);
 
         const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
         if (location?.latitude == null || location?.longitude == null) {
-          throw new Error('Please select your location to see nearby products');
+          // No real error here — just ask for a location, same as Blinkit would,
+          // instead of showing a scary full-page error.
+          setNeedsLocation(true);
+          setProducts([]);
+          return;
         }
+        setNeedsLocation(false);
+
         const locationParams = new URLSearchParams({
           latitude: String(location.latitude),
           longitude: String(location.longitude)
@@ -109,8 +117,6 @@ const SubcategoryProductsComponent = () => {
         }
 
         const productsData = await productsResponse.json();
-
-        setSubcategory(subcategoryData);
         setProducts(productsData.products || productsData || []);
       } catch (err) {
         console.error("Error fetching subcategory data:", err);
@@ -121,6 +127,9 @@ const SubcategoryProductsComponent = () => {
     };
 
     if (subcategoryId) fetchSubcategoryData();
+
+    window.addEventListener('locationUpdated', fetchSubcategoryData);
+    return () => window.removeEventListener('locationUpdated', fetchSubcategoryData);
   }, [subcategoryId]);
 
   // Fetch cart quantities
@@ -330,12 +339,37 @@ const SubcategoryProductsComponent = () => {
     );
   }
 
+  if (needsLocation) {
+    return (
+      <div className="bg-white flex items-center justify-center min-h-screen">
+        <div className="text-center max-w-sm px-6">
+          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Set your delivery location</h3>
+          <p className="text-gray-500 mb-6">
+            We'll show you what's available near you as soon as you set your location.
+          </p>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('openLocationPrompt'))}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-6 rounded-xl"
+          >
+            Set Location
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="bg-white flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Subcategory</h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <h3 className="text-xl font-medium text-gray-800 mb-2">Something went wrong</h3>
+          <p className="text-gray-600 mb-4">We couldn't load this page. Please try again.</p>
           <button
             onClick={() => router.push("/subcategory")}
             className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg"
@@ -483,10 +517,11 @@ const SubcategoryProductsComponent = () => {
                   </svg>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  No Products Found
+                  Not available near you yet
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  We couldn't find any products in this subcategory.
+                  This category doesn't have items available at your location right now.
+                  Check back soon, or explore what's available nearby.
                 </p>
                 <Link
                   href="/subcategory"
