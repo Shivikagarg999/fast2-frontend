@@ -7,6 +7,8 @@ import Footer from "@/app/components/footer/page";
 import ProductCard from "@/app/components/productCard/page";
 import { getProductPath } from "@/app/utils/productSlug";
 import ProductGridSkeleton from "@/app/components/skeletons/ProductGridSkeleton";
+import NotServiceable from "@/app/components/notServiceable/NotServiceable";
+import PageNotFound from "@/app/components/notFound/PageNotFound";
 
 const CustomImage = ({ src, alt, fallback, ...props }) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -47,6 +49,8 @@ const CategoryProductsComponent = () => {
   const [addingToCart, setAddingToCart] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [needsLocation, setNeedsLocation] = useState(false);
+  const [notFoundPage, setNotFoundPage] = useState(false);
 
   const fallbackImage = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 
@@ -75,21 +79,32 @@ const CategoryProductsComponent = () => {
       try {
         setIsLoading(true);
         setError(null);
+        setNotFoundPage(false);
 
         const categoryResponse = await fetch(
           `/proxy/api/category/${categoryId}`
         );
-        
+
+        if (categoryResponse.status === 404) {
+          setNotFoundPage(true);
+          return;
+        }
         if (!categoryResponse.ok) {
           throw new Error(`Category fetch failed: ${categoryResponse.status}`);
         }
-        
+
         const categoryData = await categoryResponse.json();
+        setCategory(categoryData);
 
         const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
         if (location?.latitude == null || location?.longitude == null) {
-          throw new Error('Please select your location to see nearby products');
+          // Not an error - just ask for a location instead of a scary full-page error.
+          setNeedsLocation(true);
+          setProducts([]);
+          return;
         }
+        setNeedsLocation(false);
+
         const locationParams = new URLSearchParams({
           latitude: String(location.latitude),
           longitude: String(location.longitude)
@@ -104,7 +119,6 @@ const CategoryProductsComponent = () => {
         
         const productsData = await productsResponse.json();
 
-        setCategory(categoryData);
         setProducts(productsData.products || productsData || []);
       } catch (err) {
         console.error("Error fetching category data:", err);
@@ -115,6 +129,9 @@ const CategoryProductsComponent = () => {
     };
 
     if (categoryId) fetchCategoryData();
+
+    window.addEventListener('locationUpdated', fetchCategoryData);
+    return () => window.removeEventListener('locationUpdated', fetchCategoryData);
   }, [categoryId]);
 
   // Fetch cart quantities
@@ -323,12 +340,41 @@ const CategoryProductsComponent = () => {
     );
   }
 
+  if (notFoundPage) {
+    return <PageNotFound />;
+  }
+
+  if (needsLocation) {
+    return (
+      <div className="bg-white flex items-center justify-center min-h-screen">
+        <div className="text-center max-w-sm px-6">
+          <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Set your delivery location</h3>
+          <p className="text-gray-500 mb-6">
+            We'll show you what's available near you as soon as you set your location.
+          </p>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('openLocationPrompt'))}
+            className="bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 px-6 rounded-xl"
+          >
+            Set Location
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="bg-white flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h3 className="text-xl font-medium text-gray-800 mb-2">Error Loading Category</h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <h3 className="text-xl font-medium text-gray-800 mb-2">Something went wrong</h3>
+          <p className="text-gray-600 mb-4">We couldn't load this page. Please try again.</p>
           <button
             onClick={() => router.push("/category")}
             className="bg-brand-600 hover:bg-brand-700 text-white py-2 px-4 rounded-lg"
@@ -459,37 +505,9 @@ const CategoryProductsComponent = () => {
               </div>
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="bg-white rounded-2xl p-12 shadow-lg max-w-md mx-auto">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg
-                    className="w-10 h-10 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  No Products Found
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  We couldn't find any products in this category.
-                </p>
-                <Link
-                  href="/category"
-                  className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors"
-                >
-                  Back to Categories
-                </Link>
-              </div>
-            </div>
+            <NotServiceable
+              message="This category doesn't have items available at your location right now. Try a different location, or explore other categories."
+            />
           )}
         </div>
       </div>

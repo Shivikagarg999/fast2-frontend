@@ -30,6 +30,7 @@ import {
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { formatWeight } from '../../utils/formatWeight';
 import { getProductPath } from '../../utils/productSlug';
+import PageNotFound from "@/app/components/notFound/PageNotFound";
 import Footer from '../../components/footer/page';
 
 const API_BASE = '/proxy';
@@ -445,14 +446,10 @@ export default function ShopDetailClient() {
 
     if (!shop) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Shop not found</h2>
-                    <button onClick={() => router.push('/shops')} className="bg-brand-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-brand-700 transition-colors">
-                        Browse Shops
-                    </button>
-                </div>
-            </div>
+            <PageNotFound
+                title="Shop not found"
+                message="This shop may have closed or the link is no longer valid."
+            />
         );
     }
 

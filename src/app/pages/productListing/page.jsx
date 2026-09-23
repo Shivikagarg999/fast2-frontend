@@ -3,6 +3,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from '../../components/productCard/page';
 import ProductGridSkeleton from '../../components/skeletons/ProductGridSkeleton';
+import NotServiceable from '../../components/notServiceable/NotServiceable';
 import { getProductPath } from '../../utils/productSlug';
 import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline';
 
@@ -569,23 +570,7 @@ const ProductListingComponent = () => {
         )}
 
         {products.length === 0 && !loading && !searchQuery && userCoordinates && (
-          <div className="text-center py-16">
-            <div className="text-gray-300 text-6xl mb-4">
-              <MapPinIcon className="h-16 w-16 mx-auto" />
-            </div>
-            <h3 className="text-xl font-medium text-gray-600 mb-2">
-              No products available in your area
-            </h3>
-            <p className="text-gray-500 mb-4">
-              No shop is currently serving your selected location within the configured radius.
-            </p>
-            <button
-              onClick={handleSetLocation}
-              className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-lg"
-            >
-              Try Different Location
-            </button>
-          </div>
+          <NotServiceable />
         )}
       </div>
     </div>

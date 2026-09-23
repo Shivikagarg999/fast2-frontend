@@ -7,6 +7,8 @@ import Footer from "@/app/components/footer/page";
 import ProductCard from "@/app/components/productCard/page";
 import { getProductPath } from "@/app/utils/productSlug";
 import ProductGridSkeleton from "@/app/components/skeletons/ProductGridSkeleton";
+import NotServiceable from "@/app/components/notServiceable/NotServiceable";
+import PageNotFound from "@/app/components/notFound/PageNotFound";
 
 const CustomImage = ({ src, alt, fallback, ...props }) => {
   const [imgSrc, setImgSrc] = useState(src);
@@ -48,6 +50,7 @@ const SubcategoryProductsComponent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [needsLocation, setNeedsLocation] = useState(false);
+  const [notFoundPage, setNotFoundPage] = useState(false);
 
   const fallbackImage = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 
@@ -83,11 +86,16 @@ const SubcategoryProductsComponent = () => {
       try {
         setIsLoading(true);
         setError(null);
+        setNotFoundPage(false);
 
         const subcategoryResponse = await fetch(
           `/proxy/api/subcategory/${subcategoryId}`
         );
 
+        if (subcategoryResponse.status === 404) {
+          setNotFoundPage(true);
+          return;
+        }
         if (!subcategoryResponse.ok) {
           throw new Error(`Subcategory fetch failed: ${subcategoryResponse.status}`);
         }
@@ -339,6 +347,10 @@ const SubcategoryProductsComponent = () => {
     );
   }
 
+  if (notFoundPage) {
+    return <PageNotFound />;
+  }
+
   if (needsLocation) {
     return (
       <div className="bg-white flex items-center justify-center min-h-screen">
@@ -499,38 +511,9 @@ const SubcategoryProductsComponent = () => {
               </div>
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="bg-white rounded-2xl p-12 shadow-lg max-w-md mx-auto">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg
-                    className="w-10 h-10 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  Not available near you yet
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  This category doesn't have items available at your location right now.
-                  Check back soon, or explore what's available nearby.
-                </p>
-                <Link
-                  href="/subcategory"
-                  className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors"
-                >
-                  Back to Subcategories
-                </Link>
-              </div>
-            </div>
+            <NotServiceable
+              message="This category doesn't have items available at your location right now. Try a different location, or explore other categories."
+            />
           )}
         </div>
       </div>

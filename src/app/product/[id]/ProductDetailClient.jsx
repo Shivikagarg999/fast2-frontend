@@ -17,6 +17,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import Footer from '@/app/components/footer/page';
 import ProductCard from '@/app/components/productCard/page';
 import { formatWeight } from '@/app/utils/formatWeight';
+import PageNotFound from "@/app/components/notFound/PageNotFound";
 import { getProductPath, getProductSlug } from '@/app/utils/productSlug';
 
 const ProductDetailClient = ({ initialProduct }) => {
@@ -435,17 +436,10 @@ const ProductDetailClient = ({ initialProduct }) => {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Product not found</h2>
-          <button
-            onClick={handleBack}
-            className="bg-brand-600 text-white px-6 py-3 rounded-lg hover:bg-brand-700 transition-colors font-medium"
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
+      <PageNotFound
+        title="Product not found"
+        message="This product may have been removed or is no longer available."
+      />
     );
   }
 

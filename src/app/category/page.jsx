@@ -8,6 +8,7 @@ export default function CategoryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [locationApplied, setLocationApplied] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -18,6 +19,9 @@ export default function CategoryPage() {
           const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
           if (location?.latitude != null && location?.longitude != null) {
             url += `?latitude=${location.latitude}&longitude=${location.longitude}`;
+            setLocationApplied(true);
+          } else {
+            setLocationApplied(false);
           }
         } catch {
           // ignore malformed saved location, fall back to the unfiltered list
@@ -207,7 +211,7 @@ export default function CategoryPage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && !error && categories.length === 0 && (
+        {!isLoading && !error && categories.length === 0 && !locationApplied && (
           <div className="text-center py-12">
             <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
