@@ -142,7 +142,7 @@ function ShopsContent() {
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold mb-3 flex items-center justify-center gap-3">
                             <BuildingStorefrontIcon className="w-8 h-8 md:w-10 md:h-10" />
-                            Discover Amazing Shops
+                            Get from your nearby shops
                         </h1>
                         <p className="text-white/80 mb-8 max-w-lg mx-auto">
                             Browse through verified sellers and find the best products near you
