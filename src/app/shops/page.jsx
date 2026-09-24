@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -331,7 +332,7 @@ function ShopsContent() {
                                 >
                                     {loadingMore ? (
                                         <span className="flex items-center gap-2">
-                                            <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                                            <LoadingDots size="sm" className="text-gray-400" />
                                             Loading more...
                                         </span>
                                     ) : (
@@ -354,7 +355,7 @@ export default function ShopsPage() {
         <Suspense
             fallback={
                 <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600" />
+                    <LoadingDots size="lg" className="text-brand-600" />
                 </div>
             }
         >

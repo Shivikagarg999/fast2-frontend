@@ -1,4 +1,5 @@
 "use client"
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import React from 'react';
 import { PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
@@ -175,7 +176,7 @@ const ProductCard = ({
             >
               {isAddingToCart ? (
                 <span className="flex items-center justify-center">
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                  <LoadingDots size="sm" className="text-white mr-2" />
                   ADDING
                 </span>
               ) : (

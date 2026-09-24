@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import AddressPinPicker from '../../components/maps/addressPinPicker';
@@ -325,7 +326,7 @@ const AddressPageContent = () => {
   if (loading && addresses.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+        <LoadingDots size="lg" className="text-brand-600" />
       </div>
     );
   }
@@ -629,7 +630,7 @@ const AddressPageContent = () => {
                       className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50"
                     >
                       {deleting === address._id ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
+                        <LoadingDots size="sm" className="text-red-600" />
                       ) : (
                         <TrashIcon className="w-5 h-5" />
                       )}

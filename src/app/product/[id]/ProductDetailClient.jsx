@@ -1,4 +1,5 @@
 'use client'
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
@@ -429,7 +430,7 @@ const ProductDetailClient = ({ initialProduct }) => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+        <LoadingDots size="lg" className="text-brand-600" />
       </div>
     );
   }
@@ -828,7 +829,7 @@ const ProductDetailClient = ({ initialProduct }) => {
 
             {loadingRelated ? (
               <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+                <LoadingDots size="md" className="text-brand-600" />
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">

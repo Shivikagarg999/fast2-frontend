@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect } from 'react';
 import { 
@@ -313,7 +314,7 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blinkit-purple"></div>
+        <LoadingDots size="lg" className="text-brand-600" />
       </div>
     );
   }

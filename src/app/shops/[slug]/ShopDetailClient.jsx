@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -762,7 +763,7 @@ export default function ShopDetailClient() {
                                                         >
                                                             {addingToCart[product._id] ? (
                                                                 <span className="flex items-center justify-center gap-2">
-                                                                    <span className="w-4 h-4 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+                                                                    <LoadingDots size="sm" className="text-brand-600" />
                                                                     Adding
                                                                 </span>
                                                             ) : (

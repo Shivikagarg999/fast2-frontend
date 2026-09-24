@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -990,7 +991,7 @@ const CheckoutPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+        <LoadingDots size="lg" className="text-brand-600" />
       </div>
     );
   }
@@ -1485,7 +1486,7 @@ const CheckoutPage = () => {
                   >
                     {processing ? (
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        <LoadingDots size="sm" className="text-white mr-2" />
                         {paymentMethod === 'online' ? 'Processing Payment...' : 'Placing Order...'}
                       </div>
                     ) : paymentMethod === 'online' ? (
@@ -1519,7 +1520,7 @@ const CheckoutPage = () => {
 
               {step === 2 && (
                 <div className="py-16 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+                  <LoadingDots size="md" className="text-brand-600" />
                 </div>
               )}
             </div>

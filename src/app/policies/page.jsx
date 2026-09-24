@@ -1,4 +1,5 @@
 "use client";
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -54,7 +55,7 @@ export default function PoliciesLandingPage() {
 
           {loading && (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mb-4"></div>
+              <LoadingDots size="lg" className="text-brand-600 mb-4" />
               <p className="text-gray-600">Loading policies...</p>
             </div>
           )}

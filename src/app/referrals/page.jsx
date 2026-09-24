@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -137,7 +138,7 @@ const ReferralPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
+        <LoadingDots size="lg" className="text-brand-600" />
       </div>
     );
   }
@@ -336,7 +337,7 @@ const ReferralPage = () => {
                 >
                   {applying ? (
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      <LoadingDots size="sm" className="text-white mr-2" />
                       Applying...
                     </div>
                   ) : (

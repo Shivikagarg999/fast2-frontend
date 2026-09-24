@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
@@ -506,7 +507,7 @@ const Cart = () => {
         {/* Loading State */}
         {loading && (
           <div className="flex-1 flex justify-center items-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+            <LoadingDots size="md" className="text-brand-600" />
           </div>
         )}
 

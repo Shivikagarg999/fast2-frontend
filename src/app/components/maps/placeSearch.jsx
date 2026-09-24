@@ -1,4 +1,5 @@
 "use client";
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 import { useEffect, useRef, useState } from "react";
 import { getPlaceDetails, searchPlaces } from "../../utils/mapService";
 
@@ -90,7 +91,7 @@ const PlaceSearch = ({
         className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
       />
       {loading && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
+        <LoadingDots size="sm" className="text-brand-600 absolute right-3 top-1/2 -translate-y-1/2" />
       )}
 
       {open && suggestions.length > 0 && (

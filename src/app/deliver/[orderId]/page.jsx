@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -179,7 +180,7 @@ export default function TrackOrderPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-3">
-        <div className="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingDots size="md" className="text-brand-600" />
         <p className="text-gray-500 text-sm">Loading tracking...</p>
       </div>
     );

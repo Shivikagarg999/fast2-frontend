@@ -1,4 +1,5 @@
 "use client";
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 import { Suspense, useState, useEffect, useRef } from 'react';
 import {
   MagnifyingGlassIcon,
@@ -335,7 +336,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
       >
         <div className={`flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors w-full ${isGettingLocation ? 'opacity-75' : ''}`}>
           {isGettingLocation ? (
-            <div className="h-5 w-5 flex-shrink-0 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
+            <LoadingDots size="sm" className="text-brand-600 flex-shrink-0" />
           ) : (
             <MapPinIcon className="h-5 w-5 flex-shrink-0 text-brand-600" />
           )}
@@ -369,7 +370,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
             >
               {isGettingLocation ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <LoadingDots size="sm" className="text-white" />
                   <span>Detecting...</span>
                 </>
               ) : (
@@ -412,7 +413,7 @@ function LocationSelector({ isMobile = false, onLocationSelect }) {
 
               {isSearching && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+                  <LoadingDots size="sm" className="text-brand-600" />
                 </div>
               )}
             </div>

@@ -1,4 +1,5 @@
 'use client';
+import LoadingDots from '@/app/components/loaders/LoadingDots';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -676,7 +677,7 @@ const MyOrdersPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-14 h-14 mx-auto mb-4 relative">
-            <div className="animate-spin rounded-full h-14 w-14 border-4 border-brand-100 border-t-brand-600" />
+            <LoadingDots size="lg" className="text-brand-600" />
             <ShoppingBagIcon className="w-6 h-6 text-brand-600 absolute inset-0 m-auto" />
           </div>
           <h2 className="text-lg font-semibold text-gray-900">Loading Your Orders</h2>
