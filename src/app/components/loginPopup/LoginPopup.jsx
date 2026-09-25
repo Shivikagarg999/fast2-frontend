@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { XMarkIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
+import { track } from "../../utils/analytics";
 
 const SHOW_AFTER_MS = 12000;
 const RETRY_MS = 4000;
@@ -50,6 +51,7 @@ const LoginPopup = () => {
         return;
       }
       setOpen(true);
+      track("login_popup_shown");
       try {
         sessionStorage.setItem(SESSION_KEY, "1");
       } catch {
@@ -76,6 +78,7 @@ const LoginPopup = () => {
       return;
     }
     setOpen(false);
+    track("login_popup_submit");
     router.push(`/login?phone=${phone}`);
   };
 

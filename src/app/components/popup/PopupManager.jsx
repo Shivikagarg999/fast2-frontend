@@ -1,6 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { track } from '../../utils/analytics';
+
+const isExternalLink = (link) => /^https?:\/\//i.test(link);
+
+const ctaClass =
+  'inline-block mt-4 w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl transition-colors';
 
 const PopupManager = () => {
   const [popup, setPopup] = useState(null);
@@ -17,7 +24,7 @@ const PopupManager = () => {
       
       setIsLoading(true);
       try {
-        const response = await fetch('/api/popups/active');
+        const response = await fetch('/proxy/api/popups/active');
         const result = await response.json();
         
         if (result.success && result.data) {
@@ -26,6 +33,7 @@ const PopupManager = () => {
           if (currentPath === '/') {
             setPopup(result.data);
             setIsVisible(true);
+            track('offer_popup_shown', { ref: String(result.data._id || '') });
             // Mark popup as shown in this session
             sessionStorage.setItem('popupShown', 'true');
           }
@@ -85,48 +93,60 @@ const PopupManager = () => {
 
       {/* Centered Popup */}
       <div
-        className={`fixed z-[9999] max-w-2xl w-11/12 rounded-lg shadow-2xl transition-all duration-300 transform ${
+        className={`fixed z-[9999] max-w-md w-11/12 bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 transform ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
         }`}
         style={getPopupStyle()}
       >
         <div className="relative">
-          {/* Close Button - Always Visible */}
           <button
             onClick={closePopup}
-            className="absolute top-4 right-4 text-white bg-red-500 hover:bg-red-600 transition-colors duration-200 rounded-full p-2"
+            className="absolute top-3 right-3 z-10 text-gray-700 bg-white/90 hover:bg-white shadow rounded-full p-1.5 transition-colors"
             aria-label="Close popup"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
-          {/* Popup Image */}
           {popup.imageUrl && (
-            <div>
-              <img
-                src={popup.imageUrl}
-                alt={popup.title}
-                className="w-full h-auto rounded-lg object-cover"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                }}
-              />
-            </div>
+            <img
+              src={popup.imageUrl}
+              alt={popup.title || 'Offer'}
+              className="w-full h-auto max-h-[60vh] object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
           )}
 
-
+          {(popup.title || popup.subtitle || (popup.ctaText && popup.ctaLink)) && (
+            <div className="p-5 text-center">
+              {popup.title && (
+                <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">{popup.title}</h2>
+              )}
+              {popup.subtitle && (
+                <p className="text-sm text-gray-500 mt-1.5">{popup.subtitle}</p>
+              )}
+              {popup.ctaText && popup.ctaLink && (
+                isExternalLink(popup.ctaLink) ? (
+                  <a
+                    href={popup.ctaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => { track('offer_popup_cta_click', { ref: String(popup._id || '') }); closePopup(); }}
+                    className={ctaClass}
+                  >
+                    {popup.ctaText}
+                  </a>
+                ) : (
+                  <Link href={popup.ctaLink} onClick={() => { track('offer_popup_cta_click', { ref: String(popup._id || '') }); closePopup(); }} className={ctaClass}>
+                    {popup.ctaText}
+                  </Link>
+                )
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>

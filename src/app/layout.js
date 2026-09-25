@@ -7,6 +7,7 @@ import ChatWidget from "./components/chatbot/page";
 import MainContent from "./components/MainContent";
 import LocationGateModal from "./components/locationGate/LocationGateModal";
 import LoginPopup from "./components/loginPopup/LoginPopup";
+import AnalyticsTracker from "./components/analytics/AnalyticsTracker";
 import { Suspense } from "react";
 
 const geistSans = Geist({
@@ -152,6 +153,9 @@ export default function RootLayout({ children }) {
         <ChatWidget />
         <LocationGateModal />
         <LoginPopup />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
       </body>
     </html>
   );
