@@ -81,20 +81,20 @@ const ProductCard = ({
 
   return (
     <div
-      className="bg-white rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex flex-col h-full cursor-pointer border border-gray-200 shadow-sm relative"
+      className="bg-white rounded-xl overflow-hidden transition-shadow duration-200 hover:shadow-md flex flex-col h-full cursor-pointer border border-gray-100 relative"
       onClick={handleCardClick}
     >
       {/* Discount Badge — overall % off vs MRP (oldPrice), covering any active campaign too */}
       {hasMrpDiscount && (
         <div className="absolute top-2 left-2 z-10">
-          <div className="px-2 py-1 rounded-md text-xs font-extrabold text-white shadow-sm bg-red-600">
+          <div className="px-1.5 py-0.5 rounded text-[11px] font-bold text-white shadow-sm bg-red-600">
             {mrpDiscountPercent}% OFF
           </div>
         </div>
       )}
 
       {/* Product Image */}
-      <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
+      <div className="relative h-28 sm:h-32 bg-white flex items-center justify-center p-2">
         <img
           src={getProductImage()}
           alt={product?.name || "Product"}
@@ -105,7 +105,7 @@ const ProductCard = ({
             e.target.src = "https://via.placeholder.com/200x200?text=No+Image";
           }}
         />
-        
+
         {/* Out of Stock Overlay */}
         {product?.stockStatus === 'out-of-stock' && (
           <div className="absolute inset-0 bg-white/30 flex items-center justify-center">
@@ -119,88 +119,72 @@ const ProductCard = ({
       </div>
 
       {/* Product Details */}
-      <div className="p-3 flex-grow flex flex-col">
-        <div className="flex-grow">
-          <h3 className="font-semibold text-gray-900 text-sm mb-1 leading-tight line-clamp-2">
-            {product?.name || "Unnamed Product"}
-          </h3>
+      <div className="px-2.5 pb-2.5 pt-1 flex-grow flex flex-col">
+        <h3 className="font-medium text-gray-900 text-xs sm:text-sm mb-0.5 leading-tight line-clamp-2 min-h-[2.2em]">
+          {product?.name || "Unnamed Product"}
+        </h3>
 
-          {/* Product Weight */}
-          {product?.weight && (
-            <p className="text-xs text-gray-500 mb-2 font-medium">
-              {formatWeight(product.weight, product?.weightUnit)}
-            </p>
-          )}
-        </div>
+        {/* Product Weight */}
+        {product?.weight && (
+          <p className="text-xs text-gray-500 mb-2">
+            {formatWeight(product.weight, product?.weightUnit)}
+          </p>
+        )}
 
-        <div className="mb-3">
-          <div className="flex items-center space-x-2 mb-1">
-            {/* Selling price as main price */}
-            <span className="text-base font-extrabold text-gray-900">
+        {/* Price + Add row */}
+        <div className="mt-auto flex items-end justify-between gap-2">
+          <div className="min-w-0">
+            <div className="text-sm font-bold text-gray-900">
               {formatDisplayPrice(displayPrice)}
-            </span>
-
-            {/* MRP crossed out whenever it's higher than the selling price */}
+            </div>
             {hasMrpDiscount && (
-              <span className="text-xs text-gray-400 line-through">
+              <div className="text-xs text-gray-400 line-through">
                 {formatDisplayPrice(mrp)}
-              </span>
+              </div>
             )}
           </div>
 
-          {/* Savings vs MRP */}
-          {hasMrpDiscount && mrpSavings > 0 && (
-            <div className="flex items-center space-x-1">
-              <span className="text-xs text-brand-700 font-bold">
-                Save {formatDisplayPrice(mrpSavings)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Add to Cart Section */}
-        <div className="mt-auto">
           {product?.stockStatus === 'out-of-stock' ? (
             <button
-              className="w-full bg-gray-100 text-gray-500 py-2 px-3 rounded-xl text-sm font-bold cursor-not-allowed border border-gray-200"
+              className="flex-shrink-0 bg-gray-100 text-gray-400 py-1.5 px-3 rounded-lg text-xs font-bold cursor-not-allowed border border-gray-200"
               disabled
             >
-              Out of Stock
+              ADD
             </button>
           ) : cartQuantity === 0 ? (
             <button
-              className={`w-full bg-brand-600 text-white hover:bg-brand-700 py-2 px-3 rounded-xl text-sm font-extrabold tracking-wide transition-all duration-200 shadow-sm ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
+              className={`flex-shrink-0 bg-white text-brand-600 hover:bg-brand-50 py-1.5 px-4 rounded-lg text-xs font-extrabold tracking-wide border border-brand-500 transition-colors ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               onClick={handleAdd}
               disabled={isAddingToCart}
             >
               {isAddingToCart ? (
                 <span className="flex items-center justify-center">
-                  <LoadingDots size="sm" className="text-white mr-2" />
-                  ADDING
+                  <LoadingDots size="sm" className="text-brand-600 mr-1" />
+                  ADD
                 </span>
               ) : (
                 'ADD'
               )}
             </button>
           ) : (
-            <div className="flex items-center justify-between bg-brand-600 text-white rounded-xl shadow-sm h-9">
+            <div className="flex-shrink-0 flex items-center justify-between bg-brand-600 text-white rounded-lg shadow-sm h-8">
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-brand-700 rounded-l-xl transition-colors"
+                className="w-7 h-full flex items-center justify-center hover:bg-brand-700 rounded-l-lg transition-colors"
                 onClick={handleRemove}
               >
-                <MinusIcon className="w-4 h-4 font-bold" />
+                <MinusIcon className="w-3.5 h-3.5 font-bold" />
               </button>
 
-              <span className="font-bold text-sm px-1 min-w-[1.5rem] text-center">
+              <span className="font-bold text-xs px-1 min-w-[1.25rem] text-center">
                 {cartQuantity}
               </span>
 
               <button
-                className="w-8 h-full flex items-center justify-center hover:bg-brand-700 rounded-r-xl transition-colors"
+                className="w-7 h-full flex items-center justify-center hover:bg-brand-700 rounded-r-lg transition-colors"
                 onClick={handleIncrement}
               >
-                <PlusIcon className="w-4 h-4 font-bold" />
+                <PlusIcon className="w-3.5 h-3.5 font-bold" />
               </button>
             </div>
           )}
