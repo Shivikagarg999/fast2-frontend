@@ -94,11 +94,11 @@ const ProductCard = ({
       )}
 
       {/* Product Image */}
-      <div className="relative h-32 bg-gray-50 flex items-center justify-center">
+      <div className="relative h-32 bg-gray-50 flex items-center justify-center p-3">
         <img
           src={getProductImage()}
           alt={product?.name || "Product"}
-          className={`object-cover h-full w-full transition-transform duration-300 hover:scale-105 ${
+          className={`object-contain h-full w-full transition-transform duration-300 hover:scale-105 ${
             product?.stockStatus === 'out-of-stock' ? 'opacity-80' : ''
           }`}
           onError={(e) => {
