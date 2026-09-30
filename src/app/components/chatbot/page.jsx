@@ -192,6 +192,21 @@ const ChatWidget = () => {
     if (isOpen && language) inputRef.current?.focus();
   }, [isOpen, language]);
 
+  // Full-screen overlay: stop the page behind it from scrolling, and let Esc close it.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen]);
+
   const t = TEXT[language || 'en'];
 
   const chooseLanguage = (lang) => {
@@ -285,17 +300,22 @@ const ChatWidget = () => {
       )}
 
       {isOpen && (
-        <div className="fixed bottom-5 right-5 z-50 w-[350px] sm:w-[400px] h-[600px] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden">
-          <div className="bg-brand-600 px-4 py-3 flex items-center justify-between flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
-              <span className="text-white font-semibold text-sm">GMKart Assistant</span>
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col">
+          <header className="shrink-0 flex items-center justify-between gap-4 border-b border-gray-100 px-5 py-3 sm:px-8">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-white">
+                <ChatBubbleLeftRightIcon className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-bold text-gray-900">GMKart Assistant</p>
+                <p className="text-xs text-gray-500">Ask, search, and add to cart</p>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               {language && (
                 <button
                   onClick={switchLanguage}
-                  className="text-[11px] font-bold text-white bg-white/20 hover:bg-white/30 rounded-full px-2 py-1 transition-colors"
+                  className="text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-full px-3 py-1.5 transition-colors"
                   title="Switch language"
                 >
                   {language === 'hi' ? 'EN' : 'हिं'}
@@ -303,88 +323,93 @@ const ChatWidget = () => {
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-white hover:bg-white/20 rounded-full p-1 transition-colors"
                 aria-label="Close chat"
+                title="Close (Esc)"
+                className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
             </div>
-          </div>
+          </header>
 
-          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-3 py-4 space-y-4 bg-gray-50">
-            {messages.map((msg, i) => (
-              <div key={i} className="chat-fade-in flex flex-col gap-2">
-                {msg.role === 'user' ? (
-                  <div className="flex items-start justify-end gap-2">
-                    <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-brand-600 text-white px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap">
-                      {msg.content}
-                    </p>
-                    <UserAvatar />
-                  </div>
-                ) : (
-                  <div className="flex items-start gap-2">
-                    <AssistantAvatar />
-                    <p className="max-w-[78%] rounded-2xl rounded-tl-md bg-white border border-gray-200 text-gray-800 px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap">
-                      {msg.content}
-                    </p>
-                  </div>
-                )}
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-8 bg-gray-50">
+            <div className="mx-auto w-full max-w-2xl flex flex-col gap-5">
+              {messages.map((msg, i) => (
+                <div key={i} className="chat-fade-in flex flex-col gap-2">
+                  {msg.role === 'user' ? (
+                    <div className="flex items-start justify-end gap-3">
+                      <p className="max-w-[78%] rounded-2xl rounded-tr-md bg-brand-600 text-white px-4 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap">
+                        {msg.content}
+                      </p>
+                      <UserAvatar />
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-3">
+                      <AssistantAvatar />
+                      <p className="max-w-[78%] rounded-2xl rounded-tl-md bg-white border border-gray-200 text-gray-800 px-4 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap">
+                        {msg.content}
+                      </p>
+                    </div>
+                  )}
 
-                {msg.languageChoice && !language && (
-                  <div className="chat-fade-in ml-10 flex flex-wrap gap-2">
-                    {LANGUAGE_OPTIONS.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => chooseLanguage(option.value)}
-                        className="rounded-full border border-brand-300 bg-white px-4 py-1.5 text-sm font-semibold text-brand-700 hover:border-brand-500 hover:bg-brand-50 transition-colors"
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                  {msg.languageChoice && !language && (
+                    <div className="chat-fade-in ml-11 flex flex-wrap gap-2">
+                      {LANGUAGE_OPTIONS.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => chooseLanguage(option.value)}
+                          className="rounded-full border border-brand-300 bg-white px-4 py-1.5 text-sm font-semibold text-brand-700 hover:border-brand-500 hover:bg-brand-50 transition-colors"
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
-                {msg.products && (
-                  <div className="ml-10 flex gap-2 overflow-x-auto max-w-[calc(100%-2.5rem)] pb-1 no-scrollbar">
-                    {msg.products.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        isLoggedIn={isLoggedIn}
-                        onLoginRequired={handleLoginRequired}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            {loading && <TypingBubble words={t.typingWords} />}
+                  {msg.products && (
+                    <div className="ml-11 flex gap-2.5 overflow-x-auto max-w-[calc(100%-2.75rem)] pb-1 no-scrollbar">
+                      {msg.products.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          isLoggedIn={isLoggedIn}
+                          onLoginRequired={handleLoginRequired}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {loading && <TypingBubble words={t.typingWords} />}
+            </div>
           </div>
 
           {language && (
-            <div className="shrink-0 border-t border-gray-100 bg-gray-50/60 px-3 py-3">
-              <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-white p-1.5 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-100">
-                <textarea
-                  ref={inputRef}
-                  rows={1}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={t.placeholder}
-                  disabled={loading}
-                  className="min-h-[36px] max-h-24 min-w-0 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-relaxed text-gray-800 outline-none placeholder:text-gray-400"
-                />
-                <button
-                  type="button"
-                  onClick={handleSend}
-                  disabled={loading || !input.trim()}
-                  className="w-8 h-8 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
-                  aria-label="Send"
-                >
-                  <PaperAirplaneIcon className="w-4 h-4 text-white" />
-                </button>
+            <div className="shrink-0 px-4 pt-2 pb-5">
+              <div className="mx-auto w-full max-w-2xl">
+                <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-white p-2 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-100">
+                  <textarea
+                    ref={inputRef}
+                    rows={1}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={t.placeholder}
+                    disabled={loading}
+                    className="min-h-[44px] max-h-32 min-w-0 flex-1 resize-none bg-transparent px-2 py-2.5 text-base leading-relaxed text-gray-800 outline-none placeholder:text-gray-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSend}
+                    disabled={loading || !input.trim()}
+                    className="w-10 h-10 bg-brand-600 hover:bg-brand-700 disabled:opacity-40 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors"
+                    aria-label="Send"
+                  >
+                    <PaperAirplaneIcon className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+                <p className="mt-1.5 text-xs text-gray-400 px-1">{t.hint}</p>
               </div>
-              <p className="mt-1 text-[10px] text-gray-400 px-1">{t.hint}</p>
             </div>
           )}
 
