@@ -80,7 +80,6 @@ const SubcategoryProductsComponent = () => {
     };
   }, []);
 
-  // Fetch subcategory and products data
   useEffect(() => {
     const fetchSubcategoryData = async () => {
       try {

@@ -57,3 +57,9 @@ svg {
 .oc-circle { stroke-dasharray: 166; stroke-dashoffset: 166; animation: oc-draw 0.6s ease-out 0.15s forwards; }
 .oc-check { stroke-dasharray: 48; stroke-dashoffset: 48; animation: oc-draw 0.35s ease-out 0.7s forwards; }
 .oc-rise { animation: oc-rise 0.5s ease-out both; }
+
+/* Chat assistant */
+@keyframes chat-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes chat-fade-in { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+.chat-shimmer-text { background-size: 200% 100%; animation: chat-shimmer 1.6s linear infinite; }
+.chat-fade-in { animation: chat-fade-in 0.25s ease-out both; }
