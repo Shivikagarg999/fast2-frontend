@@ -608,6 +608,21 @@ const ProductDetailClient = ({ initialProduct }) => {
                     Image {selectedImageIndex + 1} of {images.length}
                   </div>
                 )}
+
+                {/* Product Video */}
+                {product?.video?.url && (
+                  <div className="mt-4">
+                    <video
+                      src={product.video.url}
+                      poster={product.video.thumbnail || undefined}
+                      controls
+                      playsInline
+                      className="w-full rounded-lg bg-black"
+                    >
+                      Your browser does not support video playback.
+                    </video>
+                  </div>
+                )}
               </div>
             </div>
 
