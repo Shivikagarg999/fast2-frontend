@@ -51,6 +51,15 @@ const getSessionId = () => {
   }
 };
 
+const getLocation = () => {
+  try {
+    const data = JSON.parse(localStorage.getItem('userLocationData') || 'null');
+    return { pincode: data?.pincode || '', area: data?.locationName || '' };
+  } catch {
+    return { pincode: '', area: '' };
+  }
+};
+
 const getDevice = () => {
   const width = window.innerWidth;
   if (width < 768) return 'mobile';
@@ -77,6 +86,7 @@ const flush = () => {
     device: getDevice(),
     isLoggedIn: isLoggedIn(),
     referrer: document.referrer ? new URL(document.referrer).hostname : '',
+    location: getLocation(),
     events: queue.splice(0, 20),
   });
 
