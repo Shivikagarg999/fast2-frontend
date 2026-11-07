@@ -6,24 +6,24 @@ import SectionHeading from '../components/sectionHeading/SectionHeading';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
 
-const TILE_WIDTH = 'w-[calc((100%-2.25rem)/4)] sm:w-28 md:w-32';
+const TILE_WIDTH = 'w-[calc((100%-2rem)/5)] sm:w-16 md:w-20';
 
 const CategoryTile = ({ category }) => (
   <Link
     href={`/category/${category.slug || category._id}`}
     className={`group flex flex-col items-center text-center ${TILE_WIDTH}`}
   >
-    <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-brand-50 border border-brand-100 shadow-sm transition-all duration-200 group-hover:shadow-md group-hover:-translate-y-0.5 group-hover:border-brand-300">
+    <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-50">
       <Image
         src={category.image || fallbackImage}
         alt={category.name}
         fill
-        sizes="(max-width: 640px) 25vw, (max-width: 1024px) 16vw, 12vw"
-        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        sizes="(max-width: 640px) 18vw, (max-width: 1024px) 10vw, 80px"
+        className="object-cover transition-transform duration-200 group-hover:scale-105"
         onError={(e) => { e.target.src = fallbackImage; }}
       />
     </div>
-    <p className="mt-2 text-xs sm:text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+    <p className="mt-1.5 text-[11px] sm:text-xs font-medium text-gray-700 leading-tight line-clamp-2">
       {category.name}
     </p>
   </Link>
@@ -95,11 +95,11 @@ export default function CategoryPage({ limit } = {}) {
 
         {/* Loading State - same grid as the loaded tiles so nothing jumps */}
         {isLoading && (
-          <div className="flex flex-wrap justify-center gap-x-3 gap-y-5">
+          <div className="flex flex-wrap justify-center gap-x-2 gap-y-4">
             {[...Array(typeLimit || 8)].map((_, i) => (
               <div key={i} className={`flex flex-col items-center animate-pulse ${TILE_WIDTH}`}>
-                <div className="w-full aspect-square rounded-2xl bg-gray-100"></div>
-                <div className="h-3 w-4/5 bg-gray-100 rounded mt-2"></div>
+                <div className="w-full aspect-square rounded-xl bg-gray-100"></div>
+                <div className="h-3 w-4/5 bg-gray-100 rounded mt-1.5"></div>
               </div>
             ))}
           </div>
@@ -107,7 +107,7 @@ export default function CategoryPage({ limit } = {}) {
 
         {/* Categories - compact, scannable grid */}
         {!isLoading && !error && categories.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-x-3 gap-y-5">
+          <div className="flex flex-wrap justify-center gap-x-2 gap-y-4">
             {visible.map((category) => (
               <CategoryTile key={category._id} category={category} />
             ))}

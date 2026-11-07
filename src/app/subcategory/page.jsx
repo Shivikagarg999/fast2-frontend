@@ -9,18 +9,18 @@ const MIN_SUBCATEGORIES_FOR_OWN_ROW = 3;
 const fallbackImage = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80';
 
 const SubcategoryTile = ({ subcategory }) => (
-  <Link href={`/subcategory/${subcategory.slug || subcategory._id}`} className="flex-shrink-0 w-36 sm:w-40 group">
-    <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 group-hover:border-gray-300 transition-colors">
+  <Link href={`/subcategory/${subcategory.slug || subcategory._id}`} className="flex-shrink-0 w-20 sm:w-24 group">
+    <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-50">
       <Image
         src={subcategory.image || fallbackImage}
         alt={subcategory.name}
         fill
-        sizes="(max-width: 640px) 144px, 160px"
-        className="object-cover group-hover:scale-105 transition-transform duration-300"
+        sizes="(max-width: 640px) 80px, 96px"
+        className="object-cover group-hover:scale-105 transition-transform duration-200"
         onError={(e) => { e.target.src = fallbackImage; }}
       />
     </div>
-    <p className="mt-2 text-sm font-semibold text-gray-800 text-center leading-tight line-clamp-2">
+    <p className="mt-1.5 text-[11px] sm:text-xs font-medium text-gray-700 text-center leading-tight line-clamp-2">
       {subcategory.name}
     </p>
   </Link>
@@ -106,11 +106,11 @@ export default function SubcategorySection() {
             {[...Array(2)].map((_, sectionIdx) => (
               <div key={sectionIdx}>
                 <div className="h-5 w-40 bg-gray-100 rounded animate-pulse mb-3"></div>
-                <div className="flex gap-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex-shrink-0 w-36 sm:w-40">
-                      <div className="aspect-square rounded-2xl bg-gray-100 animate-pulse"></div>
-                      <div className="h-3 w-20 bg-gray-100 rounded animate-pulse mt-2 mx-auto"></div>
+                <div className="flex gap-3">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="flex-shrink-0 w-20 sm:w-24">
+                      <div className="aspect-square rounded-xl bg-gray-100 animate-pulse"></div>
+                      <div className="h-3 w-14 bg-gray-100 rounded animate-pulse mt-1.5 mx-auto"></div>
                     </div>
                   ))}
                 </div>
@@ -126,7 +126,7 @@ export default function SubcategorySection() {
               <div key={category._id}>
                 <SectionHeading title={category.name} href={`/category/${category.slug || category._id}`} />
 
-                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
                   {subcategories.map((subcategory) => (
                     <SubcategoryTile key={subcategory._id} subcategory={subcategory} />
                   ))}
@@ -138,7 +138,7 @@ export default function SubcategorySection() {
             {moreSubcategories.length > 0 && (
               <div>
                 <SectionHeading title="More to explore" />
-                <div className="flex flex-wrap gap-x-4 gap-y-5">
+                <div className="flex flex-wrap gap-x-2 gap-y-4">
                   {moreSubcategories.map((subcategory) => (
                     <SubcategoryTile key={subcategory._id} subcategory={subcategory} />
                   ))}

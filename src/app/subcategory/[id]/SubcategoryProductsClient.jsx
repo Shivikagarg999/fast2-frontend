@@ -55,7 +55,6 @@ const SubcategoryProductsComponent = () => {
   const fallbackImage = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 
   useEffect(() => {
-    // Scroll to top when component mounts
     if (typeof window !== 'undefined') {
       window.scrollTo(0, 0);
     }
@@ -104,8 +103,6 @@ const SubcategoryProductsComponent = () => {
 
         const location = JSON.parse(localStorage.getItem('userLocationData') || 'null');
         if (location?.latitude == null || location?.longitude == null) {
-          // No real error here — just ask for a location, same as Blinkit would,
-          // instead of showing a scary full-page error.
           setNeedsLocation(true);
           setProducts([]);
           return;
