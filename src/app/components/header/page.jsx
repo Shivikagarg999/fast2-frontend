@@ -16,13 +16,35 @@ import {
   MapPinIcon,
   ChevronDownIcon,
   BuildingStorefrontIcon,
-  TicketIcon
+  TicketIcon,
+  MicrophoneIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Logo from '../../../assets/images/logo.png';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 import { searchPlaces, getPlaceDetails, reverseGeocode } from '../../utils/mapService';
+import useVoiceSearch from '../../hooks/useVoiceSearch';
+
+// Mic button shared by the desktop and mobile search bars — hidden entirely
+// when the browser has no Web Speech API (e.g. Firefox) rather than showing
+// a button that would silently do nothing.
+function VoiceSearchButton({ onTranscript, className }) {
+  const { isSupported, isListening, startListening } = useVoiceSearch({ onResult: onTranscript });
+  if (!isSupported) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={startListening}
+      title="Search by voice"
+      aria-label="Search by voice"
+      className={`${className} ${isListening ? 'bg-red-500 animate-pulse' : 'bg-gray-100 hover:bg-gray-200'}`}
+    >
+      <MicrophoneIcon className={`w-4 h-4 ${isListening ? 'text-white' : 'text-gray-600'}`} />
+    </button>
+  );
+}
 
 function SearchInput({ productSearchQuery, setProductSearchQuery }) {
   const searchParams = useSearchParams();
@@ -40,23 +62,7 @@ function SearchInput({ productSearchQuery, setProductSearchQuery }) {
     router.push(`/?${params.toString()}`, { scroll: false });
   };
 
-  return (
-    <input
-      type="text"
-      placeholder="Search for products, categories..."
-      className="w-full pl-10 pr-12 text-black py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-      value={productSearchQuery}
-      onChange={handleProductSearchChange}
-    />
-  );
-}
-
-function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const handleProductSearchChange = (e) => {
-    const query = e.target.value;
+  const updateQuery = (query) => {
     setProductSearchQuery(query);
     const params = new URLSearchParams(searchParams);
     if (query) {
@@ -68,13 +74,51 @@ function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
   };
 
   return (
-    <input
-      type="text"
-      placeholder="Search for products..."
-      className="w-full pl-10 pr-4 py-2 border border-brand-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-      value={productSearchQuery}
-      onChange={handleProductSearchChange}
-    />
+    <>
+      <input
+        type="text"
+        placeholder="Search for products, categories..."
+        className="w-full pl-10 pr-24 text-black py-2.5 border border-gray-200 rounded-full focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+        value={productSearchQuery}
+        onChange={(e) => updateQuery(e.target.value)}
+      />
+      <VoiceSearchButton
+        onTranscript={updateQuery}
+        className="absolute right-11 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+      />
+    </>
+  );
+}
+
+function MobileSearchInput({ productSearchQuery, setProductSearchQuery }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const updateQuery = (query) => {
+    setProductSearchQuery(query);
+    const params = new URLSearchParams(searchParams);
+    if (query) {
+      params.set('search', query);
+    } else {
+      params.delete('search');
+    }
+    router.push(`/?${params.toString()}`, { scroll: false });
+  };
+
+  return (
+    <>
+      <input
+        type="text"
+        placeholder="Search for products..."
+        className="w-full pl-10 pr-10 py-2 border border-brand-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+        value={productSearchQuery}
+        onChange={(e) => updateQuery(e.target.value)}
+      />
+      <VoiceSearchButton
+        onTranscript={updateQuery}
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center transition-colors"
+      />
+    </>
   );
 }
 
